@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroPortrait from "@/assets/hero-portrait.jpg";
 
 export const HeroSection = () => {
   const scrollToSection = (href: string) => {
@@ -31,13 +30,13 @@ export const HeroSection = () => {
       </div>
 
       <div className="container-custom relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
           {/* Text Content */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center lg:text-left"
+            className="w-full"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -63,7 +62,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto"
             >
               Psikolojik Danışman Sefa Sevim ile bilimsel temelli ve empatik
               yaklaşımlarla içsel huzurunuzu keşfedin.
@@ -73,7 +72,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Button
                 variant="hero"
@@ -100,14 +99,14 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-border"
+              className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-border max-w-2xl mx-auto"
             >
               {[
                 { value: "500+", label: "Danışan" },
                 { value: "5+", label: "Yıl Deneyim" },
                 { value: "%98", label: "Memnuniyet" },
               ].map((stat, index) => (
-                <div key={index} className="text-center lg:text-left">
+                <div key={index} className="text-center">
                   <div className="text-2xl sm:text-3xl font-heading font-bold text-secondary">
                     {stat.value}
                   </div>
@@ -119,76 +118,7 @@ export const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Image */}
-          <motion.div
-            initial={{ opacity: 0, x: 50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="relative"
-          >
-            <div className="relative max-w-md mx-auto lg:max-w-none">
-              {/* Main Image */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="relative z-10 rounded-3xl overflow-hidden shadow-card"
-              >
-                <img
-                  src={heroPortrait}
-                  alt="Psikolojik Danışman Sefa Sevim"
-                  className="w-full h-auto object-cover aspect-[3/4]"
-                />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-teal-dark/20 to-transparent" />
-              </motion.div>
 
-              {/* Floating cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="absolute -bottom-4 -left-4 sm:-left-8 z-20 glass rounded-2xl p-4 shadow-card"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-sage flex items-center justify-center">
-                    <span className="text-2xl">🎓</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground text-sm">
-                      PDR Mezunu
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Lisanslı Danışman
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="absolute -top-4 -right-4 sm:-right-8 z-20 glass rounded-2xl p-4 shadow-card"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-beige-warm flex items-center justify-center">
-                    <span className="text-2xl">💚</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground text-sm">
-                      Online & Yüz Yüze
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Esnek Seçenekler
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Background decoration */}
-              <div className="absolute -z-10 top-8 right-8 w-full h-full rounded-3xl bg-sage-light/50" />
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>

@@ -6,6 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/admin/Login";
+import AdminLayout from "./components/layouts/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import Appointments from "./pages/admin/Appointments";
+import Settings from "./pages/admin/Settings";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +24,13 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

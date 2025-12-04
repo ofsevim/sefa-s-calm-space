@@ -5,11 +5,19 @@ import {
   Send,
   Calendar,
   Clock,
-  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { contactInfo, workingHours } from "@/data/content";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { BookingForm } from "@/components/BookingForm";
 
 export const ContactSection = () => {
   const ref = useRef(null);
@@ -244,7 +252,7 @@ export const ContactSection = () => {
               </div>
             </motion.div>
 
-            {/* Booking Widget Placeholder */}
+            {/* Booking Widget */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -262,17 +270,26 @@ export const ContactSection = () => {
                 oluşturabilirsiniz.
               </p>
               <div className="bg-primary-foreground/10 rounded-2xl p-6 backdrop-blur-sm">
-                <div className="flex items-center justify-center gap-2 text-primary-foreground/70 mb-4">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="text-sm">Calendly Entegrasyonu</span>
-                </div>
-                <Button
-                  variant="glass"
-                  size="lg"
-                  className="w-full text-foreground"
-                >
-                  Randevu Takvimini Aç
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="glass"
+                      size="lg"
+                      className="w-full text-foreground"
+                    >
+                      Randevu Oluştur
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Randevu Oluştur</DialogTitle>
+                      <DialogDescription>
+                        Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <BookingForm />
+                  </DialogContent>
+                </Dialog>
               </div>
             </motion.div>
           </motion.div>
