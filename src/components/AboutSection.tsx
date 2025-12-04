@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { credentials } from "@/data/content";
-import heroPortrait from "@/assets/sefa-sevim.jpg";
+import heroPortrait from "@/assets/sefa-sevim-about.png";
 
 export const AboutSection = () => {
   const ref = useRef(null);
