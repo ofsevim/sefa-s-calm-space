@@ -200,7 +200,6 @@ export const quickLinks = [
     { name: "Anasayfa", href: "#hero" },
     { name: "Hakkımda", href: "#hakkimda" },
     { name: "Hizmetler", href: "#hizmetler" },
-    { name: "Online Terapi", href: "#online" },
     { name: "SSS", href: "#sss" },
     { name: "İletişim", href: "#iletisim" },
 ];

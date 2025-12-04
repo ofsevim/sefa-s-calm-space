@@ -7,7 +7,6 @@ const navLinks = [
   { name: "Anasayfa", href: "#hero" },
   { name: "Hakkımda", href: "#hakkimda" },
   { name: "Hizmetler", href: "#hizmetler" },
-  { name: "Online Terapi", href: "#online" },
   { name: "SSS", href: "#sss" },
   { name: "İletişim", href: "#iletisim" },
 ];
@@ -37,11 +36,10 @@ export const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
           ? "bg-white/80 backdrop-blur-lg border-b border-sage-light/50 shadow-soft"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">

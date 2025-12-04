@@ -140,6 +140,13 @@ export const Footer = () => {
               © {new Date().getFullYear()} Psk. Dan. Sefa Sevim. Tüm hakları
               saklıdır.
             </p>
+            <a
+              href="/admin/login"
+              className="text-secondary-foreground/30 hover:text-secondary-foreground/60 transition-colors text-xs"
+              title="Yönetim Paneli"
+            >
+              •
+            </a>
           </div>
         </div>
       </div>
