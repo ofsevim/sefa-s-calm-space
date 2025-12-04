@@ -4,6 +4,7 @@ import {
     Settings,
     LogOut,
     MessageSquare,
+    Home,
 } from "lucide-react";
 import {
     Sidebar,
@@ -84,6 +85,14 @@ export function AdminSidebar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <a href="/" target="_blank" rel="noopener noreferrer">
+                                <Home />
+                                <span>Siteye Dön</span>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton onClick={handleLogout}>
                             <LogOut />
