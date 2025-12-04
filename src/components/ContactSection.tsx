@@ -198,6 +198,47 @@ export const ContactSection = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="space-y-8"
           >
+            {/* Booking Widget */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.9 }}
+              className="bg-gradient-sage rounded-3xl p-8 text-primary-foreground"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Calendar className="w-6 h-6" />
+                <h4 className="font-heading font-semibold text-lg">
+                  Online Randevu
+                </h4>
+              </div>
+              <p className="text-primary-foreground/80 mb-6">
+                Size en uygun gün ve saati seçerek hemen online randevu
+                oluşturabilirsiniz.
+              </p>
+              <div className="bg-primary-foreground/10 rounded-2xl p-6 backdrop-blur-sm">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="glass"
+                      size="lg"
+                      className="w-full text-foreground"
+                    >
+                      Randevu Oluştur
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Randevu Oluştur</DialogTitle>
+                      <DialogDescription>
+                        Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <BookingForm />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </motion.div>
+
             {/* Contact Info Cards */}
             <div className="space-y-4">
               {contactInfo.map((item, index) => (
@@ -252,46 +293,7 @@ export const ContactSection = () => {
               </div>
             </motion.div>
 
-            {/* Booking Widget */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.9 }}
-              className="bg-gradient-sage rounded-3xl p-8 text-primary-foreground"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Calendar className="w-6 h-6" />
-                <h4 className="font-heading font-semibold text-lg">
-                  Online Randevu
-                </h4>
-              </div>
-              <p className="text-primary-foreground/80 mb-6">
-                Size en uygun gün ve saati seçerek hemen online randevu
-                oluşturabilirsiniz.
-              </p>
-              <div className="bg-primary-foreground/10 rounded-2xl p-6 backdrop-blur-sm">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="glass"
-                      size="lg"
-                      className="w-full text-foreground"
-                    >
-                      Randevu Oluştur
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Randevu Oluştur</DialogTitle>
-                      <DialogDescription>
-                        Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <BookingForm />
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </motion.div>
+
           </motion.div>
         </div>
       </div>
