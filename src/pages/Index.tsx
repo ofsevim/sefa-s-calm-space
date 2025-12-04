@@ -2,7 +2,6 @@ import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
 import { ServicesSection } from "@/components/ServicesSection";
-import { OnlineTherapySection } from "@/components/OnlineTherapySection";
 import { FAQSection } from "@/components/FAQSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
@@ -23,13 +22,12 @@ const Index = () => {
         />
         <link rel="canonical" href="https://sefasevim.com" />
       </Helmet>
-      
+
       <main className="overflow-hidden">
         <Navbar />
         <HeroSection />
         <AboutSection />
         <ServicesSection />
-        <OnlineTherapySection />
         <FAQSection />
         <ContactSection />
         <Footer />

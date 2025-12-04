@@ -1,8 +1,37 @@
 import { motion } from "framer-motion";
-import { Leaf, Heart } from "lucide-react";
+import { Leaf } from "lucide-react";
 import { quickLinks, socialLinks } from "@/data/content";
+import { useState, useEffect } from "react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export const Footer = () => {
+  const [contactInfo, setContactInfo] = useState({
+    email: "iletisim@sefasevim.com",
+    phone: "+90 555 123 4567",
+    address: "K.Maraş, Türkiye"
+  });
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const docRef = doc(db, "settings", "general");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setContactInfo({
+            email: data.email || "iletisim@sefasevim.com",
+            phone: data.phone || "+90 555 123 4567",
+            address: data.address || "K.Maraş, Türkiye"
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      }
+    };
+    fetchContactInfo();
+  }, []);
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
@@ -85,21 +114,21 @@ export const Footer = () => {
             <ul className="space-y-3 text-secondary-foreground/80">
               <li>
                 <a
-                  href="mailto:iletisim@sefasevim.com"
+                  href={`mailto:${contactInfo.email}`}
                   className="hover:text-secondary-foreground transition-colors"
                 >
-                  iletisim@sefasevim.com
+                  {contactInfo.email}
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+905551234567"
+                  href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
                   className="hover:text-secondary-foreground transition-colors"
                 >
-                  +90 555 123 4567
+                  {contactInfo.phone}
                 </a>
               </li>
-              <li>K.Maraş, Türkiye</li>
+              <li>{contactInfo.address}</li>
             </ul>
           </div>
         </div>
@@ -111,7 +140,6 @@ export const Footer = () => {
               © {new Date().getFullYear()} Psk. Dan. Sefa Sevim. Tüm hakları
               saklıdır.
             </p>
-
           </div>
         </div>
       </div>

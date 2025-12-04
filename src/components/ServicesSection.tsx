@@ -3,6 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { services } from "@/data/content";
 import { ArrowRight } from "lucide-react";
+import { DynamicIcon } from "@/components/DynamicIcon";
 
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -82,13 +83,8 @@ export const ServicesSection = () => {
                 <div
                   className={`relative w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
                 >
-                  {/* Handle both Lucide icon component and string name from Firestore */}
                   {typeof IconComponent === 'string' ? (
-                    // If it's a string (from Firestore), we need a way to render it. 
-                    // For simplicity, let's map a few common ones or use a dynamic icon component if available.
-                    // Since we don't have a dynamic icon loader ready, let's fallback to a default icon or try to map it.
-                    // A better approach for now is to use a default icon if string, or map known strings.
-                    <ArrowRight className={`w-8 h-8 ${service.iconColor}`} />
+                    <DynamicIcon name={IconComponent} className={`w-8 h-8 ${service.iconColor}`} />
                   ) : (
                     <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
                   )}
