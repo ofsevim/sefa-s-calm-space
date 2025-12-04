@@ -56,8 +56,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto"
             >
-              Psikolojik Danışman Sefa Sevim ile bilimsel temelli ve empatik
-              yaklaşımlarla içsel huzurunuzu keşfedin.
+              Hayatın karmaşasında kaybolmuş hissettiğinizde, sizi anlayan ve yargılamayan bir yol arkadaşı olarak yanınızdayım. Birlikte, içinizdeki gücü ve huzuru yeniden keşfedelim.
             </motion.p>
 
             <motion.div
