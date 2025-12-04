@@ -139,14 +139,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
                                 <FormLabel>Randevu Tarihi</FormLabel>
-                                <div className="border rounded-md p-2">
+                                <div className="border rounded-md p-3">
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
@@ -156,6 +156,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                         }
                                         initialFocus
                                         locale={tr}
+                                        className="rounded-md"
                                     />
                                 </div>
                                 <FormMessage />
