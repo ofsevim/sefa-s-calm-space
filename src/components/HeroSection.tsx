@@ -38,15 +38,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sage-light/50 text-secondary text-sm font-medium mb-6"
-            >
-              <span className="w-2 h-2 rounded-full bg-sage animate-pulse" />
-              PDR Mezunu Psikolojik Danışman
-            </motion.div>
+
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
