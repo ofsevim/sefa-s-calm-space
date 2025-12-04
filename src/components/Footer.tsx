@@ -113,10 +113,7 @@ export const Footer = () => {
               © {new Date().getFullYear()} Psk. Dan. Sefa Sevim. Tüm hakları
               saklıdır.
             </p>
-            <p className="flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-destructive" /> in
-              Türkiye
-            </p>
+
           </div>
         </div>
       </div>
