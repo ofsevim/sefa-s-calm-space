@@ -3,6 +3,7 @@ import {
     LayoutDashboard,
     Settings,
     LogOut,
+    MessageSquare,
 } from "lucide-react";
 import {
     Sidebar,
@@ -30,6 +31,11 @@ const items = [
         title: "Randevular",
         url: "/admin/appointments",
         icon: Calendar,
+    },
+    {
+        title: "Mesajlar",
+        url: "/admin/messages",
+        icon: MessageSquare,
     },
     {
         title: "Ayarlar",

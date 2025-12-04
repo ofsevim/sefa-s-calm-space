@@ -20,7 +20,7 @@ import {
 import { BookingForm } from "@/components/BookingForm";
 
 import { db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc } from "firebase/firestore";
 
 export const ContactSection = () => {
   const ref = useRef(null);
@@ -75,20 +75,38 @@ export const ContactSection = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      await addDoc(collection(db, "messages"), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        createdAt: new Date().toISOString(),
+        read: false,
+      });
 
-    toast({
-      title: "Mesajınız Alındı!",
-      description: "En kısa sürede sizinle iletişime geçeceğim.",
-    });
+      toast({
+        title: "Mesajınız Alındı!",
+        description: "En kısa sürede sizinle iletişime geçeceğim.",
+      });
 
-    setFormData({ name: "", email: "", phone: "", message: "" });
-    setIsSubmitting(false);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast({
+        variant: "destructive",
+        title: "Hata",
+        description: "Mesaj gönderilirken bir hata oluştu.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
