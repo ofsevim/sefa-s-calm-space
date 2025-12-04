@@ -121,28 +121,7 @@ export const steps = [
     },
 ];
 
-export const benefits = [
-    {
-        icon: Globe,
-        title: "Her Yerden Erişim",
-        description: "Nerede olursanız olun, profesyonel desteğe ulaşın",
-    },
-    {
-        icon: Home,
-        title: "Ev Konforu",
-        description: "Güvenli ve rahat ortamınızdan ayrılmadan görüşün",
-    },
-    {
-        icon: Lock,
-        title: "Tam Gizlilik",
-        description: "Şifreli bağlantı ile %100 güvenli görüşmeler",
-    },
-    {
-        icon: Award, // Replaced Lock with Award just in case, but original was Lock. Wait, original was Lock.
-        title: "Tam Gizlilik",
-        description: "Şifreli bağlantı ile %100 güvenli görüşmeler",
-    }
-];
+
 // Wait, benefits had 3 items in OnlineTherapySection.tsx.
 // 1. Globe
 // 2. Home
@@ -206,7 +185,7 @@ export const contactInfo = [
     {
         icon: MapPin,
         label: "Konum",
-        value: "İstanbul, Türkiye",
+        value: "Onikişubat, Kahramanmaraş",
         href: "#",
     },
 ];
