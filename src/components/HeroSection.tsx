@@ -93,29 +93,6 @@ export const HeroSection = () => {
                 Hizmetleri İncele
               </Button>
             </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-border max-w-2xl mx-auto"
-            >
-              {[
-                { value: "500+", label: "Danışan" },
-                { value: "5+", label: "Yıl Deneyim" },
-                { value: "%98", label: "Memnuniyet" },
-              ].map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-2xl sm:text-3xl font-heading font-bold text-secondary">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
           </motion.div>
 
 
