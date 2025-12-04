@@ -206,7 +206,5 @@ export const quickLinks = [
 ];
 
 export const socialLinks = [
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-    { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-    { icon: Mail, href: "mailto:iletisim@sefasevim.com", label: "Email" },
+    { icon: Instagram, href: "https://www.instagram.com/psk.dan.sefasevim/", label: "Instagram" },
 ];

@@ -29,7 +29,7 @@ export const Footer = () => {
                 <Leaf className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <span className="font-heading text-xl font-semibold text-secondary-foreground block">
+                <span className="font-heading text-2xl font-semibold text-secondary-foreground block">
                   Psk. Dan. Sefa Sevim
                 </span>
                 <span className="text-sm text-secondary-foreground/70">
@@ -38,9 +38,7 @@ export const Footer = () => {
               </div>
             </motion.a>
             <p className="text-secondary-foreground/80 leading-relaxed max-w-md mb-6">
-              Bilimsel temelli ve empatik yaklaşımla, kendini keşfetme
-              yolculuğunda yanınızdayım. Online ve yüz yüze görüşme
-              seçenekleriyle size en uygun desteği sunuyorum.
+              Anlaşılmak, iyileşmenin yarısıdır. Profesyonel ve etik değerler ışığında, online veya yüz yüze görüşmelerle desteğe hazırız.
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map((social, index) => (
