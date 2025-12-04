@@ -70,11 +70,17 @@ export default function Settings() {
                 if (servicesSnap.exists() && servicesSnap.data().items) {
                     setServices(servicesSnap.data().items);
                 } else {
-                    // Default services if empty
-                    setServices([
-                        { title: "Bireysel Danışmanlık", description: "Kişisel gelişim ve birebir destek.", icon: "User", color: "bg-sage-light", iconColor: "text-sage-dark" },
-                        { title: "Ergen Danışmanlığı", description: "Gençlere ve ailelerine rehberlik.", icon: "Users", color: "bg-beige-warm", iconColor: "text-secondary" },
-                    ]);
+                    // Default services if empty - save them to Firestore
+                    const defaultServices = [
+                        { title: "Bireysel Danışmanlık", description: "Kişisel gelişim, özgüven, ilişki sorunları ve yaşam zorlukları için birebir destek.", icon: "User", color: "bg-sage-light", iconColor: "text-sage-dark" },
+                        { title: "Ergen Danışmanlığı", description: "Ergenlik döneminin zorluklarında gençlere ve ailelerine profesyonel rehberlik.", icon: "Users", color: "bg-beige-warm", iconColor: "text-secondary" },
+                        { title: "Sınav Kaygısı", description: "Sınav stresi ve performans kaygısını yönetmek için etkili teknikler ve stratejiler.", icon: "Brain", color: "bg-sage-light", iconColor: "text-sage-dark" },
+                        { title: "Kariyer Danışmanlığı", description: "Meslek seçimi, kariyer planlaması ve iş hayatı zorluklarında yol gösterici destek.", icon: "Compass", color: "bg-beige-warm", iconColor: "text-secondary" },
+                        { title: "Online Terapi", description: "Evinizin konforunda, güvenli ve etkili online psikolojik danışmanlık hizmeti.", icon: "Monitor", color: "bg-sage-light", iconColor: "text-sage-dark" },
+                    ];
+                    setServices(defaultServices);
+                    // Save to Firestore
+                    await setDoc(servicesRef, { items: defaultServices });
                 }
 
                 // Fetch Working Hours
