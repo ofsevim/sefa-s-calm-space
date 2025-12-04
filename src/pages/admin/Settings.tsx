@@ -55,7 +55,7 @@ export default function Settings() {
                 const generalRef = doc(db, "settings", "general");
                 const generalSnap = await getDoc(generalRef);
                 if (generalSnap.exists()) {
-                    setGeneralData(generalSnap.data() as any);
+                    setGeneralData(generalSnap.data() as typeof generalData);
                 } else {
                     setGeneralData({
                         email: "iletisim@sefasevim.com",

@@ -22,12 +22,13 @@ export const AboutSection = () => {
             <div className="relative max-w-md mx-auto">
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="relative rounded-3xl overflow-hidden shadow-card"
+                className="relative rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/20"
               >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
                 <img
                   src={heroPortrait}
                   alt="Sefa Sevim - Psikolojik Danışman"
-                  className="w-full h-auto object-cover aspect-square"
+                  className="w-full h-full object-cover"
                 />
               </motion.div>
 
