@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { db } from "@/lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -27,8 +34,15 @@ const formSchema = z.object({
     date: z.date({
         required_error: "Lütfen bir tarih seçiniz.",
     }),
+    time: z.string({
+        required_error: "Lütfen bir saat seçiniz.",
+    }),
     notes: z.string().optional(),
 });
+
+const timeSlots = [
+    "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
+];
 
 export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [loading, setLoading] = useState(false);
@@ -47,11 +61,16 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
+            // Combine date and time
+            const appointmentDate = new Date(values.date);
+            const [hours, minutes] = values.time.split(':').map(Number);
+            appointmentDate.setHours(hours, minutes);
+
             await addDoc(collection(db, "appointments"), {
                 client_name: values.name,
                 client_email: values.email,
                 client_phone: values.phone,
-                appointment_date: values.date.toISOString(),
+                appointment_date: appointmentDate.toISOString(),
                 notes: values.notes,
                 status: "pending",
                 created_at: new Date().toISOString(),
@@ -119,28 +138,57 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         )}
                     />
                 </div>
-                <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Randevu Tarihi</FormLabel>
-                            <div className="border rounded-md p-2">
-                                <Calendar
-                                    mode="single"
-                                    selected={field.value}
-                                    onSelect={field.onChange}
-                                    disabled={(date) =>
-                                        date < new Date() || date < new Date("1900-01-01")
-                                    }
-                                    initialFocus
-                                    locale={tr}
-                                />
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>Randevu Tarihi</FormLabel>
+                                <div className="border rounded-md p-2">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) =>
+                                            date < new Date() || date < new Date("1900-01-01")
+                                        }
+                                        initialFocus
+                                        locale={tr}
+                                    />
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="time"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Randevu Saati</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Saat seçiniz" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {timeSlots.map((time) => (
+                                            <SelectItem key={time} value={time}>
+                                                {time}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 <FormField
                     control={form.control}
                     name="notes"
