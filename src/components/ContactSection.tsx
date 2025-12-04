@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Send,
   Calendar,
@@ -19,10 +19,47 @@ import {
 } from "@/components/ui/dialog";
 import { BookingForm } from "@/components/BookingForm";
 
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
 export const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { toast } = useToast();
+
+  const [contactData, setContactData] = useState(contactInfo);
+  const [hoursData, setHoursData] = useState(workingHours);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch General Settings (Contact Info)
+        const generalRef = doc(db, "settings", "general");
+        const generalSnap = await getDoc(generalRef);
+        if (generalSnap.exists()) {
+          const data = generalSnap.data();
+          // Update contact info array with fetched data
+          const updatedContact = contactInfo.map(item => {
+            if (item.label === "E-posta" && data.email) return { ...item, value: data.email, href: `mailto:${data.email}` };
+            if (item.label === "Telefon" && data.phone) return { ...item, value: data.phone, href: `tel:${data.phone.replace(/\s/g, '')}` };
+            if (item.label === "Konum" && data.address) return { ...item, value: data.address };
+            return item;
+          });
+          setContactData(updatedContact);
+        }
+
+        // Fetch Working Hours
+        const hoursRef = doc(db, "settings", "workingHours");
+        const hoursSnap = await getDoc(hoursRef);
+        if (hoursSnap.exists() && hoursSnap.data().items) {
+          setHoursData(hoursSnap.data().items);
+        }
+      } catch (error) {
+        console.error("Error fetching contact data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -241,7 +278,7 @@ export const ContactSection = () => {
 
             {/* Contact Info Cards */}
             <div className="space-y-4">
-              {contactInfo.map((item, index) => (
+              {contactData.map((item, index) => (
                 <motion.a
                   key={index}
                   href={item.href}
@@ -279,7 +316,7 @@ export const ContactSection = () => {
                 </h4>
               </div>
               <div className="space-y-3">
-                {workingHours.map((item, index) => (
+                {hoursData.map((item, index) => (
                   <div
                     key={index}
                     className="flex justify-between items-center text-sm"

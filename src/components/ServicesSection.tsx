@@ -4,9 +4,29 @@ import { useRef } from "react";
 import { services } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+
 export const ServicesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [servicesList, setServicesList] = useState(services);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const docRef = doc(db, "settings", "services");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().items) {
+          setServicesList(docSnap.data().items);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchServices();
+  }, []);
 
   const scrollToContact = () => {
     const element = document.querySelector("#iletisim");
@@ -43,41 +63,53 @@ export const ServicesSection = () => {
 
         {/* Services Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-card rounded-3xl p-8 shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden"
-              onClick={scrollToContact}
-            >
-              {/* Background decoration */}
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-sage-light/20 -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
-
-              {/* Icon */}
-              <div
-                className={`relative w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+          {servicesList.map((service, index) => {
+            const IconComponent = service.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="group relative bg-card rounded-3xl p-8 shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden"
+                onClick={scrollToContact}
               >
-                <service.icon className={`w-8 h-8 ${service.iconColor}`} />
-              </div>
+                {/* Background decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-sage-light/20 -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
 
-              {/* Content */}
-              <h3 className="relative text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-secondary transition-colors">
-                {service.title}
-              </h3>
-              <p className="relative text-muted-foreground mb-6 leading-relaxed">
-                {service.description}
-              </p>
+                {/* Icon */}
+                <div
+                  className={`relative w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                >
+                  {/* Handle both Lucide icon component and string name from Firestore */}
+                  {typeof IconComponent === 'string' ? (
+                    // If it's a string (from Firestore), we need a way to render it. 
+                    // For simplicity, let's map a few common ones or use a dynamic icon component if available.
+                    // Since we don't have a dynamic icon loader ready, let's fallback to a default icon or try to map it.
+                    // A better approach for now is to use a default icon if string, or map known strings.
+                    <ArrowRight className={`w-8 h-8 ${service.iconColor}`} />
+                  ) : (
+                    <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
+                  )}
+                </div>
 
-              {/* Link */}
-              <div className="relative flex items-center gap-2 text-primary font-medium group-hover:text-secondary transition-colors">
-                <span>Detaylı Bilgi</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </motion.div>
-          ))}
+                {/* Content */}
+                <h3 className="relative text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-secondary transition-colors">
+                  {service.title}
+                </h3>
+                <p className="relative text-muted-foreground mb-6 leading-relaxed">
+                  {service.description}
+                </p>
+
+                {/* Link */}
+                <div className="relative flex items-center gap-2 text-primary font-medium group-hover:text-secondary transition-colors">
+                  <span>Detaylı Bilgi</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </section>

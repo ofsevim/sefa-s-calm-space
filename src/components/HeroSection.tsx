@@ -56,8 +56,8 @@ export const HeroSection = () => {
               transition={{ delay: 0.3 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-tight mb-6"
             >
-              Kendini Keşfetme Yolculuğunda{" "}
-              <span className="text-primary">Yanındayım</span>
+              Tek Başına Taşımak{" "}
+              <span className="text-primary">Zorunda Değilsiniz.</span>
             </motion.h1>
 
             <motion.p
@@ -66,7 +66,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto"
             >
-              Hayatın karmaşasında kaybolmuş hissettiğinizde, sizi anlayan ve yargılamayan bir yol arkadaşı olarak yanınızdayım. Birlikte, içinizdeki gücü ve huzuru yeniden keşfedelim.
+              Herkes zaman zaman desteğe ihtiyaç duyar. İç dünyanızdaki karmaşayı netliğe kavuşturmak ve daha huzurlu bir zihne ulaşmak sandığınızdan daha yakın olabilir.
             </motion.p>
 
             <motion.div
@@ -81,7 +81,7 @@ export const HeroSection = () => {
                 onClick={() => scrollToSection("#iletisim")}
                 className="group"
               >
-                Hemen Randevu Al
+                Randevu Oluştur
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
