@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { services } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 import { DynamicIcon } from "@/components/DynamicIcon";
+import { useNavigate } from "react-router-dom";
 
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -13,6 +14,7 @@ export const ServicesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [servicesList, setServicesList] = useState(services);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -29,11 +31,9 @@ export const ServicesSection = () => {
     fetchServices();
   }, []);
 
-  const scrollToContact = () => {
-    const element = document.querySelector("#iletisim");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const handleServiceClick = (title: string) => {
+    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c');
+    navigate(`/hizmet/${slug}`);
   };
 
   return (
@@ -74,7 +74,7 @@ export const ServicesSection = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="group relative bg-card rounded-3xl p-8 shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden"
-                onClick={scrollToContact}
+                onClick={() => handleServiceClick(service.title)}
               >
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-sage-light/20 -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />

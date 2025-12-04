@@ -110,13 +110,98 @@ export default function ServiceDetail() {
             {/* Content Section */}
             <div className="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
                 <div className="bg-card rounded-3xl p-8 sm:p-12 shadow-card border border-border/50">
-                    <div className="prose prose-lg max-w-none text-muted-foreground">
-                        <p>
-                            {service.title} hizmetimiz hakkında detaylı bilgi almak ve kişisel ihtiyaçlarınıza özel bir planlama yapmak için bizimle iletişime geçebilirsiniz.
-                        </p>
-                        <p>
-                            Her bireyin yolculuğu kendine özgüdür ve biz bu yolculukta size profesyonel rehberlik sunmak için buradayız.
-                        </p>
+                    <div className="prose prose-lg max-w-none text-muted-foreground space-y-6">
+                        {service.title === "Bireysel Danışmanlık" && (
+                            <>
+                                <p>
+                                    Bireysel danışmanlık, kişisel gelişim ve ruh sağlığı için özel olarak tasarlanmış birebir destek sürecidir.
+                                    Bu süreçte, yaşadığınız zorlukları anlamak, güçlü yönlerinizi keşfetmek ve hedeflerinize ulaşmak için birlikte çalışırız.
+                                </p>
+                                <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Bireysel Danışmanlık Neleri Kapsar?</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    <li>Özgüven ve benlik saygısı geliştirme</li>
+                                    <li>İlişki sorunları ve iletişim becerileri</li>
+                                    <li>Stres ve kaygı yönetimi</li>
+                                    <li>Yaşam geçişleri ve değişim süreçleri</li>
+                                    <li>Kişisel hedef belirleme ve motivasyon</li>
+                                </ul>
+                            </>
+                        )}
+
+                        {service.title === "Ergen Danışmanlığı" && (
+                            <>
+                                <p>
+                                    Ergenlik dönemi, fiziksel, duygusal ve sosyal değişimlerin yoğun yaşandığı kritik bir dönemdir.
+                                    Ergen danışmanlığı, gençlerin bu dönemi sağlıklı bir şekilde geçirmelerine yardımcı olur.
+                                </p>
+                                <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Ergen Danışmanlığında Odaklandığımız Konular</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    <li>Kimlik gelişimi ve benlik keşfi</li>
+                                    <li>Akran ilişkileri ve sosyal uyum</li>
+                                    <li>Aile içi iletişim sorunları</li>
+                                    <li>Akademik başarı ve motivasyon</li>
+                                    <li>Duygusal düzenleme becerileri</li>
+                                </ul>
+                            </>
+                        )}
+
+                        {service.title === "Sınav Kaygısı" && (
+                            <>
+                                <p>
+                                    Sınav kaygısı, performansı olumsuz etkileyen ve birçok öğrencinin yaşadığı yaygın bir sorundur.
+                                    Bu süreçte, kaygıyı yönetmek ve sınav performansını artırmak için etkili stratejiler geliştiririz.
+                                </p>
+                                <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Sınav Kaygısı Danışmanlığı Nasıl Yardımcı Olur?</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    <li>Kaygı belirtilerini tanıma ve yönetme</li>
+                                    <li>Etkili çalışma teknikleri ve zaman yönetimi</li>
+                                    <li>Gevşeme ve nefes egzersizleri</li>
+                                    <li>Olumsuz düşünceleri yeniden yapılandırma</li>
+                                    <li>Özgüven ve motivasyon artırma</li>
+                                </ul>
+                            </>
+                        )}
+
+                        {service.title === "Kariyer Danışmanlığı" && (
+                            <>
+                                <p>
+                                    Kariyer danışmanlığı, meslek seçimi, kariyer planlaması ve iş hayatındaki zorlukları aşmak için profesyonel destek sunar.
+                                    Yeteneklerinizi, ilgi alanlarınızı ve değerlerinizi keşfederek size en uygun kariyer yolunu belirlemenize yardımcı oluruz.
+                                </p>
+                                <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Kariyer Danışmanlığı Süreci</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    <li>Kişilik ve yetenek değerlendirmesi</li>
+                                    <li>Meslek seçimi ve kariyer planlama</li>
+                                    <li>İş arama stratejileri ve mülakat hazırlığı</li>
+                                    <li>İş yerinde uyum ve performans artırma</li>
+                                    <li>Kariyer değişimi ve geçiş süreçleri</li>
+                                </ul>
+                            </>
+                        )}
+
+                        {service.title === "Online Terapi" && (
+                            <>
+                                <p>
+                                    Online terapi, evinizin konforunda, güvenli ve etkili psikolojik danışmanlık almanızı sağlar.
+                                    Teknolojinin sunduğu imkanlarla, coğrafi kısıtlamalar olmadan profesyonel desteğe erişebilirsiniz.
+                                </p>
+                                <h3 className="text-xl font-semibold text-foreground mt-8 mb-4">Online Terapinin Avantajları</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    <li>Zaman ve mekan esnekliği</li>
+                                    <li>Tanıdık bir ortamda rahat hissetme</li>
+                                    <li>Ulaşım ve zaman tasarrufu</li>
+                                    <li>Gizlilik ve mahremiyet</li>
+                                    <li>Düzenli seans sürekliliği</li>
+                                </ul>
+                            </>
+                        )}
+
+                        {!["Bireysel Danışmanlık", "Ergen Danışmanlığı", "Sınav Kaygısı", "Kariyer Danışmanlığı", "Online Terapi"].includes(service.title) && (
+                            <p>
+                                {service.title} hizmetimiz hakkında detaylı bilgi almak ve kişisel ihtiyaçlarınıza özel bir planlama yapmak için bizimle iletişime geçebilirsiniz.
+                                Her bireyin yolculuğu kendine özgüdür ve biz bu yolculukta size profesyonel rehberlik sunmak için buradayız.
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-12 flex justify-center">
