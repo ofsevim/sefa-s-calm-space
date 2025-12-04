@@ -26,7 +26,7 @@ export default function Login() {
                 description: "Yönetim paneline yönlendiriliyorsunuz.",
             });
             navigate("/admin/dashboard");
-        } catch (error: any) {
+        } catch (error) {
             toast({
                 variant: "destructive",
                 title: "Giriş başarısız",

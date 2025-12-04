@@ -26,7 +26,7 @@ export default function Settings() {
                 const docRef = doc(db, "settings", "general");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    setFormData(docSnap.data() as any);
+                    setFormData(docSnap.data() as typeof formData);
                 } else {
                     // Default values if no settings exist
                     setFormData({
@@ -47,7 +47,7 @@ export default function Settings() {
             }
         };
         fetchSettings();
-    }, []);
+    }, [toast]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.id]: e.target.value });

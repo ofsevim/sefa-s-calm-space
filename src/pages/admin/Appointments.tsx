@@ -32,6 +32,32 @@ export default function Appointments() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            setLoading(true);
+            try {
+                const q = query(collection(db, "appointments"), orderBy("appointment_date", "asc"));
+                const querySnapshot = await getDocs(q);
+                const data: Appointment[] = [];
+                querySnapshot.forEach((doc) => {
+                    data.push({ id: doc.id, ...doc.data() } as Appointment);
+                });
+                setAppointments(data);
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Hata",
+                    description: "Randevular yüklenirken bir hata oluştu.",
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAppointments();
+    }, [toast]);
+
     const fetchAppointments = async () => {
         setLoading(true);
         try {
@@ -53,10 +79,6 @@ export default function Appointments() {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchAppointments();
-    }, []);
 
     const updateStatus = async (id: string, status: Appointment["status"]) => {
         try {
