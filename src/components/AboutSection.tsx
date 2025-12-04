@@ -1,31 +1,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { GraduationCap, Heart, Shield, Award } from "lucide-react";
+import { credentials } from "@/data/content";
 import heroPortrait from "@/assets/hero-portrait.jpg";
-
-const credentials = [
-  {
-    icon: GraduationCap,
-    title: "PDR Mezunu",
-    description: "Psikolojik Danışmanlık ve Rehberlik alanında lisans derecesi",
-  },
-  {
-    icon: Heart,
-    title: "Empatik Yaklaşım",
-    description: "Danışan merkezli, anlayışlı ve destekleyici terapi ortamı",
-  },
-  {
-    icon: Shield,
-    title: "Gizlilik Garantisi",
-    description: "Tüm görüşmeler %100 gizlilik ile korunmaktadır",
-  },
-  {
-    icon: Award,
-    title: "Sürekli Gelişim",
-    description: "Güncel araştırma ve teknikleri takip eden profesyonel yaklaşım",
-  },
-];
 
 export const AboutSection = () => {
   const ref = useRef(null);

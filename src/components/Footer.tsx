@@ -1,20 +1,6 @@
 import { motion } from "framer-motion";
-import { Leaf, Instagram, Linkedin, Mail, Heart } from "lucide-react";
-
-const quickLinks = [
-  { name: "Anasayfa", href: "#hero" },
-  { name: "Hakkımda", href: "#hakkimda" },
-  { name: "Hizmetler", href: "#hizmetler" },
-  { name: "Online Terapi", href: "#online" },
-  { name: "SSS", href: "#sss" },
-  { name: "İletişim", href: "#iletisim" },
-];
-
-const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:iletisim@sefasevim.com", label: "Email" },
-];
+import { Leaf, Heart } from "lucide-react";
+import { quickLinks, socialLinks } from "@/data/content";
 
 export const Footer = () => {
   const scrollToSection = (href: string) => {

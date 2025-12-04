@@ -1,57 +1,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import {
-  User,
-  Users,
-  Brain,
-  Compass,
-  Monitor,
-  ArrowRight,
-} from "lucide-react";
-
-const services = [
-  {
-    icon: User,
-    title: "Bireysel Danışmanlık",
-    description:
-      "Kişisel gelişim, özgüven, ilişki sorunları ve yaşam zorlukları için birebir destek.",
-    color: "bg-sage-light",
-    iconColor: "text-sage-dark",
-  },
-  {
-    icon: Users,
-    title: "Ergen Danışmanlığı",
-    description:
-      "Ergenlik döneminin zorluklarında gençlere ve ailelerine profesyonel rehberlik.",
-    color: "bg-beige-warm",
-    iconColor: "text-secondary",
-  },
-  {
-    icon: Brain,
-    title: "Sınav Kaygısı",
-    description:
-      "Sınav stresi ve performans kaygısını yönetmek için etkili teknikler ve stratejiler.",
-    color: "bg-sage-light",
-    iconColor: "text-sage-dark",
-  },
-  {
-    icon: Compass,
-    title: "Kariyer Danışmanlığı",
-    description:
-      "Meslek seçimi, kariyer planlaması ve iş hayatı zorluklarında yol gösterici destek.",
-    color: "bg-beige-warm",
-    iconColor: "text-secondary",
-  },
-  {
-    icon: Monitor,
-    title: "Online Terapi",
-    description:
-      "Evinizin konforunda, güvenli ve etkili online psikolojik danışmanlık hizmeti.",
-    color: "bg-sage-light",
-    iconColor: "text-sage-dark",
-  },
-];
+import { services } from "@/data/content";
+import { ArrowRight } from "lucide-react";
 
 export const ServicesSection = () => {
   const ref = useRef(null);

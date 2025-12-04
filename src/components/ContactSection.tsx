@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-  Mail,
-  Phone,
-  MapPin,
   Send,
   Calendar,
   Clock,
@@ -12,33 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "E-posta",
-    value: "iletisim@sefasevim.com",
-    href: "mailto:iletisim@sefasevim.com",
-  },
-  {
-    icon: Phone,
-    label: "Telefon",
-    value: "+90 555 123 4567",
-    href: "tel:+905551234567",
-  },
-  {
-    icon: MapPin,
-    label: "Konum",
-    value: "İstanbul, Türkiye",
-    href: "#",
-  },
-];
-
-const workingHours = [
-  { day: "Pazartesi - Cuma", hours: "09:00 - 19:00" },
-  { day: "Cumartesi", hours: "10:00 - 16:00" },
-  { day: "Pazar", hours: "Kapalı" },
-];
+import { contactInfo, workingHours } from "@/data/content";
 
 export const ContactSection = () => {
   const ref = useRef(null);

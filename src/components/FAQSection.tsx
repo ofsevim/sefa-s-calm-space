@@ -8,38 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const faqs = [
-  {
-    question: "Seanslar ne kadar sürer?",
-    answer:
-      "Her seans yaklaşık 50 dakika sürmektedir. İlk görüşme biraz daha uzun olabilir çünkü bu süreçte sizinle tanışmak, ihtiyaçlarınızı anlamak ve birlikte bir yol haritası çizmek için zaman ayırıyoruz. Seans süreleri ihtiyaca göre esnek tutulabilir.",
-  },
-  {
-    question: "Online terapi etkili midir?",
-    answer:
-      "Evet, çok sayıda bilimsel araştırma online terapinin yüz yüze terapi kadar etkili olduğunu göstermektedir. Özellikle depresyon, anksiyete ve stres yönetimi gibi konularda online terapi oldukça başarılı sonuçlar vermektedir. Ayrıca ev ortamınızda olmanız, bazı danışanlar için daha rahat ve açık bir iletişim sağlayabilir.",
-  },
-  {
-    question: "Gizlilik politikası nedir?",
-    answer:
-      "Gizlilik, psikolojik danışmanlık sürecinin en temel ilkelerinden biridir. Görüşmelerimizde paylaştığınız tüm bilgiler tamamen gizli tutulmaktadır. Yasal zorunluluklar (size veya başkalarına ciddi zarar riski) dışında hiçbir bilgi üçüncü kişilerle paylaşılmaz. Online görüşmeler için şifreli ve güvenli platformlar kullanılmaktadır.",
-  },
-  {
-    question: "İlk görüşmeye nasıl hazırlanmalıyım?",
-    answer:
-      "İlk görüşmeye özel bir hazırlık yapmanıza gerek yok. Rahat bir ortamda, kesintisiz konuşabileceğiniz bir zaman dilimi seçmeniz yeterli. İsterseniz aklınıza gelen soruları not alabilirsiniz. En önemlisi, kendinizi yargılamadan, olduğunuz gibi gelmenizdir. İlk görüşme tanışma ve ihtiyaçlarınızı anlama sürecidir.",
-  },
-  {
-    question: "Kaç seans gerekir?",
-    answer:
-      "Seans sayısı tamamen kişisel ihtiyaçlara ve hedeflere bağlıdır. Bazı danışanlar 4-6 seansta hedeflerine ulaşırken, bazıları daha uzun süreli destek almayı tercih edebilir. İlk görüşmelerde birlikte bir plan oluşturur ve süreci birlikte değerlendiririz. Amaç, size en uygun ve etkili desteği sunmaktır.",
-  },
-  {
-    question: "Randevumu iptal etmem gerekirse ne yapmalıyım?",
-    answer:
-      "Randevunuzu en az 24 saat öncesinden iptal etmeniz veya ertelemeniz gerekmektedir. Bu süre içinde bildirimde bulunursanız, randevunuz başka bir tarihe ücretsiz olarak aktarılabilir. 24 saatten kısa sürede yapılan iptallerde seans ücreti tahsil edilebilir. Acil durumlar için her zaman iletişime geçebilirsiniz.",
-  },
-];
+import { faqs } from "@/data/content";
 
 export const FAQSection = () => {
   const ref = useRef(null);

@@ -1,58 +1,9 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import {
-  CalendarCheck,
-  Link2,
-  Video,
-  Home,
-  Lock,
-  Globe,
-  CheckCircle2,
-} from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const steps = [
-  {
-    number: "01",
-    icon: CalendarCheck,
-    title: "Randevu Oluştur",
-    description:
-      "Size uygun gün ve saati seçerek kolayca online randevu oluşturun.",
-  },
-  {
-    number: "02",
-    icon: Link2,
-    title: "Bağlantı Linkini Al",
-    description:
-      "Randevunuz onaylandıktan sonra güvenli görüntülü görüşme linkinizi alın.",
-  },
-  {
-    number: "03",
-    icon: Video,
-    title: "Görüşmeye Başla",
-    description:
-      "Belirlenen saatte linke tıklayarak seansınıza başlayın. Bu kadar basit!",
-  },
-];
-
-const benefits = [
-  {
-    icon: Globe,
-    title: "Her Yerden Erişim",
-    description: "Nerede olursanız olun, profesyonel desteğe ulaşın",
-  },
-  {
-    icon: Home,
-    title: "Ev Konforu",
-    description: "Güvenli ve rahat ortamınızdan ayrılmadan görüşün",
-  },
-  {
-    icon: Lock,
-    title: "Tam Gizlilik",
-    description: "Şifreli bağlantı ile %100 güvenli görüşmeler",
-  },
-];
+import { steps, onlineTherapyBenefits as benefits } from "@/data/content";
 
 export const OnlineTherapySection = () => {
   const ref = useRef(null);
