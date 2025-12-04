@@ -27,6 +27,16 @@ export const HeroSection = () => {
           transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
           className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-beige-warm/50 blur-3xl"
         />
+
+        {/* Subtle Wave Pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="hero-pattern" x="0" y="0" width="100" height="20" patternUnits="userSpaceOnUse">
+              <path d="M0 10 Q 25 20 50 10 T 100 10" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hero-pattern)" />
+        </svg>
       </div>
 
       <div className="container-custom relative z-10">
