@@ -99,7 +99,7 @@ export const Footer = () => {
                   +90 555 123 4567
                 </a>
               </li>
-              <li>İstanbul, Türkiye</li>
+              <li>K.Maraş, Türkiye</li>
             </ul>
           </div>
         </div>
