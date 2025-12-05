@@ -17,7 +17,7 @@ export const AboutSection = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="relative order-2 lg:order-1"
+            className="relative order-1 lg:order-1"
           >
             <div className="relative max-w-md mx-auto">
               <motion.div
@@ -59,7 +59,7 @@ export const AboutSection = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="order-1 lg:order-2"
+            className="order-2 lg:order-2"
           >
             <motion.span
               initial={{ opacity: 0, y: 20 }}
@@ -86,10 +86,8 @@ export const AboutSection = () => {
               transition={{ delay: 0.5 }}
               className="text-lg text-muted-foreground leading-relaxed mb-6"
             >
-              PDR (Psikolojik Danışmanlık ve Rehberlik) alanında eğitim almış,
-              bilimsel temelli ve empatik yaklaşımı benimseyen bir psikolojik
-              danışmanım. Her bireyin kendine özgü hikayesi olduğuna inanıyor ve
-              bu hikayeyi anlamak için buradayım.
+              Hayatın gürültüsü içinde bazen kendi sesimizi duymakta zorlanırız.
+              Bir PDR uzmanı olarak amacım, o sesi yeniden keşfetmenize rehberlik etmektir.
             </motion.p>
 
             <motion.p
@@ -98,9 +96,8 @@ export const AboutSection = () => {
               transition={{ delay: 0.6 }}
               className="text-lg text-muted-foreground leading-relaxed mb-8"
             >
-              Amacım, sizinle birlikte güvenli bir alan yaratarak içsel
-              farkındalığınızı artırmanıza ve yaşam kalitenizi yükseltmenize
-              yardımcı olmaktır. Her seans, size özel tasarlanmış bir yolculuktur.
+              Bilimsel yöntemlerin ışığında; tüm duygularınızı özgürce ifade edebileceğiniz
+              güvenli bir limandasınız. Unutmayın; iyileşmek, yargılanmadığınızı hissettiğiniz yerde başlar.
             </motion.p>
 
             {/* Credentials Grid */}
