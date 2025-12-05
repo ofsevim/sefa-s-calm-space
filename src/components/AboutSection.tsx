@@ -43,7 +43,7 @@ export const AboutSection = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.5 }}
-                className="absolute -bottom-6 -right-6 glass rounded-2xl p-6 shadow-card"
+                className="absolute -bottom-6 -right-6 glass rounded-2xl p-6 shadow-card pointer-events-none"
               >
                 <div className="text-center">
                   <div className="text-4xl font-heading font-bold text-secondary">
