@@ -6,6 +6,7 @@ import {
     MessageSquare,
     Home,
     FileText,
+    Image,
 } from "lucide-react";
 import {
     Sidebar,
@@ -43,6 +44,11 @@ const items = [
         title: "İçerik Yönetimi",
         url: "/admin/content",
         icon: FileText,
+    },
+    {
+        title: "Medya",
+        url: "/admin/media",
+        icon: Image,
     },
     {
         title: "Ayarlar",

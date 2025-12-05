@@ -14,6 +14,7 @@ import Appointments from "./pages/admin/Appointments";
 import Settings from "./pages/admin/Settings";
 import Messages from "./pages/admin/Messages";
 import ContentManagement from "./pages/admin/ContentManagement";
+import MediaManagement from "./pages/admin/MediaManagement";
 import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="appointments" element={<Appointments />} />
               <Route path="messages" element={<Messages />} />
               <Route path="content" element={<ContentManagement />} />
+              <Route path="media" element={<MediaManagement />} />
               <Route path="settings" element={<Settings />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
