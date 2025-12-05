@@ -1,14 +1,32 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { credentials } from "@/data/content";
 import heroPortrait from "@/assets/sefa-sevim-about.png";
 import { useAboutContent } from "@/hooks/useContent";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { content } = useAboutContent();
+  const [aboutImage, setAboutImage] = useState<string>(heroPortrait);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        const docRef = doc(db, "settings", "media");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().aboutImage) {
+          setAboutImage(docSnap.data().aboutImage);
+        }
+      } catch (error) {
+        console.error("Error loading about image:", error);
+      }
+    };
+    loadImage();
+  }, []);
 
   return (
     <section id="hakkimda" className="section-padding bg-background" ref={ref}>
@@ -28,7 +46,7 @@ export const AboutSection = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
                 <img
-                  src={heroPortrait}
+                  src={aboutImage}
                   alt="Sefa Sevim - Psikolojik Danışman"
                   className="w-full h-full object-cover"
                 />
