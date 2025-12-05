@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useHeroContent } from "@/hooks/useContent";
 
 export const HeroSection = () => {
-  const { content, loading } = useHeroContent();
+  const { content } = useHeroContent();
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -12,10 +12,6 @@ export const HeroSection = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  if (loading) {
-    return null; // or a skeleton loader
-  }
 
   return (
     <section

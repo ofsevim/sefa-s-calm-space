@@ -8,11 +8,7 @@ import { useAboutContent } from "@/hooks/useContent";
 export const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { content, loading } = useAboutContent();
-
-  if (loading) {
-    return null; // or a skeleton loader
-  }
+  const { content } = useAboutContent();
 
   return (
     <section id="hakkimda" className="section-padding bg-background" ref={ref}>
