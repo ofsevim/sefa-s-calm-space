@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Loader2, Image as ImageIcon } from "lucide-react";
-import { storage } from "@/lib/firebase";
+import { Loader2, Image as ImageIcon, Save } from "lucide-react";
+import { storage, db } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function MediaManagement() {
     const [uploading, setUploading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [aboutImage, setAboutImage] = useState<string>("");
     const { toast } = useToast();
+
+    useEffect(() => {
+        // Load existing image URL from Firestore
+        const loadImage = async () => {
+            try {
+                const docRef = doc(db, "settings", "media");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().aboutImage) {
+                    setAboutImage(docSnap.data().aboutImage);
+                }
+            } catch (error) {
+                console.error("Error loading image:", error);
+            }
+        };
+        loadImage();
+    }, []);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, imageType: string) => {
         const file = e.target.files?.[0];
@@ -54,11 +72,8 @@ export default function MediaManagement() {
 
             toast({
                 title: "Başarılı",
-                description: "Resim başarıyla yüklendi.",
+                description: "Resim yüklendi. Kaydetmeyi unutmayın!",
             });
-
-            // Here you would typically save the URL to Firestore
-            // For now, we'll just show it in the UI
         } catch (error) {
             console.error("Error uploading image:", error);
             toast({
@@ -68,6 +83,39 @@ export default function MediaManagement() {
             });
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleSaveImage = async () => {
+        if (!aboutImage) {
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Lütfen önce bir resim yükleyin.",
+            });
+            return;
+        }
+
+        setSaving(true);
+        try {
+            await setDoc(doc(db, "settings", "media"), {
+                aboutImage: aboutImage,
+                updatedAt: new Date().toISOString(),
+            });
+
+            toast({
+                title: "Başarılı",
+                description: "Fotoğraf kaydedildi ve sitede görünecek.",
+            });
+        } catch (error) {
+            console.error("Error saving image:", error);
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Fotoğraf kaydedilirken bir hata oluştu.",
+            });
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -112,6 +160,26 @@ export default function MediaManagement() {
                             JPG, PNG veya WebP formatında, maksimum 5MB
                         </p>
                     </div>
+
+                    {aboutImage && (
+                        <Button
+                            onClick={handleSaveImage}
+                            disabled={saving}
+                            className="w-full sm:w-auto"
+                        >
+                            {saving ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Kaydediliyor...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    Kaydet
+                                </>
+                            )}
+                        </Button>
+                    )}
                 </CardContent>
             </Card>
 
@@ -124,13 +192,22 @@ export default function MediaManagement() {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {/* Placeholder for existing images */}
-                        <div className="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-                            <div className="text-center text-muted-foreground">
-                                <ImageIcon className="h-8 w-8 mx-auto mb-2" />
-                                <p className="text-sm">Henüz görsel yok</p>
+                        {aboutImage ? (
+                            <div className="aspect-square rounded-lg border-2 border-border overflow-hidden">
+                                <img
+                                    src={aboutImage}
+                                    alt="Hakkımda"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
-                        </div>
+                        ) : (
+                            <div className="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                                <div className="text-center text-muted-foreground">
+                                    <ImageIcon className="h-8 w-8 mx-auto mb-2" />
+                                    <p className="text-sm">Henüz görsel yok</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
