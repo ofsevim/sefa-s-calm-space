@@ -5,6 +5,7 @@ import {
     LogOut,
     MessageSquare,
     Home,
+    FileText,
 } from "lucide-react";
 import {
     Sidebar,
@@ -37,6 +38,11 @@ const items = [
         title: "Mesajlar",
         url: "/admin/messages",
         icon: MessageSquare,
+    },
+    {
+        title: "İçerik Yönetimi",
+        url: "/admin/content",
+        icon: FileText,
     },
     {
         title: "Ayarlar",

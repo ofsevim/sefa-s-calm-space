@@ -1,14 +1,21 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useHeroContent } from "@/hooks/useContent";
 
 export const HeroSection = () => {
+  const { content, loading } = useHeroContent();
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  if (loading) {
+    return null; // or a skeleton loader
+  }
 
   return (
     <section
@@ -49,15 +56,14 @@ export const HeroSection = () => {
             className="w-full"
           >
 
-
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-tight mb-6"
             >
-              Tek Başına Taşımak{" "}
-              <span className="text-primary">Zorunda Değilsiniz.</span>
+              {content.title}{" "}
+              <span className="text-primary">{content.titleHighlight}</span>
             </motion.h1>
 
             <motion.p
@@ -66,7 +72,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto"
             >
-              Herkes zaman zaman desteğe ihtiyaç duyar. İç dünyanızdaki karmaşayı netliğe kavuşturmak ve daha huzurlu bir zihne ulaşmak sandığınızdan daha yakın olabilir.
+              {content.description}
             </motion.p>
 
             <motion.div
@@ -81,7 +87,7 @@ export const HeroSection = () => {
                 onClick={() => scrollToSection("#iletisim")}
                 className="group"
               >
-                Randevu Oluştur
+                {content.primaryButtonText}
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
@@ -91,7 +97,7 @@ export const HeroSection = () => {
                 className="group"
               >
                 <Play className="w-5 h-5" />
-                Hizmetleri İncele
+                {content.secondaryButtonText}
               </Button>
             </motion.div>
           </motion.div>

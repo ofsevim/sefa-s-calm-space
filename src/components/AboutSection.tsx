@@ -3,10 +3,16 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { credentials } from "@/data/content";
 import heroPortrait from "@/assets/sefa-sevim-about.png";
+import { useAboutContent } from "@/hooks/useContent";
 
 export const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { content, loading } = useAboutContent();
+
+  if (loading) {
+    return null; // or a skeleton loader
+  }
 
   return (
     <section id="hakkimda" className="section-padding bg-background" ref={ref}>
@@ -67,7 +73,7 @@ export const AboutSection = () => {
               transition={{ delay: 0.3 }}
               className="inline-block px-4 py-2 rounded-full bg-sage-light/50 text-secondary text-sm font-medium mb-4"
             >
-              Hakkımda
+              {content.badge}
             </motion.span>
 
             <motion.h2
@@ -76,8 +82,8 @@ export const AboutSection = () => {
               transition={{ delay: 0.4 }}
               className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-foreground mb-6"
             >
-              Merhaba, Ben{" "}
-              <span className="text-primary">Sefa Sevim</span>
+              {content.title}{" "}
+              <span className="text-primary">{content.titleHighlight}</span>
             </motion.h2>
 
             <motion.p
@@ -86,8 +92,7 @@ export const AboutSection = () => {
               transition={{ delay: 0.5 }}
               className="text-lg text-muted-foreground leading-relaxed mb-6"
             >
-              Hayatın gürültüsü içinde bazen kendi sesimizi duymakta zorlanırız.
-              Bir PDR uzmanı olarak amacım, o sesi yeniden keşfetmenize rehberlik etmektir.
+              {content.paragraph1}
             </motion.p>
 
             <motion.p
@@ -96,8 +101,7 @@ export const AboutSection = () => {
               transition={{ delay: 0.6 }}
               className="text-lg text-muted-foreground leading-relaxed mb-8"
             >
-              Bilimsel yöntemlerin ışığında; tüm duygularınızı özgürce ifade edebileceğiniz
-              güvenli bir limandasınız. Unutmayın; iyileşmek, yargılanmadığınızı hissettiğiniz yerde başlar.
+              {content.paragraph2}
             </motion.p>
 
             {/* Credentials Grid */}
