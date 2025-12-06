@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,7 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { db } from "@/lib/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { tr } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
@@ -40,12 +40,19 @@ const formSchema = z.object({
     notes: z.string().optional(),
 });
 
-const timeSlots = [
-    "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
-];
+// Helper function to generate time slots between start and end hours
+const generateTimeSlots = (startHour: number, endHour: number): string[] => {
+    const slots: string[] = [];
+    for (let hour = startHour; hour < endHour; hour++) {
+        slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    }
+    return slots;
+};
 
 export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [loading, setLoading] = useState(false);
+    const [timeSlots, setTimeSlots] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -57,6 +64,69 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
             notes: "",
         },
     });
+
+    // Load working hours and update time slots when date changes
+    useEffect(() => {
+        const loadWorkingHours = async () => {
+            try {
+                const docRef = doc(db, "settings", "workingHours");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().items) {
+                    const workingHours = docSnap.data().items;
+
+                    if (selectedDate) {
+                        const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                        const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+                        const selectedDayName = dayNames[dayOfWeek];
+
+                        // Find working hours for selected day
+                        let dayHours = workingHours.find((wh: any) => wh.day === selectedDayName);
+
+                        // If not found, check for range (e.g., "Pazartesi - Cuma")
+                        if (!dayHours) {
+                            dayHours = workingHours.find((wh: any) => {
+                                if (wh.day.includes('-')) {
+                                    const [start, end] = wh.day.split('-').map((d: string) => d.trim());
+                                    const startIdx = dayNames.indexOf(start);
+                                    const endIdx = dayNames.indexOf(end);
+                                    return dayOfWeek >= startIdx && dayOfWeek <= endIdx;
+                                }
+                                return false;
+                            });
+                        }
+
+                        if (dayHours && dayHours.hours !== "Kapalı") {
+                            // Parse hours (e.g., "09:00 - 19:00")
+                            const [startTime, endTime] = dayHours.hours.split('-').map((t: string) => t.trim());
+                            const startHour = parseInt(startTime.split(':')[0]);
+                            const endHour = parseInt(endTime.split(':')[0]);
+
+                            setTimeSlots(generateTimeSlots(startHour, endHour));
+                        } else {
+                            // Closed on this day
+                            setTimeSlots([]);
+                            toast({
+                                variant: "destructive",
+                                title: "Kapalı Gün",
+                                description: "Seçtiğiniz gün çalışma saatleri dışındadır.",
+                            });
+                        }
+                    }
+                } else {
+                    // Default working hours if not set
+                    setTimeSlots(generateTimeSlots(9, 19));
+                }
+            } catch (error) {
+                console.error("Error loading working hours:", error);
+                setTimeSlots(generateTimeSlots(9, 19)); // Fallback to default
+            }
+        };
+
+        if (selectedDate) {
+            loadWorkingHours();
+        }
+    }, [selectedDate, toast]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
@@ -150,7 +220,10 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
-                                        onSelect={field.onChange}
+                                        onSelect={(date) => {
+                                            field.onChange(date);
+                                            setSelectedDate(date);
+                                        }}
                                         disabled={(date) =>
                                             date < new Date() || date < new Date("1900-01-01")
                                         }
