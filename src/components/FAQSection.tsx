@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -8,11 +8,34 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { faqs } from "@/data/content";
+import { faqs as defaultFaqs } from "@/data/content";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
 
 export const FAQSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [faqs, setFaqs] = useState<FAQItem[]>(defaultFaqs);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const docRef = doc(db, "settings", "faqs");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().items) {
+          setFaqs(docSnap.data().items);
+        }
+      } catch (error) {
+        console.error("Error fetching FAQs:", error);
+      }
+    };
+    fetchFAQs();
+  }, []);
 
   return (
     <section id="sss" className="section-padding bg-background" ref={ref}>

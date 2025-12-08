@@ -7,6 +7,7 @@ import {
     Home,
     FileText,
     Image,
+    HelpCircle,
 } from "lucide-react";
 import {
     Sidebar,
@@ -49,6 +50,11 @@ const items = [
         title: "Medya",
         url: "/admin/media",
         icon: Image,
+    },
+    {
+        title: "SSS",
+        url: "/admin/faq",
+        icon: HelpCircle,
     },
     {
         title: "Ayarlar",

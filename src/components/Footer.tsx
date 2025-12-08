@@ -137,16 +137,30 @@ export const Footer = () => {
         <div className="border-t border-primary-foreground/10 mt-12 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-secondary-foreground/60">
             <p>
-              © {new Date().getFullYear()} Psk. Dan. Sefa Sevim. Tüm hakları
-              saklıdır.
+              © {new Date().getFullYear()} Psk. Dan. Sefa Sevim
             </p>
-            <a
-              href="/admin/login"
-              className="text-secondary-foreground/30 hover:text-secondary-foreground/60 transition-colors text-xs"
-              title="Yönetim Paneli"
-            >
-              •
-            </a>
+            <div className="flex items-center gap-4">
+              <a
+                href="/gizlilik"
+                className="hover:text-secondary-foreground transition-colors"
+              >
+                Gizlilik Politikası
+              </a>
+              <span>|</span>
+              <a
+                href="/kvkk"
+                className="hover:text-secondary-foreground transition-colors"
+              >
+                KVKK
+              </a>
+              <a
+                href="/admin/login"
+                className="text-secondary-foreground/30 hover:text-secondary-foreground/60 transition-colors"
+                title="Yönetim Paneli"
+              >
+                •
+              </a>
+            </div>
           </div>
         </div>
       </div>

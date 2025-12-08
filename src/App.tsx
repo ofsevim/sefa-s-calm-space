@@ -7,6 +7,8 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import ServiceDetail from "./pages/ServiceDetail";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import KVKK from "./pages/KVKK";
 import Login from "./pages/admin/Login";
 import AdminLayout from "./components/layouts/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -15,6 +17,7 @@ import Settings from "./pages/admin/Settings";
 import Messages from "./pages/admin/Messages";
 import ContentManagement from "./pages/admin/ContentManagement";
 import MediaManagement from "./pages/admin/MediaManagement";
+import FAQManagement from "./pages/admin/FAQManagement";
 import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
@@ -29,6 +32,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/hizmet/:slug" element={<ServiceDetail />} />
+            <Route path="/gizlilik" element={<PrivacyPolicy />} />
+            <Route path="/kvkk" element={<KVKK />} />
             <Route path="/admin/login" element={<Login />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -37,6 +42,7 @@ const App = () => (
               <Route path="messages" element={<Messages />} />
               <Route path="content" element={<ContentManagement />} />
               <Route path="media" element={<MediaManagement />} />
+              <Route path="faq" element={<FAQManagement />} />
               <Route path="settings" element={<Settings />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
