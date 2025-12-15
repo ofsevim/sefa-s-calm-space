@@ -82,12 +82,18 @@ export const ServicesSection = () => {
                 {/* Visual Cover Area */}
                 <div className={`h-48 w-full ${service.color} relative overflow-hidden`}>
                   <div className="absolute inset-0 bg-white/10" />
-                  {/* Abstract Pattern Overlay */}
-                  <div className="absolute inset-0 opacity-20">
-                    <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                      <path d="M0 100 C 20 0 50 0 100 100 Z" fill="currentColor" className="text-white" />
-                    </svg>
-                  </div>
+
+                  {/* Image Overlay if available */}
+                  {(service as any).image && (
+                    <img
+                      src={(service as any).image}
+                      alt={service.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500"
+                    />
+                  )}
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
                   {/* Icon Badge */}
                   <div className="absolute -bottom-8 left-8">

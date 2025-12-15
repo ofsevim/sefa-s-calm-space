@@ -136,25 +136,13 @@ export const HeroSection = () => {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-sage-light/30 rounded-full blur-3xl animate-pulse" />
 
               {/* Image Frame */}
-              <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl bg-white/20 backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-sage-50 to-beige-100 flex items-center justify-center flex-col gap-4 text-sage-300">
-                  {/* This is a placeholder for a real photo */}
-                  <div className="w-24 h-24 rounded-full bg-sage-100/50 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-12 w-12 opacity-50"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <span className="font-heading text-lg font-medium opacity-60">Görsel Alanı</span>
-                  <p className="text-xs max-w-[200px] text-center opacity-50 px-4">
-                    Buraya profesyonel ve güven veren bir profil fotoğrafı veya size özel minimalist bir görsel eklenebilir.
-                  </p>
-                </div>
+              <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl bg-white/20 backdrop-blur-sm group">
+                <img
+                  src="https://images.unsplash.com/photo-1528319725582-ddc096101511?q=80&w=1000&auto=format&fit=crop"
+                  alt="Inner Peace and Balance"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-sage-dark/20 to-transparent" />
               </div>
 
               {/* Decorative Elements */}
