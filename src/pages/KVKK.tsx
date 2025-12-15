@@ -77,7 +77,7 @@ const KVKK = () => {
                                                 </tr>
                                                 <tr className="border-b border-border/50">
                                                     <td className="py-2">İletişim Bilgileri</td>
-                                                    <td className="py-2">E-posta adresi, telefon numarası</td>
+                                                    <td className="py-2">E-posta adresi</td>
                                                 </tr>
                                                 <tr className="border-b border-border/50">
                                                     <td className="py-2">İşlem Güvenliği</td>
@@ -181,17 +181,8 @@ const KVKK = () => {
                                             <Mail className="w-5 h-5 text-primary" />
                                             <div>
                                                 <p className="font-medium text-foreground">E-posta ile başvuru:</p>
-                                                <a href="mailto:kvkk@sefasevim.com" className="text-primary hover:underline">
-                                                    kvkk@sefasevim.com
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Phone className="w-5 h-5 text-primary" />
-                                            <div>
-                                                <p className="font-medium text-foreground">Telefon:</p>
-                                                <a href="tel:+905551234567" className="text-primary hover:underline">
-                                                    +90 555 123 4567
+                                                <a href="mailto:Sefa.Sevim@outlook.com" className="text-primary hover:underline">
+                                                    Sefa.Sevim@outlook.com
                                                 </a>
                                             </div>
                                         </div>

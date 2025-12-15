@@ -62,7 +62,7 @@ const PrivacyPolicy = () => {
                                         Aşağıdaki kişisel bilgileri toplayabiliriz:
                                     </p>
                                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                                        <li><strong>İletişim Bilgileri:</strong> Ad, soyad, e-posta adresi, telefon numarası</li>
+                                        <li><strong>İletişim Bilgileri:</strong> Ad, soyad, e-posta adresi</li>
                                         <li><strong>Randevu Bilgileri:</strong> Tercih edilen randevu tarihi ve saati</li>
                                         <li><strong>Mesaj İçerikleri:</strong> İletişim formu aracılığıyla gönderdiğiniz mesajlar</li>
                                         <li><strong>Teknik Veriler:</strong> IP adresi, tarayıcı türü, ziyaret edilen sayfalar (anonim olarak)</li>
@@ -138,13 +138,9 @@ const PrivacyPolicy = () => {
                                         Gizlilik politikamız hakkında sorularınız için bizimle iletişime geçebilirsiniz:
                                     </p>
                                     <div className="flex flex-col gap-2 text-muted-foreground">
-                                        <a href="mailto:iletisim@sefasevim.com" className="flex items-center gap-2 hover:text-primary transition-colors">
+                                        <a href="mailto:Sefa.Sevim@outlook.com" className="flex items-center gap-2 hover:text-primary transition-colors">
                                             <Mail className="w-4 h-4" />
-                                            iletisim@sefasevim.com
-                                        </a>
-                                        <a href="tel:+905551234567" className="flex items-center gap-2 hover:text-primary transition-colors">
-                                            <Phone className="w-4 h-4" />
-                                            +90 555 123 4567
+                                            Sefa.Sevim@outlook.com
                                         </a>
                                     </div>
                                 </section>
