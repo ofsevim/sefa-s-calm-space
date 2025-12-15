@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { services } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 import { DynamicIcon } from "@/components/DynamicIcon";
+import { WaveSeparator } from "@/components/ui/WaveSeparator";
 
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -39,10 +40,12 @@ export const ServicesSection = () => {
   return (
     <section
       id="hizmetler"
-      className="section-padding bg-gradient-calm"
+      className="section-padding bg-gradient-calm relative"
       ref={ref}
     >
-      <div className="container-custom">
+      <WaveSeparator position="top" className="text-background" />
+
+      <div className="container-custom relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -73,35 +76,46 @@ export const ServicesSection = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative bg-card rounded-3xl p-8 shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
                 onClick={scrollToContact}
               >
-                {/* Background decoration */}
-                <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-sage-light/20 -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+                {/* Visual Cover Area */}
+                <div className={`h-48 w-full ${service.color} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-white/10" />
+                  {/* Abstract Pattern Overlay */}
+                  <div className="absolute inset-0 opacity-20">
+                    <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <path d="M0 100 C 20 0 50 0 100 100 Z" fill="currentColor" className="text-white" />
+                    </svg>
+                  </div>
 
-                {/* Icon */}
-                <div
-                  className={`relative w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  {typeof IconComponent === 'string' ? (
-                    <DynamicIcon name={IconComponent} className={`w-8 h-8 ${service.iconColor}`} />
-                  ) : (
-                    <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
-                  )}
+                  {/* Icon Badge */}
+                  <div className="absolute -bottom-8 left-8">
+                    <div
+                      className={`w-16 h-16 rounded-2xl bg-white shadow-card flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {typeof IconComponent === 'string' ? (
+                        <DynamicIcon name={IconComponent} className={`w-8 h-8 ${service.iconColor}`} />
+                      ) : (
+                        <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Content */}
-                <h3 className="relative text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-secondary transition-colors">
-                  {service.title}
-                </h3>
-                <p className="relative text-muted-foreground mb-6 leading-relaxed">
-                  {service.description}
-                </p>
+                <div className="p-8 pt-12 flex-grow flex flex-col">
+                  <h3 className="relative text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-secondary transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="relative text-muted-foreground mb-6 leading-relaxed flex-grow">
+                    {service.description}
+                  </p>
 
-                {/* Link */}
-                <div className="relative flex items-center gap-2 text-primary font-medium group-hover:text-secondary transition-colors">
-                  <span>Detaylı Bilgi</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  {/* Link */}
+                  <div className="relative flex items-center gap-2 text-primary font-medium group-hover:text-secondary transition-colors mt-auto">
+                    <span>Detaylı Bilgi</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </motion.div>
             )
