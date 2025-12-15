@@ -83,10 +83,16 @@ export const ServicesSection = () => {
                 <div className={`h-48 w-full ${service.color} relative overflow-hidden`}>
                   <div className="absolute inset-0 bg-white/10" />
 
-                  {/* Image Overlay if available */}
-                  {/* Image Overlay if available */}
+                  {/* Image Overlay */}
                   <img
-                    src={(service as any).image || "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop"}
+                    src={(service as any).image || [
+                      "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop"
+                    ][index % 6]}
                     alt={service.title}
                     className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
