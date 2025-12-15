@@ -29,7 +29,7 @@ export const services = [
             "Kişisel gelişim, özgüven, ilişki sorunları ve yaşam zorlukları için birebir destek.",
         color: "bg-sage-light",
         iconColor: "text-sage-dark",
-        image: "https://images.unsplash.com/photo-1516302752625-fcc7c50d4b81?q=80&w=500&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop", // Woman looking thoughtful/serene
     },
     {
         icon: Users,
@@ -38,7 +38,7 @@ export const services = [
             "Ergenlik döneminin zorluklarında gençlere ve ailelerine profesyonel rehberlik.",
         color: "bg-beige-warm",
         iconColor: "text-secondary",
-        image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=500&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop", // Friends/Teenagers group
     },
     {
         icon: Brain,
@@ -47,7 +47,7 @@ export const services = [
             "Sınav stresi ve performans kaygısını yönetmek için etkili teknikler ve stratejiler.",
         color: "bg-sage-light",
         iconColor: "text-sage-dark",
-        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=500&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop", // Studying/Focus
     },
     {
         icon: Compass,
@@ -56,7 +56,7 @@ export const services = [
             "Meslek seçimi, kariyer planlaması ve iş hayatı zorluklarında yol gösterici destek.",
         color: "bg-beige-warm",
         iconColor: "text-secondary",
-        image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=500&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop", // Working/Career
     },
     {
         icon: Monitor,
@@ -65,7 +65,7 @@ export const services = [
             "Evinizin konforunda, güvenli ve etkili online psikolojik danışmanlık hizmeti.",
         color: "bg-sage-light",
         iconColor: "text-sage-dark",
-        image: "https://images.unsplash.com/photo-1533227297464-af803ccaae48?q=80&w=500&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?q=80&w=800&auto=format&fit=crop", // Laptop/Online connection
     },
 ];
 

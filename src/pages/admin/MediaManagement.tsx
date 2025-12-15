@@ -57,6 +57,7 @@ export default function MediaManagement() {
     const [selectedPreview, setSelectedPreview] = useState<StorageImage | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<StorageImage | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [heroImage, setHeroImage] = useState<string>("");
     const { toast } = useToast();
 
     // Load existing image URL from Firestore and all images from Storage
@@ -72,6 +73,13 @@ export default function MediaManagement() {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().aboutImage) {
                 setAboutImage(docSnap.data().aboutImage);
+            }
+
+            // Load current hero image setting
+            const heroDocRef = doc(db, "content", "hero");
+            const heroDocSnap = await getDoc(heroDocRef);
+            if (heroDocSnap.exists() && heroDocSnap.data().heroImage) {
+                setHeroImage(heroDocSnap.data().heroImage);
             }
 
             // Load all images from Firebase Storage
@@ -238,6 +246,45 @@ export default function MediaManagement() {
         }
     };
 
+    const handleSetAsHeroImage = async (image: StorageImage) => {
+        setSaving(true);
+        try {
+            // Get current hero content to preserve other fields
+            const heroDocRef = doc(db, "content", "hero");
+            const heroDocSnap = await getDoc(heroDocRef);
+
+            if (heroDocSnap.exists()) {
+                const currentData = heroDocSnap.data();
+                await setDoc(heroDocRef, {
+                    ...currentData,
+                    heroImage: image.url
+                });
+                setHeroImage(image.url);
+
+                toast({
+                    title: "Başarılı",
+                    description: "Anasayfa Hero fotoğrafı güncellendi.",
+                });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Hata",
+                    description: "Hero içerik verisi bulunamadı.",
+                });
+            }
+
+        } catch (error) {
+            console.error("Error setting hero image:", error);
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Fotoğraf güncellenirken bir hata oluştu.",
+            });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const formatFileSize = (bytes: number) => {
         if (bytes < 1024) return bytes + ' B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -379,6 +426,50 @@ export default function MediaManagement() {
                 </CardContent>
             </Card>
 
+            {/* Current Hero Image */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <ImageIcon className="h-5 w-5 text-primary" />
+                        Hero Bölümü Fotoğrafı
+                    </CardTitle>
+                    <CardDescription>
+                        Anasayfada görünen büyük görsel
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {heroImage ? (
+                        <div className="flex items-start gap-4">
+                            <div className="relative w-48 h-32 rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg">
+                                <img
+                                    src={heroImage}
+                                    alt="Hero Fotoğrafı"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute top-2 right-2">
+                                    <CheckCircle2 className="h-6 w-6 text-green-500 drop-shadow-lg" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">
+                                    Bu fotoğraf şu an anasayfada aktif olarak görünüyor.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                            <div>
+                                <p className="font-medium">Fotoğraf Seçilmedi</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Varsayılan görsel kullanılıyor.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
             {/* Image Gallery */}
             <Card>
                 <CardHeader>
@@ -418,7 +509,7 @@ export default function MediaManagement() {
                                     />
 
                                     {/* Active indicator */}
-                                    {aboutImage === image.url && (
+                                    {(aboutImage === image.url || heroImage === image.url) && (
                                         <div className="absolute top-2 right-2">
                                             <CheckCircle2 className="h-5 w-5 text-green-500 drop-shadow-lg" />
                                         </div>
@@ -478,6 +569,12 @@ export default function MediaManagement() {
                                         <span>Aktif Hakkımda fotoğrafı</span>
                                     </div>
                                 )}
+                                {heroImage === selectedPreview.url && (
+                                    <div className="flex items-center gap-1 text-green-600">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        <span>Aktif Hero fotoğrafı</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -498,6 +595,24 @@ export default function MediaManagement() {
                                     <CheckCircle2 className="h-4 w-4 mr-2" />
                                 )}
                                 Hakkımda Fotoğrafı Yap
+                            </Button>
+                        )}
+                        {selectedPreview && heroImage !== selectedPreview.url && (
+                            <Button
+                                onClick={() => {
+                                    handleSetAsHeroImage(selectedPreview);
+                                    setSelectedPreview(null);
+                                }}
+                                disabled={saving}
+                                className="w-full sm:w-auto"
+                                variant="secondary"
+                            >
+                                {saving ? (
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                )}
+                                Hero Fotoğrafı Yap
                             </Button>
                         )}
                         <Button
@@ -556,6 +671,6 @@ export default function MediaManagement() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </div >
     );
 }

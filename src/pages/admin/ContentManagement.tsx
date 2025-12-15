@@ -16,6 +16,7 @@ interface HeroContent {
     description: string;
     primaryButtonText: string;
     secondaryButtonText: string;
+    heroImage: string;
 }
 
 interface AboutContent {
@@ -37,6 +38,7 @@ export default function ContentManagement() {
         description: "Herkes zaman zaman desteğe ihtiyaç duyar. İç dünyanızdaki karmaşayı netliğe kavuşturmak ve daha huzurlu bir zihne ulaşmak sandığınızdan daha yakın olabilir.",
         primaryButtonText: "Randevu Oluştur",
         secondaryButtonText: "Hizmetleri İncele",
+        heroImage: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=1000&auto=format&fit=crop",
     });
 
     // About Content State
@@ -205,6 +207,18 @@ export default function ContentManagement() {
                                     placeholder="Hizmetleri İncele"
                                 />
                             </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="hero-image">Görsel URL (Medya Yönetimi'nden kopyalayabilirsiniz)</Label>
+                            <Input
+                                id="hero-image"
+                                value={heroContent.heroImage}
+                                onChange={(e) =>
+                                    setHeroContent({ ...heroContent, heroImage: e.target.value })
+                                }
+                                placeholder="https://..."
+                            />
                         </div>
 
                         <Button onClick={saveHeroContent} disabled={loading} className="w-full">

@@ -84,13 +84,15 @@ export const ServicesSection = () => {
                   <div className="absolute inset-0 bg-white/10" />
 
                   {/* Image Overlay if available */}
-                  {(service as any).image && (
-                    <img
-                      src={(service as any).image}
-                      alt={service.title}
-                      className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500"
-                    />
-                  )}
+                  {/* Image Overlay if available */}
+                  <img
+                    src={(service as any).image || "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop"}
+                    alt={service.title}
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
 
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />

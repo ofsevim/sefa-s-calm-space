@@ -137,11 +137,15 @@ export const HeroSection = () => {
 
               {/* Image Frame */}
               <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl bg-white/20 backdrop-blur-sm group">
-                <img
-                  src="https://images.unsplash.com/photo-1528319725582-ddc096101511?q=80&w=1000&auto=format&fit=crop"
-                  alt="Inner Peace and Balance"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {loading ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <img
+                    src={content.heroImage}
+                    alt={content.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-sage-dark/20 to-transparent" />
               </div>
 
