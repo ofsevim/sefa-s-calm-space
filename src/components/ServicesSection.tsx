@@ -102,18 +102,18 @@ export const ServicesSection = () => {
 
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
 
-                  {/* Icon Badge */}
-                  <div className="absolute -bottom-8 left-8 z-10">
-                    <div
-                      className={`w-16 h-16 rounded-2xl bg-white shadow-card flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      {typeof IconComponent === 'string' ? (
-                        <DynamicIcon name={IconComponent} className={`w-8 h-8 ${service.iconColor}`} />
-                      ) : (
-                        <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
-                      )}
-                    </div>
+                {/* Icon Badge - moved outside image container */}
+                <div className="absolute top-40 left-8 z-20">
+                  <div
+                    className={`w-16 h-16 rounded-2xl bg-white shadow-card flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    {typeof IconComponent === 'string' ? (
+                      <DynamicIcon name={IconComponent} className={`w-8 h-8 ${service.iconColor}`} />
+                    ) : (
+                      <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
+                    )}
                   </div>
                 </div>
 
