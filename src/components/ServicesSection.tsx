@@ -75,8 +75,8 @@ export const ServicesSection = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
+                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.15 } }}
+                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-150 cursor-pointer overflow-hidden flex flex-col"
                 onClick={scrollToContact}
               >
                 {/* Visual Cover Area */}
