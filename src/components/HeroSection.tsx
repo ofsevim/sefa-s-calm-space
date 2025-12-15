@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHeroContent } from "@/hooks/useContent";
@@ -114,7 +114,7 @@ export const HeroSection = () => {
                   onClick={() => scrollToSection("#hizmetler")}
                   className="group"
                 >
-                  <Play className="w-5 h-5" />
+                  <Sparkles className="w-5 h-5" />
                   {content.secondaryButtonText}
                 </Button>
               </motion.div>
