@@ -8,7 +8,6 @@ import { doc, getDoc } from "firebase/firestore";
 export const Footer = () => {
   const [contactInfo, setContactInfo] = useState({
     email: "iletisim@sefasevim.com",
-    phone: "+90 555 123 4567",
     address: "K.Maraş, Türkiye"
   });
 
@@ -21,7 +20,6 @@ export const Footer = () => {
           const data = docSnap.data();
           setContactInfo({
             email: data.email || "iletisim@sefasevim.com",
-            phone: data.phone || "+90 555 123 4567",
             address: data.address || "K.Maraş, Türkiye"
           });
         }
@@ -120,14 +118,7 @@ export const Footer = () => {
                   {contactInfo.email}
                 </a>
               </li>
-              <li>
-                <a
-                  href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
-                  className="hover:text-secondary-foreground transition-colors"
-                >
-                  {contactInfo.phone}
-                </a>
-              </li>
+
               <li>{contactInfo.address}</li>
             </ul>
           </div>
