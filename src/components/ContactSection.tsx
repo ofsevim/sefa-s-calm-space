@@ -39,12 +39,14 @@ export const ContactSection = () => {
         if (generalSnap.exists()) {
           const data = generalSnap.data();
           // Update contact info array with fetched data
-          const updatedContact = contactInfo.map(item => {
-            if (item.label === "E-posta" && data.email) return { ...item, value: data.email, href: `mailto:${data.email}` };
-            if (item.label === "Telefon" && data.phone) return { ...item, value: data.phone, href: `tel:${data.phone.replace(/\s/g, '')}` };
-            if (item.label === "Konum" && data.address) return { ...item, value: data.address };
-            return item;
-          });
+          // Update contact info array with fetched data
+          const updatedContact = contactInfo
+            .map(item => {
+              if (item.label === "E-posta" && data.email) return { ...item, value: data.email, href: `mailto:${data.email}` };
+              if (item.label === "Konum" && data.address) return { ...item, value: data.address };
+              return item;
+            })
+            .filter(item => item.label !== "Telefon");
           setContactData(updatedContact);
         }
 
@@ -64,7 +66,6 @@ export const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,7 +86,6 @@ export const ContactSection = () => {
       await addDoc(collection(db, "messages"), {
         name: formData.name,
         email: formData.email,
-        phone: formData.phone,
         message: formData.message,
         createdAt: new Date().toISOString(),
         read: false,
@@ -96,7 +96,7 @@ export const ContactSection = () => {
         description: "En kısa sürede sizinle iletişime geçeceğim.",
       });
 
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -186,23 +186,7 @@ export const ContactSection = () => {
                   />
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-foreground mb-2"
-                  >
-                    Telefon
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
-                    placeholder="+90 5XX XXX XX XX"
-                  />
-                </div>
+
 
                 <div>
                   <label
