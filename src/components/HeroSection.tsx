@@ -124,28 +124,19 @@ export const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Right Column: Visual Placeholder */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="hidden lg:block relative"
-          >
+          {/* Right Column: Visual */}
+          <div className="hidden lg:block relative">
             <div className="relative w-full aspect-[4/5] max-w-md mx-auto">
               {/* Abstract Blob Background */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-sage-light/30 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-sage-light/30 rounded-full blur-3xl" />
 
               {/* Image Frame */}
               <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl bg-white/20 backdrop-blur-sm group">
-                {loading ? (
-                  <Skeleton className="w-full h-full" />
-                ) : (
-                  <img
-                    src={content.heroImage}
-                    alt={content.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                )}
+                <img
+                  src={content.heroImage}
+                  alt={content.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-sage-dark/20 to-transparent" />
               </div>
 
@@ -153,7 +144,7 @@ export const HeroSection = () => {
               <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-beige-warm/50 rounded-full blur-xl" />
               <div className="absolute -top-6 -left-6 w-32 h-32 bg-teal-light/30 rounded-full blur-xl" />
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
