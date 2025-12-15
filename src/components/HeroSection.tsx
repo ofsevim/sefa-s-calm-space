@@ -156,8 +156,6 @@ export const HeroSection = () => {
           </motion.div>
         </div>
       </div>
-
-      <WaveSeparator position="bottom" className="text-background" />
     </section>
   );
 };
