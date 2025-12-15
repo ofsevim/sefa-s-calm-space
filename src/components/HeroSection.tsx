@@ -126,9 +126,9 @@ export const HeroSection = () => {
 
           {/* Right Column: Visual Placeholder */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="hidden lg:block relative"
           >
             <div className="relative w-full aspect-[4/5] max-w-md mx-auto">
