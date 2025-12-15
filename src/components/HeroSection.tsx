@@ -18,7 +18,7 @@ export const HeroSection = () => {
   return (
     <section
       id="hero"
-      className="min-h-screen pt-30 pb-16 flex items-start bg-gradient-hero relative overflow-hidden"
+      className="min-h-screen pt-36 pb-16 flex items-start bg-gradient-hero relative overflow-hidden"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
