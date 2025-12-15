@@ -74,9 +74,9 @@ export const ServicesSection = () => {
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.15 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-100 cursor-pointer overflow-hidden flex flex-col"
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.15 } }}
+                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-150 cursor-pointer overflow-hidden flex flex-col"
                 onClick={scrollToContact}
               >
                 {/* Visual Cover Area */}
@@ -89,8 +89,8 @@ export const ServicesSection = () => {
                       "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop",
                       "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
                       "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
-                      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop",
-                      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop",
+                      "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?q=80&w=800&auto=format&fit=crop",
                       "https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop"
                     ][index % 6]}
                     alt={service.title}
