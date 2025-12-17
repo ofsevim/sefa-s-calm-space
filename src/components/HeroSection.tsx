@@ -4,9 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHeroContent } from "@/hooks/useContent";
 import { WaveSeparator } from "@/components/ui/WaveSeparator";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { BookingForm } from "@/components/BookingForm";
 
 export const HeroSection = () => {
   const { content, loading } = useHeroContent();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -93,7 +103,7 @@ export const HeroSection = () => {
                   <Button
                     variant="hero"
                     size="xl"
-                    onClick={() => scrollToSection("#iletisim")}
+                    onClick={() => setIsDialogOpen(true)}
                     className="group"
                   >
                     {content.primaryButtonText}
@@ -137,6 +147,19 @@ export const HeroSection = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Randevu Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Randevu Oluştur</DialogTitle>
+            <DialogDescription>
+              Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
+            </DialogDescription>
+          </DialogHeader>
+          <BookingForm onSuccess={() => setIsDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
