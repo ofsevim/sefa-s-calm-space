@@ -196,8 +196,8 @@ export const contactInfo = [
 ];
 
 export const workingHours = [
-    { day: "Pazartesi - Cuma", hours: "09:00 - 19:00" },
-    { day: "Cumartesi", hours: "10:00 - 16:00" },
+    { day: "Pazartesi - Cuma", hours: "13:00 - 20:00" },
+    { day: "Cumartesi", hours: "13:00-20:00" },
     { day: "Pazar", hours: "Kapalı" },
 ];
 

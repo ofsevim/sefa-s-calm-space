@@ -67,15 +67,12 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
 
     // Helper function to process working hours
     const processWorkingHours = (workingHoursData: any[], date: Date) => {
-        console.log("🔍 Processing working hours:", workingHoursData);
         const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
         const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
         const selectedDayName = dayNames[dayOfWeek];
-        console.log("📅 Selected day:", selectedDayName, "(index:", dayOfWeek, ")");
 
         // Find working hours for selected day
         let dayHours = workingHoursData.find((wh: any) => wh.day === selectedDayName);
-        console.log("🔎 Direct match for", selectedDayName, ":", dayHours);
 
         // If not found, check for range (e.g., "Pazartesi - Cuma")
         if (!dayHours) {
@@ -84,13 +81,10 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     const [start, end] = wh.day.split('-').map((d: string) => d.trim());
                     const startIdx = dayNames.indexOf(start);
                     const endIdx = dayNames.indexOf(end);
-                    console.log(`🔍 Checking range "${wh.day}": ${start}(${startIdx}) to ${end}(${endIdx}), current: ${dayOfWeek}`);
 
                     // Handle range wrapping (though typical business hours don't wrap)
                     if (startIdx <= endIdx) {
-                        const matches = dayOfWeek >= startIdx && dayOfWeek <= endIdx;
-                        console.log(`   ✓ Match: ${matches}`);
-                        return matches;
+                        return dayOfWeek >= startIdx && dayOfWeek <= endIdx;
                     }
                 }
                 return false;
@@ -102,7 +96,6 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
             const [startTime, endTime] = dayHours.hours.split('-').map((t: string) => t.trim());
             const startHour = parseInt(startTime.split(':')[0]);
             const endHour = parseInt(endTime.split(':')[0]);
-            console.log(`⏰ Setting time slots: ${startHour}:00 to ${endHour}:00`);
 
             setTimeSlots(generateTimeSlots(startHour, endHour));
         } else {
@@ -126,11 +119,9 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists() && docSnap.data().items) {
-                    console.log("✅ Firestore data found:", docSnap.data().items);
                     processWorkingHours(docSnap.data().items, selectedDate);
                 } else {
                     // Fallback to local data
-                    console.log("⚠️ No Firestore data, using local fallback");
                     const { workingHours } = await import("@/data/content");
                     processWorkingHours(workingHours, selectedDate);
                 }
