@@ -65,67 +65,79 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
         },
     });
 
+    // Helper function to process working hours
+    const processWorkingHours = (workingHoursData: any[], date: Date) => {
+        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+        const selectedDayName = dayNames[dayOfWeek];
+
+        // Find working hours for selected day
+        let dayHours = workingHoursData.find((wh: any) => wh.day === selectedDayName);
+
+        // If not found, check for range (e.g., "Pazartesi - Cuma")
+        if (!dayHours) {
+            dayHours = workingHoursData.find((wh: any) => {
+                if (wh.day.includes('-')) {
+                    const [start, end] = wh.day.split('-').map((d: string) => d.trim());
+                    const startIdx = dayNames.indexOf(start);
+                    const endIdx = dayNames.indexOf(end);
+
+                    // Handle range wrapping (though typical business hours don't wrap)
+                    if (startIdx <= endIdx) {
+                        return dayOfWeek >= startIdx && dayOfWeek <= endIdx;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if (dayHours && dayHours.hours !== "Kapalı") {
+            // Parse hours (e.g., "09:00 - 19:00")
+            const [startTime, endTime] = dayHours.hours.split('-').map((t: string) => t.trim());
+            const startHour = parseInt(startTime.split(':')[0]);
+            const endHour = parseInt(endTime.split(':')[0]);
+
+            setTimeSlots(generateTimeSlots(startHour, endHour));
+        } else {
+            // Closed on this day
+            setTimeSlots([]);
+            toast({
+                variant: "destructive",
+                title: "Kapalı Gün",
+                description: "Seçtiğiniz gün çalışma saatleri dışındadır.",
+            });
+        }
+    };
+
     // Load working hours and update time slots when date changes
     useEffect(() => {
         const loadWorkingHours = async () => {
+            if (!selectedDate) return;
+
             try {
                 const docRef = doc(db, "settings", "workingHours");
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists() && docSnap.data().items) {
-                    const workingHours = docSnap.data().items;
-
-                    if (selectedDate) {
-                        const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                        const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-                        const selectedDayName = dayNames[dayOfWeek];
-
-                        // Find working hours for selected day
-                        let dayHours = workingHours.find((wh: any) => wh.day === selectedDayName);
-
-                        // If not found, check for range (e.g., "Pazartesi - Cuma")
-                        if (!dayHours) {
-                            dayHours = workingHours.find((wh: any) => {
-                                if (wh.day.includes('-')) {
-                                    const [start, end] = wh.day.split('-').map((d: string) => d.trim());
-                                    const startIdx = dayNames.indexOf(start);
-                                    const endIdx = dayNames.indexOf(end);
-                                    return dayOfWeek >= startIdx && dayOfWeek <= endIdx;
-                                }
-                                return false;
-                            });
-                        }
-
-                        if (dayHours && dayHours.hours !== "Kapalı") {
-                            // Parse hours (e.g., "09:00 - 19:00")
-                            const [startTime, endTime] = dayHours.hours.split('-').map((t: string) => t.trim());
-                            const startHour = parseInt(startTime.split(':')[0]);
-                            const endHour = parseInt(endTime.split(':')[0]);
-
-                            setTimeSlots(generateTimeSlots(startHour, endHour));
-                        } else {
-                            // Closed on this day
-                            setTimeSlots([]);
-                            toast({
-                                variant: "destructive",
-                                title: "Kapalı Gün",
-                                description: "Seçtiğiniz gün çalışma saatleri dışındadır.",
-                            });
-                        }
-                    }
+                    processWorkingHours(docSnap.data().items, selectedDate);
                 } else {
-                    // Default working hours if not set
-                    setTimeSlots(generateTimeSlots(9, 19));
+                    // Fallback to local data
+                    const { workingHours } = await import("@/data/content");
+                    processWorkingHours(workingHours, selectedDate);
                 }
             } catch (error) {
                 console.error("Error loading working hours:", error);
-                setTimeSlots(generateTimeSlots(9, 19)); // Fallback to default
+                // Fallback to local data on error
+                try {
+                    const { workingHours } = await import("@/data/content");
+                    processWorkingHours(workingHours, selectedDate);
+                } catch (e) {
+                    setTimeSlots(generateTimeSlots(9, 19)); // Ultimate fallback
+                }
             }
         };
 
-        if (selectedDate) {
-            loadWorkingHours();
-        }
+        loadWorkingHours();
     }, [selectedDate, toast]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
