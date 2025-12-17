@@ -166,17 +166,17 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-sm font-semibold text-foreground">Ad Soyad</FormLabel>
+                            <FormLabel className="text-sm font-medium">Ad Soyad</FormLabel>
                             <FormControl>
                                 <Input
                                     placeholder="Adınız Soyadınız"
-                                    className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                    className="h-10"
                                     {...field}
                                 />
                             </FormControl>
@@ -190,12 +190,12 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-semibold text-foreground">E-posta</FormLabel>
+                                <FormLabel className="text-sm font-medium">E-posta</FormLabel>
                                 <FormControl>
                                     <Input
                                         placeholder="ornek@email.com"
                                         type="email"
-                                        className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                        className="h-10"
                                         {...field}
                                     />
                                 </FormControl>
@@ -208,12 +208,12 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-semibold text-foreground">Telefon</FormLabel>
+                                <FormLabel className="text-sm font-medium">Telefon</FormLabel>
                                 <FormControl>
                                     <Input
                                         placeholder="0555 555 55 55"
                                         type="tel"
-                                        className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                        className="h-10"
                                         {...field}
                                     />
                                 </FormControl>
@@ -223,14 +223,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel className="text-sm font-semibold text-foreground mb-2">Randevu Tarihi</FormLabel>
-                                <div className="border-2 rounded-2xl p-4 bg-gradient-to-br from-sage-light/20 to-transparent hover:border-primary/50 transition-colors">
+                                <FormLabel className="text-sm font-medium">Randevu Tarihi</FormLabel>
+                                <div className="border rounded-lg p-2">
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
@@ -243,7 +243,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                         }
                                         initialFocus
                                         locale={tr}
-                                        className="rounded-xl"
+                                        className="rounded-md w-full"
                                     />
                                 </div>
                                 <FormMessage />
@@ -255,23 +255,23 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         control={form.control}
                         name="time"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold text-foreground">Randevu Saati</FormLabel>
+                            <FormItem className="flex flex-col">
+                                <FormLabel className="text-sm font-medium">Randevu Saati</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="h-11 rounded-xl border-2 focus:border-primary transition-colors">
+                                        <SelectTrigger className="h-10">
                                             <SelectValue placeholder="Saat seçiniz" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="rounded-xl">
+                                    <SelectContent>
                                         {timeSlots.length > 0 ? (
                                             timeSlots.map((time) => (
-                                                <SelectItem key={time} value={time} className="rounded-lg">
+                                                <SelectItem key={time} value={time}>
                                                     {time}
                                                 </SelectItem>
                                             ))
                                         ) : (
-                                            <div className="p-4 text-center text-sm text-muted-foreground">
+                                            <div className="p-3 text-center text-sm text-muted-foreground">
                                                 Lütfen önce tarih seçiniz
                                             </div>
                                         )}
@@ -288,11 +288,11 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     name="notes"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-sm font-semibold text-foreground">Notlar (Opsiyonel)</FormLabel>
+                            <FormLabel className="text-sm font-medium">Notlar (Opsiyonel)</FormLabel>
                             <FormControl>
                                 <Textarea
                                     placeholder="Belirtmek istediğiniz özel bir durum var mı?"
-                                    className="resize-none min-h-[100px] rounded-xl border-2 focus:border-primary transition-colors"
+                                    className="resize-none min-h-[80px]"
                                     {...field}
                                 />
                             </FormControl>
@@ -302,12 +302,12 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 />
                 <Button
                     type="submit"
-                    className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-sage hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl"
+                    className="w-full h-11"
                     disabled={loading}
                 >
                     {loading ? (
                         <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Gönderiliyor...
                         </>
                     ) : (
