@@ -176,7 +176,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                             <FormControl>
                                 <Input
                                     placeholder="Adınız Soyadınız"
-                                    className="h-10"
+                                    className="h-11 rounded-lg"
                                     {...field}
                                 />
                             </FormControl>
@@ -184,7 +184,8 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         </FormItem>
                     )}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="email"
@@ -195,7 +196,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                     <Input
                                         placeholder="ornek@email.com"
                                         type="email"
-                                        className="h-10"
+                                        className="h-11 rounded-lg"
                                         {...field}
                                     />
                                 </FormControl>
@@ -213,7 +214,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                     <Input
                                         placeholder="0555 555 55 55"
                                         type="tel"
-                                        className="h-10"
+                                        className="h-11 rounded-lg"
                                         {...field}
                                     />
                                 </FormControl>
@@ -223,14 +224,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
                                 <FormLabel className="text-sm font-medium">Randevu Tarihi</FormLabel>
-                                <div className="border rounded-lg p-2">
+                                <div className="border rounded-lg p-3 bg-muted/30">
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
@@ -241,9 +242,27 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                         disabled={(date) =>
                                             date < new Date() || date < new Date("1900-01-01")
                                         }
-                                        initialFocus
                                         locale={tr}
-                                        className="rounded-md w-full"
+                                        className="w-full"
+                                        classNames={{
+                                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                            month: "space-y-4",
+                                            caption: "flex justify-center pt-1 relative items-center",
+                                            caption_label: "text-sm font-medium",
+                                            nav: "space-x-1 flex items-center",
+                                            nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                                            table: "w-full border-collapse space-y-1",
+                                            head_row: "flex",
+                                            head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                                            row: "flex w-full mt-2",
+                                            cell: "h-9 w-9 text-center text-sm p-0 relative",
+                                            day: "h-9 w-9 p-0 font-normal",
+                                            day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                                            day_today: "bg-accent text-accent-foreground",
+                                            day_outside: "text-muted-foreground opacity-50",
+                                            day_disabled: "text-muted-foreground opacity-50",
+                                            day_hidden: "invisible",
+                                        }}
                                     />
                                 </div>
                                 <FormMessage />
@@ -259,11 +278,11 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                 <FormLabel className="text-sm font-medium">Randevu Saati</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="h-10">
+                                        <SelectTrigger className="h-11 rounded-lg">
                                             <SelectValue placeholder="Saat seçiniz" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="max-h-[200px]">
                                         {timeSlots.length > 0 ? (
                                             timeSlots.map((time) => (
                                                 <SelectItem key={time} value={time}>
@@ -292,7 +311,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                             <FormControl>
                                 <Textarea
                                     placeholder="Belirtmek istediğiniz özel bir durum var mı?"
-                                    className="resize-none min-h-[80px]"
+                                    className="resize-none min-h-[90px] rounded-lg"
                                     {...field}
                                 />
                             </FormControl>
@@ -302,7 +321,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 />
                 <Button
                     type="submit"
-                    className="w-full h-11"
+                    className="w-full h-11 rounded-lg bg-gradient-sage hover:opacity-90 transition-opacity"
                     disabled={loading}
                 >
                     {loading ? (
