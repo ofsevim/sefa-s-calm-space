@@ -285,6 +285,8 @@ export const ContactSection = () => {
                 <motion.a
                   key={index}
                   href={item.href}
+                  target={item.label === "Konum" ? "_blank" : undefined}
+                  rel={item.label === "Konum" ? "noopener noreferrer" : undefined}
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.5 + index * 0.1 }}
