@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer, query, where, getDocs, orderBy, limit } from "firebase/firestore";
+import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc } from "firebase/firestore";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -159,6 +159,41 @@ export default function Dashboard() {
 
         fetchStats();
     }, []);
+
+    const refreshData = async () => {
+        const appointmentsRef = collection(db, "appointments");
+
+        // Refresh pending appointments
+        const pendingDetailsQuery = query(
+            appointmentsRef,
+            where("status", "==", "pending"),
+            orderBy("created_at", "desc"),
+            limit(5)
+        );
+        const pendingDetailsSnapshot = await getDocs(pendingDetailsQuery);
+        const pendingAppts: PendingAppointment[] = [];
+        pendingDetailsSnapshot.forEach((doc) => {
+            pendingAppts.push({ id: doc.id, ...doc.data() } as PendingAppointment);
+        });
+        setPendingAppointments(pendingAppts);
+
+        // Refresh pending count
+        const pendingQuery = query(appointmentsRef, where("status", "==", "pending"));
+        const pendingSnapshot = await getCountFromServer(pendingQuery);
+        setStats(prev => ({ ...prev, pendingAppointments: pendingSnapshot.data().count }));
+    };
+
+    const updateStatus = async (id: string, status: "approved" | "rejected") => {
+        try {
+            const appointmentRef = doc(db, "appointments", id);
+            await updateDoc(appointmentRef, { status });
+
+            // Refresh the data
+            await refreshData();
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -325,6 +360,7 @@ export default function Dashboard() {
                                                 size="sm"
                                                 variant="outline"
                                                 className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                                                onClick={() => updateStatus(apt.id, "approved")}
                                             >
                                                 <Check className="h-4 w-4 mr-1" />
                                                 Onayla
@@ -333,6 +369,7 @@ export default function Dashboard() {
                                                 size="sm"
                                                 variant="outline"
                                                 className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                                                onClick={() => updateStatus(apt.id, "rejected")}
                                             >
                                                 <X className="h-4 w-4 mr-1" />
                                                 Reddet
