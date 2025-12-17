@@ -166,15 +166,19 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Ad Soyad</FormLabel>
+                            <FormLabel className="text-sm font-semibold text-foreground">Ad Soyad</FormLabel>
                             <FormControl>
-                                <Input placeholder="Adınız Soyadınız" {...field} />
+                                <Input
+                                    placeholder="Adınız Soyadınız"
+                                    className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -186,9 +190,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>E-posta</FormLabel>
+                                <FormLabel className="text-sm font-semibold text-foreground">E-posta</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="ornek@email.com" {...field} />
+                                    <Input
+                                        placeholder="ornek@email.com"
+                                        type="email"
+                                        className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -199,9 +208,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Telefon</FormLabel>
+                                <FormLabel className="text-sm font-semibold text-foreground">Telefon</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="0555 555 55 55" {...field} />
+                                    <Input
+                                        placeholder="0555 555 55 55"
+                                        type="tel"
+                                        className="h-11 rounded-xl border-2 focus:border-primary transition-colors"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -209,14 +223,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 gap-5">
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>Randevu Tarihi</FormLabel>
-                                <div className="border rounded-md p-3">
+                                <FormLabel className="text-sm font-semibold text-foreground mb-2">Randevu Tarihi</FormLabel>
+                                <div className="border-2 rounded-2xl p-4 bg-gradient-to-br from-sage-light/20 to-transparent hover:border-primary/50 transition-colors">
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
@@ -229,7 +243,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                         }
                                         initialFocus
                                         locale={tr}
-                                        className="rounded-md"
+                                        className="rounded-xl"
                                     />
                                 </div>
                                 <FormMessage />
@@ -242,19 +256,25 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         name="time"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Randevu Saati</FormLabel>
+                                <FormLabel className="text-sm font-semibold text-foreground">Randevu Saati</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="h-11 rounded-xl border-2 focus:border-primary transition-colors">
                                             <SelectValue placeholder="Saat seçiniz" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
-                                        {timeSlots.map((time) => (
-                                            <SelectItem key={time} value={time}>
-                                                {time}
-                                            </SelectItem>
-                                        ))}
+                                    <SelectContent className="rounded-xl">
+                                        {timeSlots.length > 0 ? (
+                                            timeSlots.map((time) => (
+                                                <SelectItem key={time} value={time} className="rounded-lg">
+                                                    {time}
+                                                </SelectItem>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 text-center text-sm text-muted-foreground">
+                                                Lütfen önce tarih seçiniz
+                                            </div>
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -268,11 +288,11 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     name="notes"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Notlar (Opsiyonel)</FormLabel>
+                            <FormLabel className="text-sm font-semibold text-foreground">Notlar (Opsiyonel)</FormLabel>
                             <FormControl>
                                 <Textarea
                                     placeholder="Belirtmek istediğiniz özel bir durum var mı?"
-                                    className="resize-none"
+                                    className="resize-none min-h-[100px] rounded-xl border-2 focus:border-primary transition-colors"
                                     {...field}
                                 />
                             </FormControl>
@@ -280,10 +300,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                    type="submit"
+                    className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-sage hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl"
+                    disabled={loading}
+                >
                     {loading ? (
                         <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                             Gönderiliyor...
                         </>
                     ) : (
