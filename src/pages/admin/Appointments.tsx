@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, updateDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import {
     Table,
     TableBody,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -100,6 +100,28 @@ export default function Appointments() {
         }
     };
 
+    const deleteAppointment = async (id: string, clientName: string) => {
+        if (!window.confirm(`${clientName} adlı danışanın randevusunu silmek istediğinize emin misiniz?`)) {
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, "appointments", id));
+            toast({
+                title: "Başarılı",
+                description: "Randevu silindi.",
+            });
+            fetchAppointments();
+        } catch (error) {
+            console.error("Error deleting appointment:", error);
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Randevu silinemedi.",
+            });
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pending":
@@ -163,29 +185,40 @@ export default function Appointments() {
                                         {appointment.notes}
                                     </TableCell>
                                     <TableCell>{getStatusBadge(appointment.status)}</TableCell>
-                                    <TableCell className="text-right space-x-2">
-                                        {appointment.status === "pending" && (
-                                            <>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                                    onClick={() => updateStatus(appointment.id, "approved")}
-                                                >
-                                                    <Check className="h-4 w-4" />
-                                                    <span className="sr-only">Onayla</span>
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    onClick={() => updateStatus(appointment.id, "rejected")}
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                    <span className="sr-only">Reddet</span>
-                                                </Button>
-                                            </>
-                                        )}
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            {appointment.status === "pending" && (
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                        onClick={() => updateStatus(appointment.id, "approved")}
+                                                    >
+                                                        <Check className="h-4 w-4" />
+                                                        <span className="sr-only">Onayla</span>
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        onClick={() => updateStatus(appointment.id, "rejected")}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                        <span className="sr-only">Reddet</span>
+                                                    </Button>
+                                                </>
+                                            )}
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 text-gray-600 hover:text-red-700 hover:bg-red-50"
+                                                onClick={() => deleteAppointment(appointment.id, appointment.client_name)}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                <span className="sr-only">Sil</span>
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))

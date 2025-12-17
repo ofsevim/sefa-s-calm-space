@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, getCountFromServer, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
@@ -11,6 +12,15 @@ import { motion } from "framer-motion";
 interface TodayAppointment {
     id: string;
     client_name: string;
+    appointment_date: string;
+    status: string;
+}
+
+interface PendingAppointment {
+    id: string;
+    client_name: string;
+    client_email: string;
+    client_phone: string;
     appointment_date: string;
     status: string;
 }
@@ -34,6 +44,7 @@ export default function Dashboard() {
         weeklyTrend: 0,
     });
     const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
+    const [pendingAppointments, setPendingAppointments] = useState<PendingAppointment[]>([]);
     const [recentMessages, setRecentMessages] = useState<RecentMessage[]>([]);
 
     useEffect(() => {
@@ -103,6 +114,20 @@ export default function Dashboard() {
                 const weeklyTrend = lastWeekCount > 0
                     ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
                     : thisWeekCount > 0 ? 100 : 0;
+
+                // Pending Appointments (for approval list)
+                const pendingDetailsQuery = query(
+                    appointmentsRef,
+                    where("status", "==", "pending"),
+                    orderBy("created_at", "desc"),
+                    limit(5)
+                );
+                const pendingDetailsSnapshot = await getDocs(pendingDetailsQuery);
+                const pendingAppts: PendingAppointment[] = [];
+                pendingDetailsSnapshot.forEach((doc) => {
+                    pendingAppts.push({ id: doc.id, ...doc.data() } as PendingAppointment);
+                });
+                setPendingAppointments(pendingAppts);
 
                 // Recent Messages
                 const recentMsgQuery = query(
@@ -254,6 +279,72 @@ export default function Dashboard() {
                     </Card>
                 </motion.div>
             </div>
+
+            {/* Pending Appointments - Onay Bekleyen Randevular */}
+            {pendingAppointments.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <Card className="border-yellow-200 bg-yellow-50/50 dark:bg-yellow-950/10">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Clock className="h-5 w-5 text-yellow-600" />
+                                Onay Bekleyen Randevular
+                            </CardTitle>
+                            <CardDescription>
+                                İşlem gerektiren {pendingAppointments.length} randevu
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3">
+                                {pendingAppointments.map((apt) => (
+                                    <div
+                                        key={apt.id}
+                                        className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-lg border border-yellow-100 dark:border-yellow-900"
+                                    >
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                                                <Users className="h-6 w-6 text-yellow-700 dark:text-yellow-300" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-semibold">{apt.client_name}</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {format(new Date(apt.appointment_date), "d MMMM yyyy, HH:mm", { locale: tr })}
+                                                </p>
+                                                <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
+                                                    <span>{apt.client_email}</span>
+                                                    <span>•</span>
+                                                    <span>{apt.client_phone}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                                            >
+                                                <Check className="h-4 w-4 mr-1" />
+                                                Onayla
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                                            >
+                                                <X className="h-4 w-4 mr-1" />
+                                                Reddet
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )}
 
             {/* Today's Appointments & Recent Messages */}
             <div className="grid gap-6 lg:grid-cols-2">
