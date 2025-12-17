@@ -191,7 +191,7 @@ export const contactInfo = [
         icon: MapPin,
         label: "Konum",
         value: "Onikişubat, Kahramanmaraş",
-        href: "https://www.google.com/maps/search/?api=1&query=Onikişubat,+Kahramanmaraş",
+        href: "https://www.google.com/maps/search/?api=1&query=37.589727,36.874777",
     },
 ];
 
