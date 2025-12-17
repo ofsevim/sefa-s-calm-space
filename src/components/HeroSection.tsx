@@ -122,7 +122,7 @@ export const HeroSection = () => {
           >
             <div className="relative w-full aspect-[4/5] max-w-md mx-auto">
               {/* Image Frame */}
-              <div className="relative h-full w-full rounded-[2rem] overflow-hidden">
+              <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl">
                 {loading ? (
                   <Skeleton className="w-full h-full" />
                 ) : (
