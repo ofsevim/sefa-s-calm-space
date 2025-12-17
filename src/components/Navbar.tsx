@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { BookingForm } from "@/components/BookingForm";
 
 const navLinks = [
   { name: "Anasayfa", href: "#hero" },
@@ -15,6 +23,7 @@ const navLinks = [
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -109,7 +118,7 @@ export const Navbar = () => {
             <Button
               variant="hero"
               size="default"
-              onClick={() => scrollToSection("#randevu")}
+              onClick={() => setIsDialogOpen(true)}
             >
               Randevu Al
             </Button>
@@ -162,7 +171,10 @@ export const Navbar = () => {
                   variant="hero"
                   size="lg"
                   className="w-full"
-                  onClick={() => scrollToSection("#randevu")}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsDialogOpen(true);
+                  }}
                 >
                   Randevu Al
                 </Button>
@@ -171,6 +183,19 @@ export const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Randevu Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Randevu Oluştur</DialogTitle>
+            <DialogDescription>
+              Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
+            </DialogDescription>
+          </DialogHeader>
+          <BookingForm onSuccess={() => setIsDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </motion.nav>
   );
 };
