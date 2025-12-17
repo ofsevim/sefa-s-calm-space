@@ -109,7 +109,7 @@ export const Navbar = () => {
             <Button
               variant="hero"
               size="default"
-              onClick={() => scrollToSection("#iletisim")}
+              onClick={() => scrollToSection("#randevu")}
             >
               Randevu Al
             </Button>
@@ -162,7 +162,7 @@ export const Navbar = () => {
                   variant="hero"
                   size="lg"
                   className="w-full"
-                  onClick={() => scrollToSection("#iletisim")}
+                  onClick={() => scrollToSection("#randevu")}
                 >
                   Randevu Al
                 </Button>

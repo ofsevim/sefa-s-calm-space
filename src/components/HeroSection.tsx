@@ -18,21 +18,10 @@ export const HeroSection = () => {
   return (
     <section
       id="hero"
-      className="min-h-screen pt-36 pb-16 flex items-start bg-gradient-hero relative overflow-hidden"
+      className="min-h-screen pt-24 pb-16 flex items-start bg-gradient-hero relative overflow-hidden"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-sage-light/30 blur-3xl"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-beige-warm/50 blur-3xl"
-        />
-
         {/* Subtle Wave Pattern */}
         <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -132,26 +121,18 @@ export const HeroSection = () => {
             className="hidden lg:block relative"
           >
             <div className="relative w-full aspect-[4/5] max-w-md mx-auto">
-              {/* Abstract Blob Background */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-sage-light/30 rounded-full blur-3xl animate-pulse" />
-
               {/* Image Frame */}
-              <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl bg-white/20 backdrop-blur-sm group">
+              <div className="relative h-full w-full rounded-[2rem] overflow-hidden">
                 {loading ? (
                   <Skeleton className="w-full h-full" />
                 ) : (
                   <img
                     src={content.heroImage}
                     alt={content.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-sage-dark/20 to-transparent" />
               </div>
-
-              {/* Decorative Elements */}
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-beige-warm/50 rounded-full blur-xl" />
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-teal-light/30 rounded-full blur-xl" />
             </div>
           </motion.div>
         </div>

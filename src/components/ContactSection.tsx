@@ -239,6 +239,7 @@ export const ContactSection = () => {
           >
             {/* Booking Widget */}
             <motion.div
+              id="randevu"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.9 }}
