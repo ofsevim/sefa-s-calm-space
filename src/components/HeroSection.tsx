@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useHeroContent } from "@/hooks/useContent";
 import { WaveSeparator } from "@/components/ui/WaveSeparator";
 import { useState } from "react";
-import heroPortrait from "@/assets/sefa-sevim.jpg";
+import heroPortrait from "@/assets/sefa-sevim.png";
 import {
   Dialog,
   DialogContent,
