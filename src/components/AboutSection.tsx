@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { credentials } from "@/data/content";
+import heroPortrait from "@/assets/sefa-sevim-about.png";
 import { useAboutContent } from "@/hooks/useContent";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -10,7 +11,7 @@ export const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { content } = useAboutContent();
-  const [aboutImage, setAboutImage] = useState<string>("");
+  const [aboutImage, setAboutImage] = useState<string>(heroPortrait);
 
   useEffect(() => {
     const loadImage = async () => {
@@ -44,21 +45,18 @@ export const AboutSection = () => {
                 className="relative rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/20"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-                {aboutImage ? (
-                  <img
-                    src={aboutImage}
-                    alt="Sefa Sevim - Psikolojik Danışman"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full aspect-[4/5] bg-gradient-to-br from-sage-light to-beige-warm flex items-center justify-center">
-                    <div className="text-center text-muted-foreground z-20">
-                      <div className="text-4xl mb-2">📸</div>
-                      <div className="text-sm">Fotoğraf yükleniyor...</div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
+                <img
+                  src={aboutImage}
+                  alt="Sefa Sevim - Psikolojik Danışman"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    // Fallback to local asset if Firebase image fails
+                    if (target.src !== heroPortrait) {
+                      target.src = heroPortrait;
+                    }
+                  }}
+                />
               </motion.div>
 
               {/* Experience badge */}
