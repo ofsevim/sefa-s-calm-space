@@ -26,7 +26,7 @@ const defaultHeroContent: HeroContent = {
         "Herkes zaman zaman desteğe ihtiyaç duyar. İç dünyanızdaki karmaşayı netliğe kavuşturmak ve daha huzurlu bir zihne ulaşmak sandığınızdan daha yakın olabilir.",
     primaryButtonText: "Randevu Oluştur",
     secondaryButtonText: "Hizmetleri İncele",
-    heroImage: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=1000&auto=format&fit=crop",
+    heroImage: "",
 };
 
 const defaultAboutContent: AboutContent = {

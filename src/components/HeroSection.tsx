@@ -135,12 +135,19 @@ export const HeroSection = () => {
               <div className="relative h-full w-full rounded-[2rem] overflow-hidden border-8 border-white/40 shadow-2xl">
                 {loading ? (
                   <Skeleton className="w-full h-full" />
-                ) : (
+                ) : content.heroImage ? (
                   <img
                     src={content.heroImage}
                     alt={content.title}
                     className="w-full h-full object-cover"
                   />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-sage-light to-beige-warm flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <div className="text-4xl mb-2">📸</div>
+                      <div className="text-sm">Fotoğraf yükleniyor...</div>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
