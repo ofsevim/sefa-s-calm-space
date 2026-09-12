@@ -22,16 +22,7 @@ export const AboutSection = () => {
         if (docSnap.exists() && docSnap.data().aboutImage) {
           const rawUrl = docSnap.data().aboutImage as string;
           const url = parseImageUrl(rawUrl);
-          // Firebase Storage URL ise önce erişilebilirliği kontrol et
-          if (url.includes("firebasestorage.googleapis.com")) {
-            try {
-              const r = await fetch(url, { method: "HEAD" });
-              if (r.ok) setAboutImage(url);
-              // else: yerel asset'te kal
-            } catch {
-              // ağ hatası → yerel asset
-            }
-          } else if (url) {
+          if (url) {
             setAboutImage(url);
           }
         }

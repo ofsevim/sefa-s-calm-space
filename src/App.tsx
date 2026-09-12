@@ -22,8 +22,9 @@ const MediaManagement = lazy(() => import("./pages/admin/MediaManagement"));
 const FAQManagement = lazy(() => import("./pages/admin/FAQManagement"));
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center" role="status" aria-live="polite">
-    Yükleniyor...
+  <div className="min-h-screen flex flex-col items-center justify-center bg-background" role="status" aria-live="polite">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+    <p className="text-sm text-muted-foreground font-medium">Sayfa yükleniyor...</p>
   </div>
 );
 

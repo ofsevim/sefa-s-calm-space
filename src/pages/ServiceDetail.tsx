@@ -23,8 +23,9 @@ interface Service {
 export default function ServiceDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const [service, setService] = useState<Service | null>(null);
-    const [loading, setLoading] = useState(true);
+    const initialService = staticServices.find((item) => slugify(item.title) === slug) as Service | undefined;
+    const [service, setService] = useState<Service | null>(initialService ?? null);
+    const [loading, setLoading] = useState(!initialService);
     const content = getServiceContent(slug);
 
     useEffect(() => {
@@ -52,7 +53,12 @@ export default function ServiceDetail() {
     }, [slug]);
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center bg-background" role="status">Yükleniyor...</div>;
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background" role="status">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+                <p className="text-sm text-muted-foreground font-medium">Hizmet bilgileri yükleniyor...</p>
+            </div>
+        );
     }
 
     if (!service) {

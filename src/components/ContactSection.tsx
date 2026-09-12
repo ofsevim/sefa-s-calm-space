@@ -34,13 +34,16 @@ export const ContactSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch General Settings (Contact Info)
         const generalRef = doc(db, "settings", "general");
-        const generalSnap = await getDoc(generalRef);
+        const hoursRef = doc(db, "settings", "workingHours");
+
+        const [generalSnap, hoursSnap] = await Promise.all([
+          getDoc(generalRef),
+          getDoc(hoursRef),
+        ]);
+
         if (generalSnap.exists()) {
           const data = generalSnap.data();
-          // Update contact info array with fetched data
-          // Update contact info array with fetched data
           const updatedContact = contactInfo
             .map(item => {
               if (item.label === "E-posta" && data.email) return { ...item, value: data.email, href: `mailto:${data.email}` };
@@ -51,9 +54,6 @@ export const ContactSection = () => {
           setContactData(updatedContact);
         }
 
-        // Fetch Working Hours
-        const hoursRef = doc(db, "settings", "workingHours");
-        const hoursSnap = await getDoc(hoursRef);
         if (hoursSnap.exists() && hoursSnap.data().items) {
           setHoursData(hoursSnap.data().items);
         }

@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
     id: string;
@@ -96,16 +97,12 @@ export default function Messages() {
         }
     };
 
-    if (loading) {
-        return <div className="p-8 text-center">Yükleniyor...</div>;
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold tracking-tight">Mesajlar</h1>
-                <div className="text-muted-foreground">
-                    Toplam {messages.length} mesaj
+                <div className="text-muted-foreground text-sm">
+                    {loading && messages.length === 0 ? "Yükleniyor..." : `Toplam ${messages.length} mesaj`}
                 </div>
             </div>
 
@@ -113,16 +110,27 @@ export default function Messages() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Durum</TableHead>
-                            <TableHead>Tarih</TableHead>
-                            <TableHead>Gönderen</TableHead>
-                            <TableHead>İletişim</TableHead>
-                            <TableHead className="w-[40%]">Mesaj</TableHead>
-                            <TableHead className="text-right">İşlemler</TableHead>
+                            <TableHead className="w-12">Durum</TableHead>
+                            <TableHead className="w-36">Tarih</TableHead>
+                            <TableHead className="w-40">Gönderen</TableHead>
+                            <TableHead className="w-48">İletişim</TableHead>
+                            <TableHead>Mesaj</TableHead>
+                            <TableHead className="text-right w-16">İşlemler</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {messages.length === 0 ? (
+                        {loading && messages.length === 0 ? (
+                            [1, 2, 3, 4].map((i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                                    <TableCell className="text-right"><Skeleton className="h-6 w-6 ml-auto" /></TableCell>
+                                </TableRow>
+                            ))
+                        ) : messages.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                                     Henüz hiç mesaj yok.

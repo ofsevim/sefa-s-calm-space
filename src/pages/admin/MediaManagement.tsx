@@ -40,18 +40,21 @@ export default function MediaManagement() {
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            // Load current about image
+            // Load current about and hero images in parallel
             const docRef = doc(db, "settings", "media");
-            const docSnap = await getDoc(docRef);
+            const heroDocRef = doc(db, "content", "hero");
+
+            const [docSnap, heroDocSnap] = await Promise.all([
+                getDoc(docRef),
+                getDoc(heroDocRef),
+            ]);
+
             if (docSnap.exists() && docSnap.data().aboutImage) {
                 setAboutImage(docSnap.data().aboutImage);
             } else {
                 setAboutImage("");
             }
 
-            // Load current hero image
-            const heroDocRef = doc(db, "content", "hero");
-            const heroDocSnap = await getDoc(heroDocRef);
             if (heroDocSnap.exists() && heroDocSnap.data().heroImage) {
                 setHeroImage(heroDocSnap.data().heroImage);
             } else {

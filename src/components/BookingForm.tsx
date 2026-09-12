@@ -65,20 +65,30 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [whatsappContact, setWhatsappContact] = useState<string>("");
     const { toast } = useToast();
 
-    // Fetch contact phone for WhatsApp direct message option
+    // Fetch contact phone & working hours once on mount in parallel
     useEffect(() => {
-        const fetchContactPhone = async () => {
+        const fetchInitialSettings = async () => {
             try {
                 const generalRef = doc(db, "settings", "general");
-                const generalSnap = await getDoc(generalRef);
+                const hoursRef = doc(db, "settings", "workingHours");
+                const [generalSnap, hoursSnap] = await Promise.all([
+                    getDoc(generalRef),
+                    getDoc(hoursRef),
+                ]);
+
                 if (generalSnap.exists()) {
                     setWhatsappContact(generalSnap.data().whatsappNumber || generalSnap.data().phone || "");
                 }
+
+                const config = hoursSnap.exists() && Array.isArray(hoursSnap.data().items)
+                    ? (hoursSnap.data().items as WorkingHour[])
+                    : defaultWorkingHours;
+                setWorkingHoursConfig(config);
             } catch {
-                // Fallback to default
+                setWorkingHoursConfig(defaultWorkingHours);
             }
         };
-        fetchContactPhone();
+        fetchInitialSettings();
     }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -92,33 +102,20 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
         },
     });
 
-    // Load working hours and update time slots when date changes
+    // Update time slots instantly from memory when date changes
     useEffect(() => {
-        const loadWorkingHours = async () => {
-            if (!selectedDate) return;
+        if (!selectedDate) {
+            setTimeSlots([]);
+            return;
+        }
 
-            try {
-                const docRef = doc(db, "settings", "workingHours");
-                const docSnap = await getDoc(docRef);
-
-                const config = docSnap.exists() && Array.isArray(docSnap.data().items)
-                    ? docSnap.data().items as WorkingHour[]
-                    : defaultWorkingHours;
-                setWorkingHoursConfig(config);
-                const slots = generateTimeSlots(config, selectedDate);
-                setTimeSlots(slots);
-                if (slots.length === 0) {
-                    toast({ variant: "destructive", title: "Kapalı Gün", description: "Seçtiğiniz gün randevu alınamamaktadır." });
-                }
-            } catch (error) {
-                console.error("Error loading working hours:", error);
-                setTimeSlots([]);
-                toast({ variant: "destructive", title: "Saatler yüklenemedi", description: "Lütfen daha sonra tekrar deneyin." });
-            }
-        };
-
-        loadWorkingHours();
-    }, [selectedDate, toast]);
+        const config = workingHoursConfig.length > 0 ? workingHoursConfig : defaultWorkingHours;
+        const slots = generateTimeSlots(config, selectedDate);
+        setTimeSlots(slots);
+        if (slots.length === 0) {
+            toast({ variant: "destructive", title: "Kapalı Gün", description: "Seçtiğiniz gün randevu alınamamaktadır." });
+        }
+    }, [selectedDate, workingHoursConfig, toast]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);

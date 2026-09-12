@@ -11,6 +11,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus, Trash, Save, Bell, Send, MessageCircle, HelpCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { parseTimeRange, type WorkingHour } from "@/lib/booking";
 import {
     getNotificationSettings,
@@ -63,13 +64,21 @@ export default function Settings() {
     useEffect(() => {
         const fetchAllSettings = async () => {
             try {
-                // Fetch Notification Settings
-                const notifSettings = await getNotificationSettings();
+                const generalRef = doc(db, "settings", "general");
+                const servicesRef = doc(db, "settings", "services");
+                const hoursRef = doc(db, "settings", "workingHours");
+
+                const [notifSettings, generalSnap, servicesSnap, hoursSnap] = await Promise.all([
+                    getNotificationSettings(),
+                    getDoc(generalRef),
+                    getDoc(servicesRef),
+                    getDoc(hoursRef),
+                ]);
+
+                // Notification Settings
                 setNotificationData(notifSettings);
 
-                // Fetch General Settings
-                const generalRef = doc(db, "settings", "general");
-                const generalSnap = await getDoc(generalRef);
+                // General Settings
                 if (generalSnap.exists()) {
                     setGeneralData(generalSnap.data() as typeof generalData);
                 } else {
@@ -80,13 +89,10 @@ export default function Settings() {
                     });
                 }
 
-                // Fetch Services
-                const servicesRef = doc(db, "settings", "services");
-                const servicesSnap = await getDoc(servicesRef);
+                // Services
                 if (servicesSnap.exists() && servicesSnap.data().items) {
                     setServices(servicesSnap.data().items);
                 } else {
-                    // Default services if empty - save them to Firestore
                     const defaultServices = [
                         { title: "Bireysel Danışmanlık", description: "Kişisel gelişim, özgüven, ilişki sorunları ve yaşam zorlukları için birebir destek.", icon: "User", color: "bg-sage-light", iconColor: "text-sage-dark" },
                         { title: "Ergen Danışmanlığı", description: "Ergenlik döneminin zorluklarında gençlere ve ailelerine profesyonel rehberlik.", icon: "Users", color: "bg-beige-warm", iconColor: "text-secondary" },
@@ -95,13 +101,10 @@ export default function Settings() {
                         { title: "Online Terapi", description: "Evinizin konforunda, güvenli ve etkili online psikolojik danışmanlık hizmeti.", icon: "Monitor", color: "bg-sage-light", iconColor: "text-sage-dark" },
                     ];
                     setServices(defaultServices);
-                    // Save to Firestore
-                    await setDoc(servicesRef, { items: defaultServices });
+                    void setDoc(servicesRef, { items: defaultServices });
                 }
 
-                // Fetch Working Hours
-                const hoursRef = doc(db, "settings", "workingHours");
-                const hoursSnap = await getDoc(hoursRef);
+                // Working Hours
                 if (hoursSnap.exists() && hoursSnap.data().items) {
                     setWorkingHours(hoursSnap.data().items);
                 } else {
@@ -248,7 +251,23 @@ export default function Settings() {
     };
 
     if (fetching) {
-        return <div className="flex items-center justify-center h-64">Yükleniyor...</div>;
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-9 w-32" />
+                <Skeleton className="h-12 w-full rounded-lg" />
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-48 mb-2" />
+                        <Skeleton className="h-4 w-72" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-20 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
 
     return (

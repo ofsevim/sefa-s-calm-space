@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Appointment = {
     id: string;
@@ -68,11 +69,15 @@ export default function Appointments() {
             const appointmentRef = doc(db, "appointments", id);
             await updateDoc(appointmentRef, { status });
 
+            // Optimistic update
+            setAppointments((current) =>
+                current.map((apt) => (apt.id === id ? { ...apt, status } : apt))
+            );
+
             toast({
                 title: "Başarılı",
                 description: "Randevu durumu güncellendi.",
             });
-            await fetchAppointments(true);
         } catch (error) {
             console.error("Error updating status:", error);
             toast({
@@ -90,11 +95,14 @@ export default function Appointments() {
 
         try {
             await deleteDoc(doc(db, "appointments", id));
+
+            // Optimistic update
+            setAppointments((current) => current.filter((apt) => apt.id !== id));
+
             toast({
                 title: "Başarılı",
                 description: "Randevu silindi.",
             });
-            await fetchAppointments(true);
         } catch (error) {
             console.error("Error deleting appointment:", error);
             toast({
@@ -139,12 +147,17 @@ export default function Appointments() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {loading ? (
-                            <TableRow>
-                                <TableCell colSpan={6} className="text-center py-10">
-                                    Yükleniyor...
-                                </TableCell>
-                            </TableRow>
+                        {loading && appointments.length === 0 ? (
+                            [1, 2, 3, 4].map((i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                    <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                                    <TableCell className="text-right"><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                                </TableRow>
+                            ))
                         ) : appointments.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="text-center py-10">

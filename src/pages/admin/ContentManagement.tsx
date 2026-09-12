@@ -79,14 +79,14 @@ export default function ContentManagement() {
             try {
                 setFetching(true);
 
-                // Fetch Hero Content
-                const heroDoc = await getDoc(doc(db, "content", "hero"));
+                // Fetch Hero and About Content in parallel
+                const [heroDoc, aboutDoc] = await Promise.all([
+                    getDoc(doc(db, "content", "hero")),
+                    getDoc(doc(db, "content", "about")),
+                ]);
                 if (heroDoc.exists()) {
                     setHeroContent(heroDoc.data() as HeroContent);
                 }
-
-                // Fetch About Content
-                const aboutDoc = await getDoc(doc(db, "content", "about"));
                 if (aboutDoc.exists()) {
                     setAboutContent(aboutDoc.data() as AboutContent);
                 }
@@ -135,7 +135,7 @@ export default function ContentManagement() {
 
     if (fetching) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center h-64">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
