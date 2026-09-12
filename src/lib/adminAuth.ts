@@ -1,9 +1,28 @@
 import { getIdTokenResult, type User } from "firebase/auth";
 
-const ADMIN_EMAILS = new Set(["sefa.sevim@outlook.com"]);
+const DEFAULT_ADMIN_EMAILS = [
+    "sefasevim46@gmail.com",
+    "omersvm0606@gmail.com",
+    "sefa.sevim@outlook.com",
+];
 
 export async function isAdminUser(user: User, forceRefresh = false): Promise<boolean> {
-  const token = await getIdTokenResult(user, forceRefresh);
-  return token.claims.admin === true || ADMIN_EMAILS.has(user.email?.toLocaleLowerCase("tr-TR") ?? "");
-}
+    if (!user || !user.email) return false;
 
+    try {
+        const token = await getIdTokenResult(user, forceRefresh);
+        if (token.claims.admin === true) return true;
+    } catch (err) {
+        console.warn("Token claims okunamadı:", err);
+    }
+
+    const normalizedEmail = user.email.trim().toLowerCase();
+
+    const envEmails = ((import.meta as any).env?.VITE_ADMIN_EMAILS || "")
+        .split(",")
+        .map((e: string) => e.trim().toLowerCase())
+        .filter(Boolean);
+
+    const allowedEmails = new Set([...DEFAULT_ADMIN_EMAILS, ...envEmails]);
+    return allowedEmails.has(normalizedEmail);
+}
