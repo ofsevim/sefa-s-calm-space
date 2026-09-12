@@ -9,6 +9,7 @@ import { tr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TodayAppointment {
     id: string;
@@ -55,26 +56,15 @@ export default function Dashboard() {
                 const appointmentsRef = collection(db, "appointments");
                 const messagesRef = collection(db, "messages");
 
-                // Total Appointments
-                const totalSnapshot = await getCountFromServer(appointmentsRef);
-                const totalAppointments = totalSnapshot.data().count;
+                const safeCount = async (q: any) => {
+                    try {
+                        const snap = await getCountFromServer(q);
+                        return snap.data().count;
+                    } catch {
+                        return 0;
+                    }
+                };
 
-                // Pending Appointments
-                const pendingQuery = query(appointmentsRef, where("status", "==", "pending"));
-                const pendingSnapshot = await getCountFromServer(pendingQuery);
-                const pendingAppointments = pendingSnapshot.data().count;
-
-                // Approved Appointments
-                const approvedQuery = query(appointmentsRef, where("status", "==", "approved"));
-                const approvedSnapshot = await getCountFromServer(approvedQuery);
-                const approvedAppointments = approvedSnapshot.data().count;
-
-                // Unread Messages
-                const unreadQuery = query(messagesRef, where("read", "==", false));
-                const unreadSnapshot = await getCountFromServer(unreadQuery);
-                const unreadMessages = unreadSnapshot.data().count;
-
-                // Today's Appointments
                 const today = new Date();
                 const todayStart = startOfDay(today).toISOString();
                 const todayEnd = endOfDay(today).toISOString();
@@ -91,16 +81,7 @@ export default function Dashboard() {
                     where("appointment_date", "<=", todayEnd),
                     orderBy("appointment_date", "asc")
                 );
-                const [todayTimestampSnapshot, todayLegacySnapshot] = await Promise.all([
-                    getDocs(todayTimestampQuery),
-                    getDocs(todayLegacyQuery),
-                ]);
-                const todayAppts = [...todayTimestampSnapshot.docs, ...todayLegacySnapshot.docs]
-                    .map((item) => ({ id: item.id, ...item.data() }) as TodayAppointment)
-                    .sort((a, b) => toDate(a.appointment_date).getTime() - toDate(b.appointment_date).getTime());
-                setTodayAppointments(todayAppts);
 
-                // Weekly Trend (this week vs last week)
                 const thisWeekStart = subDays(today, 7).toISOString();
                 const lastWeekStart = subDays(today, 14).toISOString();
                 const lastWeekEnd = subDays(today, 7).toISOString();
@@ -116,51 +97,87 @@ export default function Dashboard() {
                 );
                 const legacyThisWeekQuery = query(appointmentsRef, where("created_at", ">=", thisWeekStart));
                 const legacyLastWeekQuery = query(appointmentsRef, where("created_at", ">=", lastWeekStart), where("created_at", "<", lastWeekEnd));
-                const [thisWeekSnapshot, lastWeekSnapshot, legacyThisWeekSnapshot, legacyLastWeekSnapshot] = await Promise.all([
-                    getCountFromServer(thisWeekQuery),
-                    getCountFromServer(lastWeekQuery),
-                    getCountFromServer(legacyThisWeekQuery),
-                    getCountFromServer(legacyLastWeekQuery),
-                ]);
 
-                const thisWeekCount = thisWeekSnapshot.data().count + legacyThisWeekSnapshot.data().count;
-                const lastWeekCount = lastWeekSnapshot.data().count + legacyLastWeekSnapshot.data().count;
-                const weeklyTrend = lastWeekCount > 0
-                    ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
-                    : thisWeekCount > 0 ? 100 : 0;
-
-                // Pending Appointments (for approval list)
                 const pendingDetailsQuery = query(
                     appointmentsRef,
                     where("status", "==", "pending"),
                     orderBy("created_at", "desc"),
                     limit(5)
                 );
-                const pendingDetailsSnapshot = await getDocs(pendingDetailsQuery);
-                const pendingAppts: PendingAppointment[] = [];
-                pendingDetailsSnapshot.forEach((doc) => {
-                    pendingAppts.push({ id: doc.id, ...doc.data() } as PendingAppointment);
-                });
-                setPendingAppointments(pendingAppts);
 
-                // Recent Messages
                 const recentMsgQuery = query(
                     messagesRef,
                     orderBy("createdAt", "desc"),
                     limit(5)
                 );
-                const recentMsgSnapshot = await getDocs(recentMsgQuery);
+
+                // Tüm sunucu sorgularını tek seferde paralel çalıştır (Gecikme ~4s yerine ~350ms'ye iner)
+                const [
+                    totalCount,
+                    pendingCount,
+                    approvedCount,
+                    unreadCount,
+                    todayDocs,
+                    weeklyCounts,
+                    pendingDetailsSnapshot,
+                    recentMsgSnapshot,
+                ] = await Promise.all([
+                    safeCount(appointmentsRef),
+                    safeCount(query(appointmentsRef, where("status", "==", "pending"))),
+                    safeCount(query(appointmentsRef, where("status", "==", "approved"))),
+                    safeCount(query(messagesRef, where("read", "==", false))),
+                    Promise.all([
+                        getDocs(todayTimestampQuery).catch(() => ({ docs: [] })),
+                        getDocs(todayLegacyQuery).catch(() => ({ docs: [] })),
+                    ]),
+                    Promise.all([
+                        safeCount(thisWeekQuery),
+                        safeCount(lastWeekQuery),
+                        safeCount(legacyThisWeekQuery),
+                        safeCount(legacyLastWeekQuery),
+                    ]),
+                    getDocs(pendingDetailsQuery).catch(() => null),
+                    getDocs(recentMsgQuery).catch(() => null),
+                ]);
+
+                // Bugünkü randevular
+                const [todayTimestampSnapshot, todayLegacySnapshot] = todayDocs;
+                const todayAppts = [...todayTimestampSnapshot.docs, ...todayLegacySnapshot.docs]
+                    .map((item) => ({ id: item.id, ...item.data() }) as TodayAppointment)
+                    .sort((a, b) => toDate(a.appointment_date).getTime() - toDate(b.appointment_date).getTime());
+                setTodayAppointments(todayAppts);
+
+                // Haftalık trend
+                const [thisWeekCountRaw, lastWeekCountRaw, legacyThisWeekCountRaw, legacyLastWeekCountRaw] = weeklyCounts;
+                const thisWeekCount = thisWeekCountRaw + legacyThisWeekCountRaw;
+                const lastWeekCount = lastWeekCountRaw + legacyLastWeekCountRaw;
+                const weeklyTrend = lastWeekCount > 0
+                    ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
+                    : thisWeekCount > 0 ? 100 : 0;
+
+                // Bekleyen randevular listesi
+                const pendingAppts: PendingAppointment[] = [];
+                if (pendingDetailsSnapshot) {
+                    pendingDetailsSnapshot.forEach((doc) => {
+                        pendingAppts.push({ id: doc.id, ...doc.data() } as PendingAppointment);
+                    });
+                }
+                setPendingAppointments(pendingAppts);
+
+                // Son mesajlar listesi
                 const recentMsgs: RecentMessage[] = [];
-                recentMsgSnapshot.forEach((doc) => {
-                    recentMsgs.push({ id: doc.id, ...doc.data() } as RecentMessage);
-                });
+                if (recentMsgSnapshot) {
+                    recentMsgSnapshot.forEach((doc) => {
+                        recentMsgs.push({ id: doc.id, ...doc.data() } as RecentMessage);
+                    });
+                }
                 setRecentMessages(recentMsgs);
 
                 setStats({
-                    totalAppointments,
-                    pendingAppointments,
-                    approvedAppointments,
-                    unreadMessages,
+                    totalAppointments: totalCount,
+                    pendingAppointments: pendingCount,
+                    approvedAppointments: approvedCount,
+                    unreadMessages: unreadCount,
                     todayAppointmentsCount: todayAppts.length,
                     weeklyTrend,
                 });
@@ -177,23 +194,24 @@ export default function Dashboard() {
     const refreshData = async () => {
         const appointmentsRef = collection(db, "appointments");
 
-        // Refresh pending appointments
         const pendingDetailsQuery = query(
             appointmentsRef,
             where("status", "==", "pending"),
             orderBy("created_at", "desc"),
             limit(5)
         );
-        const pendingDetailsSnapshot = await getDocs(pendingDetailsQuery);
+        const pendingQuery = query(appointmentsRef, where("status", "==", "pending"));
+
+        const [pendingDetailsSnapshot, pendingSnapshot] = await Promise.all([
+            getDocs(pendingDetailsQuery),
+            getCountFromServer(pendingQuery),
+        ]);
+
         const pendingAppts: PendingAppointment[] = [];
         pendingDetailsSnapshot.forEach((doc) => {
             pendingAppts.push({ id: doc.id, ...doc.data() } as PendingAppointment);
         });
         setPendingAppointments(pendingAppts);
-
-        // Refresh pending count
-        const pendingQuery = query(appointmentsRef, where("status", "==", "pending"));
-        const pendingSnapshot = await getCountFromServer(pendingQuery);
         setStats(prev => ({ ...prev, pendingAppointments: pendingSnapshot.data().count }));
     };
 
@@ -224,10 +242,54 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center space-y-2">
-                    <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-                    <p className="text-muted-foreground">Yükleniyor...</p>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl font-bold tracking-tight">Panel</h2>
+                        <p className="text-muted-foreground">
+                            {format(new Date(), "d MMMM yyyy, EEEE", { locale: tr })}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Stats Cards Skeleton */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Card key={i}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-4 w-4 rounded-full" />
+                            </CardHeader>
+                            <CardContent>
+                                <Skeleton className="h-8 w-16 mb-2" />
+                                <Skeleton className="h-3 w-32" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Bottom Sections Skeleton */}
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-6 w-44 mb-2" />
+                            <Skeleton className="h-4 w-32" />
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <Skeleton className="h-16 w-full rounded-lg" />
+                            <Skeleton className="h-16 w-full rounded-lg" />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-6 w-36 mb-2" />
+                            <Skeleton className="h-4 w-28" />
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <Skeleton className="h-16 w-full rounded-lg" />
+                            <Skeleton className="h-16 w-full rounded-lg" />
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         );

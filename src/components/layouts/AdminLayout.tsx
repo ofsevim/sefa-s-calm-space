@@ -29,7 +29,12 @@ export default function AdminLayout() {
     }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-screen">Yükleniyor...</div>;
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background text-muted-foreground">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+                <p className="text-sm font-medium">Yönetim paneli yükleniyor...</p>
+            </div>
+        );
     }
 
     if (!user) {
