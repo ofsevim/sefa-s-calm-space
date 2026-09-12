@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BookingForm } from "@/components/BookingForm";
+import { LazyBookingForm } from "@/components/LazyBookingForm";
 
 const navLinks = [
   { name: "Anasayfa", href: "#hero" },
@@ -198,7 +198,7 @@ export const Navbar = () => {
               Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
             </DialogDescription>
           </DialogHeader>
-          <BookingForm onSuccess={() => setIsDialogOpen(false)} />
+          <LazyBookingForm onSuccess={() => setIsDialogOpen(false)} />
         </DialogContent>
       </Dialog>
     </motion.nav>

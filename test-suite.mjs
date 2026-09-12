@@ -3,7 +3,7 @@ import { parseImageUrl, resolveImageUrl, isImgbbViewerUrl, isValidUrl } from "./
 import { slugify } from "./src/lib/slugify.ts";
 import { services } from "./src/data/content.ts";
 import { combineAppointmentDate, generateTimeSlots, getAppointmentDocumentId, parseTimeRange } from "./src/lib/booking.ts";
-import { formatWhatsappLink, sendTelegramNotification } from "./src/lib/notificationService.ts";
+import { formatWhatsappLink } from "./src/lib/whatsapp.ts";
 
 let passedCount = 0;
 let totalCount = 0;
@@ -178,18 +178,6 @@ runTest("4.2 formatWhatsappLink uluslararası format (+90 532...)", () => {
 runTest("4.3 formatWhatsappLink başında 0 olmayan 10 haneli numara", () => {
     const link = formatWhatsappLink("5321112233", "Danışmanlık");
     assert.strictEqual(link, "https://wa.me/905321112233?text=Dan%C4%B1%C5%9Fmanl%C4%B1k");
-});
-
-await runAsyncTest("4.4 sendTelegramNotification kapalıyken güvenli hata dönmesi", async () => {
-    const res = await sendTelegramNotification("Test", { telegramEnabled: false });
-    assert.strictEqual(res.success, false);
-    assert.strictEqual(res.error, "Telegram bildirimleri etkin değil.");
-});
-
-await runAsyncTest("4.5 sendTelegramNotification token veya chatId eksikken hata dönmesi", async () => {
-    const res = await sendTelegramNotification("Test", { telegramEnabled: true, telegramBotToken: "", telegramChatId: "" });
-    assert.strictEqual(res.success, false);
-    assert.ok(res.error.includes("eksik"));
 });
 
 console.log("\n==========================================");

@@ -134,7 +134,7 @@ export default function Settings() {
     const saveGeneral = async () => {
         setLoading(true);
         try {
-            await setDoc(doc(db, "settings", "general"), generalData);
+            await setDoc(doc(db, "settings", "general"), generalData, { merge: true });
             toast({ title: "Başarılı", description: "İletişim bilgileri güncellendi." });
         } catch (error) {
             toast({ variant: "destructive", title: "Hata", description: "Kaydedilemedi." });

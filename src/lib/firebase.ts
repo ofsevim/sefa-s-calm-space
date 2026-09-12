@@ -8,12 +8,12 @@ import { getFunctions } from "firebase/functions";
 const env = import.meta.env;
 
 const firebaseConfig = {
-    apiKey: env.VITE_FIREBASE_API_KEY || "mock-api-key",
-    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || "sefasevim-9d8f8.firebaseapp.com",
-    projectId: env.VITE_FIREBASE_PROJECT_ID || "sefasevim-9d8f8",
-    storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || "sefasevim-9d8f8.appspot.com",
-    messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || "364128165772",
-    appId: env.VITE_FIREBASE_APP_ID || "1:364128165772:web:abcdef",
+    apiKey: env.VITE_FIREBASE_API_KEY,
+    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: env.VITE_FIREBASE_APP_ID,
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);

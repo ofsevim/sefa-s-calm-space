@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Helmet } from "react-helmet-async";
+import { FirebaseError } from "firebase/app";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -41,14 +42,15 @@ export default function Login() {
                 description: "Yönetim paneline yönlendiriliyorsunuz.",
             });
             navigate("/admin/dashboard");
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Giriş hatası:", error);
             let description = "E-posta veya şifre hatalı.";
-            if (error?.code === "auth/too-many-requests") {
+            const errorCode = error instanceof FirebaseError ? error.code : "";
+            if (errorCode === "auth/too-many-requests") {
                 description = "Çok fazla başarısız deneme yapıldı. Lütfen biraz bekleyin veya şifrenizi sıfırlayın.";
-            } else if (error?.code === "auth/user-disabled") {
+            } else if (errorCode === "auth/user-disabled") {
                 description = "Bu kullanıcı hesabı devre dışı bırakılmış.";
-            } else if (error?.code === "auth/network-request-failed") {
+            } else if (errorCode === "auth/network-request-failed") {
                 description = "İnternet bağlantınızı kontrol ediniz.";
             }
 

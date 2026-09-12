@@ -10,7 +10,7 @@ Sefa Sevim için hazırlanmış psikolojik danışmanlık sitesi ve Firebase tab
 
 ## Yerel kurulum
 
-Node.js 20 veya üzeri ve npm kullanın.
+Node.js 20.19 veya üzeri (ya da 22.12+) ve npm kullanın.
 
 ```bash
 npm ci
@@ -30,7 +30,7 @@ Bu komut sırasıyla TypeScript, ESLint, birim testleri ve üretim derlemesini �
 
 ## Firebase kurulumu
 
-Proje kimliği `.firebaserc` içinde `sefasevim-9d8f8` olarak ayarlıdır. Güvenlik kuralları yalnızca `admin: true` custom claim'ine veya geçiş dönemi için `sefa.sevim@outlook.com` hesabına yönetici yetkisi verir.
+Proje kimliği `.firebaserc` içinde `sefasevim-9d8f8` olarak ayarlıdır. Güvenlik kuralları `admin: true` custom claim'ine ve geçiş dönemi için kodda tanımlı yönetici e-posta listesine yetki verir. Kalıcı kullanımda custom claim tercih edilmeli, e-posta listesi istemci, Functions ve kurallarda birlikte güncellenmelidir.
 
 ```bash
 npx firebase-tools login
@@ -47,6 +47,8 @@ npm --prefix functions install
 npx firebase-tools deploy --only functions
 ```
 
+Cloud Functions ve Secret Manager dağıtımı için Firebase projesinde faturalandırmanın (Blaze planı) etkin olması gerekir.
+
 Ardından yönetim panelinde **Ayarlar → Bildirimler** bölümünden bildirimleri etkinleştirin. Cloud Functions yeni randevu ve mesaj belgelerini dinler.
 
 ## Veri modeli
@@ -62,4 +64,3 @@ Yeni herkese açık yazmalar Firestore Rules tarafından alan, tür, boyut, tari
 ## Yayın
 
 `npm run build` çıktısı `dist/` klasörüne yazılır. SPA yönlendirmesi `public/_redirects`, güvenlik başlıkları `public/_headers`, arama motoru rotaları ise `public/sitemap.xml` tarafından sağlanır.
-

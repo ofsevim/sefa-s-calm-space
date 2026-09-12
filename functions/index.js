@@ -9,7 +9,7 @@ initializeApp();
 const telegramBotToken = defineSecret("TELEGRAM_BOT_TOKEN");
 const telegramChatId = defineSecret("TELEGRAM_CHAT_ID");
 const region = "europe-west1";
-const adminEmails = new Set(["sefa.sevim@outlook.com"]);
+const adminEmails = new Set(["sefa.sevim@outlook.com", "sefasevim46@gmail.com", "omersvm0606@gmail.com"]);
 
 function escapeHtml(value) {
   return String(value ?? "")

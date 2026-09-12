@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BookingForm } from "@/components/BookingForm";
+import { LazyBookingForm } from "@/components/LazyBookingForm";
 import { parseImageUrl } from "@/lib/imageUtils";
 
 export const HeroSection = () => {
@@ -142,7 +142,6 @@ export const HeroSection = () => {
                     alt={content.title}
                     width={511}
                     height={601}
-                    fetchPriority="high"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.currentTarget;
@@ -168,7 +167,7 @@ export const HeroSection = () => {
               Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
             </DialogDescription>
           </DialogHeader>
-          <BookingForm onSuccess={() => setIsDialogOpen(false)} />
+          <LazyBookingForm onSuccess={() => setIsDialogOpen(false)} />
         </DialogContent>
       </Dialog>
     </section>

@@ -124,14 +124,6 @@ export const steps = [
             "Belirlenen saatte linke tıklayarak seansınıza başlayın. Bu kadar basit!",
     },
 ];
-
-
-// Wait, benefits had 3 items in OnlineTherapySection.tsx.
-// 1. Globe
-// 2. Home
-// 3. Lock
-// I accidentally added a 4th one or duplicated. Let me correct.
-
 export const onlineTherapyBenefits = [
     {
         icon: Globe,

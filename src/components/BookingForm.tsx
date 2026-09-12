@@ -33,7 +33,8 @@ import {
     getAppointmentDocumentId,
     type WorkingHour,
 } from "@/lib/booking";
-import { formatWhatsappLink } from "@/lib/notificationService";
+import { formatWhatsappLink } from "@/lib/whatsapp";
+import { workingHours as defaultWorkingHours } from "@/data/content";
 
 const formSchema = z.object({
     name: z.string().trim().min(2, "İsim en az 2 karakter olmalıdır.").max(100),
@@ -100,10 +101,9 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 const docRef = doc(db, "settings", "workingHours");
                 const docSnap = await getDoc(docRef);
 
-                const { workingHours } = await import("@/data/content");
                 const config = docSnap.exists() && Array.isArray(docSnap.data().items)
                     ? docSnap.data().items as WorkingHour[]
-                    : workingHours;
+                    : defaultWorkingHours;
                 setWorkingHoursConfig(config);
                 const slots = generateTimeSlots(config, selectedDate);
                 setTimeSlots(slots);
@@ -142,7 +142,6 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
             });
 
             // WhatsApp linkini hazırla
-            const contactPhone = whatsappContact || "+905551234567";
             const formattedDateStr = appointmentDate.toLocaleDateString("tr-TR", {
                 day: "numeric",
                 month: "long",
@@ -150,7 +149,9 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 weekday: "long",
             });
             const waText = `Merhaba, web siteniz üzerinden randevu talebi oluşturdum.\n\n👤 Danışan: ${values.name.trim()}\n📅 Tarih: ${formattedDateStr}\n⏰ Saat: ${values.time}\n📞 Telefon: ${values.phone.trim()}`;
-            const waLink = formatWhatsappLink(contactPhone, waText);
+            const waLink = whatsappContact
+                ? formatWhatsappLink(whatsappContact, waText)
+                : undefined;
 
             setSubmittedInfo({
                 name: values.name.trim(),

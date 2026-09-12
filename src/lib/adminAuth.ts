@@ -18,11 +18,6 @@ export async function isAdminUser(user: User, forceRefresh = false): Promise<boo
 
     const normalizedEmail = user.email.trim().toLowerCase();
 
-    const envEmails = ((import.meta as any).env?.VITE_ADMIN_EMAILS || "")
-        .split(",")
-        .map((e: string) => e.trim().toLowerCase())
-        .filter(Boolean);
-
-    const allowedEmails = new Set([...DEFAULT_ADMIN_EMAILS, ...envEmails]);
+    const allowedEmails = new Set(DEFAULT_ADMIN_EMAILS);
     return allowedEmails.has(normalizedEmail);
 }

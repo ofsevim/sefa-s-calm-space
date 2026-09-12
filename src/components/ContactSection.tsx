@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { BookingForm } from "@/components/BookingForm";
+import { LazyBookingForm } from "@/components/LazyBookingForm";
 
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -321,7 +321,7 @@ export const ContactSection = () => {
                         Aşağıdaki formu doldurarak randevu talebinizi iletebilirsiniz.
                       </DialogDescription>
                     </DialogHeader>
-                    <BookingForm />
+                    <LazyBookingForm />
                   </DialogContent>
                 </Dialog>
               </div>
