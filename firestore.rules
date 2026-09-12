@@ -62,7 +62,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    match /settings/{document=**} {
+    match /settings/{document} {
       allow read: if document != 'notifications' || isAdmin();
       allow write: if isAdmin();
     }

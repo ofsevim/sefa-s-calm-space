@@ -24,20 +24,38 @@ export default function Login() {
 
         try {
             const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
-            if (!await isAdminUser(credential.user, true)) {
+            const isAuthorized = await isAdminUser(credential.user, true);
+
+            if (!isAuthorized) {
                 await signOut(auth);
-                throw new Error("Bu hesabın yönetici yetkisi yok.");
+                toast({
+                    variant: "destructive",
+                    title: "Yetkisiz Hesap",
+                    description: "Bu e-posta adresinin yönetici paneline erişim yetkisi bulunmuyor.",
+                });
+                return;
             }
+
             toast({
                 title: "Giriş başarılı",
                 description: "Yönetim paneline yönlendiriliyorsunuz.",
             });
             navigate("/admin/dashboard");
-        } catch (error: unknown) {
+        } catch (error: any) {
+            console.error("Giriş hatası:", error);
+            let description = "E-posta veya şifre hatalı.";
+            if (error?.code === "auth/too-many-requests") {
+                description = "Çok fazla başarısız deneme yapıldı. Lütfen biraz bekleyin veya şifrenizi sıfırlayın.";
+            } else if (error?.code === "auth/user-disabled") {
+                description = "Bu kullanıcı hesabı devre dışı bırakılmış.";
+            } else if (error?.code === "auth/network-request-failed") {
+                description = "İnternet bağlantınızı kontrol ediniz.";
+            }
+
             toast({
                 variant: "destructive",
                 title: "Giriş başarısız",
-                description: "E-posta veya şifre hatalı.",
+                description,
             });
         } finally {
             setLoading(false);
