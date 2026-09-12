@@ -58,6 +58,8 @@ export default function MediaManagement() {
     const [deleteConfirm, setDeleteConfirm] = useState<StorageImage | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [heroImage, setHeroImage] = useState<string>("");
+    const [manualAboutUrl, setManualAboutUrl] = useState<string>("");
+    const [manualHeroUrl, setManualHeroUrl] = useState<string>("");
     const { toast } = useToast();
 
     // Load existing image URL from Firestore and all images from Storage
@@ -158,8 +160,18 @@ export default function MediaManagement() {
                 // Upload the file
                 await uploadBytes(storageRef, file);
                 successCount++;
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error uploading image:", error);
+                if (error?.code === "storage/quota-exceeded") {
+                    toast({
+                        variant: "destructive",
+                        title: "Firebase Storage Kotası Doldu",
+                        description: "Ücretsiz plan limiti aşıldı. Görsel URL'si yapıştırarak manuel olarak ekleyebilirsiniz.",
+                    });
+                    setUploading(false);
+                    e.target.value = '';
+                    return;
+                }
                 errorCount++;
             }
         }
@@ -285,6 +297,45 @@ export default function MediaManagement() {
         }
     };
 
+    const handleSetManualAboutUrl = async () => {
+        if (!manualAboutUrl.trim()) return;
+        setSaving(true);
+        try {
+            await setDoc(doc(db, "settings", "media"), {
+                aboutImage: manualAboutUrl.trim(),
+                updatedAt: new Date().toISOString(),
+            });
+            setAboutImage(manualAboutUrl.trim());
+            setManualAboutUrl("");
+            toast({ title: "Başarılı", description: "Hakkımda fotoğrafı URL ile güncellendi." });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: "destructive", title: "Hata", description: "Kaydedilemedi." });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSetManualHeroUrl = async () => {
+        if (!manualHeroUrl.trim()) return;
+        setSaving(true);
+        try {
+            const heroDocRef = doc(db, "content", "hero");
+            const heroDocSnap = await getDoc(heroDocRef);
+            if (heroDocSnap.exists()) {
+                await setDoc(heroDocRef, { ...heroDocSnap.data(), heroImage: manualHeroUrl.trim() });
+                setHeroImage(manualHeroUrl.trim());
+                setManualHeroUrl("");
+                toast({ title: "Başarılı", description: "Hero fotoğrafı URL ile güncellendi." });
+            }
+        } catch (error) {
+            console.error(error);
+            toast({ variant: "destructive", title: "Hata", description: "Kaydedilemedi." });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const formatFileSize = (bytes: number) => {
         if (bytes < 1024) return bytes + ' B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -328,7 +379,7 @@ export default function MediaManagement() {
             </div>
 
             {/* Upload Section */}
-            <Card>
+            <Card className="border-amber-200 bg-amber-50/30">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Upload className="h-5 w-5 text-primary" />
@@ -340,6 +391,49 @@ export default function MediaManagement() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
+                        {/* Storage Kota Uyarısı */}
+                        <div className="flex items-start gap-3 p-4 bg-amber-100 border border-amber-300 rounded-lg text-sm text-amber-900">
+                            <span className="text-xl leading-none">⚠️</span>
+                            <div>
+                                <p className="font-semibold mb-1">Firebase Storage Ücretsiz Plan Limiti</p>
+                                <p>Ücretsiz planda 1GB/gün indirme kotası var. Kota dolduğunda görsel yükleme ve görüntüleme çalışmaz.</p>
+                                <p className="mt-1"><strong>Alternatif:</strong> <a href="https://cloudinary.com" target="_blank" rel="noreferrer" className="underline">Cloudinary.com</a>'a (ücretsiz 25GB) yükleyip URL'i aşağıdaki alana yapıştırabilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        {/* URL ile Manuel Görsel Ayarla */}
+                        <div className="space-y-3 p-4 border rounded-lg bg-card">
+                            <p className="text-sm font-medium">🔗 URL ile Hakkımda Görseli Ayarla</p>
+                            <div className="flex gap-2">
+                                <Input
+                                    type="url"
+                                    placeholder="https://res.cloudinary.com/... veya başka bir görsel URL'si"
+                                    value={manualAboutUrl}
+                                    onChange={(e) => setManualAboutUrl(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Button onClick={handleSetManualAboutUrl} disabled={!manualAboutUrl.trim() || saving} size="sm">
+                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                                    Kaydet
+                                </Button>
+                            </div>
+                            <p className="text-sm font-medium">🔗 URL ile Hero Görseli Ayarla</p>
+                            <div className="flex gap-2">
+                                <Input
+                                    type="url"
+                                    placeholder="https://res.cloudinary.com/... veya başka bir görsel URL'si"
+                                    value={manualHeroUrl}
+                                    onChange={(e) => setManualHeroUrl(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Button onClick={handleSetManualHeroUrl} disabled={!manualHeroUrl.trim() || saving} size="sm">
+                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                                    Kaydet
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Firebase'e Yükleme */}
                         <div className="flex items-center gap-4">
                             <Label
                                 htmlFor="image-upload"
@@ -360,7 +454,7 @@ export default function MediaManagement() {
                                     <>
                                         <Upload className="h-6 w-6 text-primary" />
                                         <span className="text-muted-foreground">
-                                            Görsel seçmek için tıklayın veya sürükleyip bırakın
+                                            Firebase Storage'a yükle (kota varsa)
                                         </span>
                                     </>
                                 )}

@@ -19,7 +19,19 @@ export const AboutSection = () => {
         const docRef = doc(db, "settings", "media");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().aboutImage) {
-          setAboutImage(docSnap.data().aboutImage);
+          const url = docSnap.data().aboutImage as string;
+          // Firebase Storage URL ise önce erişilebilirliği kontrol et
+          if (url.includes("firebasestorage.googleapis.com")) {
+            try {
+              const r = await fetch(url, { method: "HEAD" });
+              if (r.ok) setAboutImage(url);
+              // else: yerel asset'te kal
+            } catch {
+              // ağ hatası → yerel asset
+            }
+          } else if (url) {
+            setAboutImage(url);
+          }
         }
       } catch (error) {
         console.error("Error loading about image:", error);
