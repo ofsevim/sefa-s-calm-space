@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BookingForm } from "@/components/BookingForm";
+import { parseImageUrl } from "@/lib/imageUtils";
 
 export const HeroSection = () => {
   const { content, loading } = useHeroContent();
@@ -138,7 +139,7 @@ export const HeroSection = () => {
                   <Skeleton className="w-full h-full" />
                 ) : (
                   <img
-                    src={content.heroImage || heroPortrait}
+                    src={parseImageUrl(content.heroImage) || heroPortrait}
                     alt={content.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {

@@ -9,6 +9,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus, Trash, Save } from "lucide-react";
+import { parseTimeRange, type WorkingHour } from "@/lib/booking";
 
 type Service = {
     title: string;
@@ -16,11 +17,6 @@ type Service = {
     icon: string;
     color: string;
     iconColor: string;
-};
-
-type WorkingHour = {
-    day: string;
-    hours: string;
 };
 
 export default function Settings() {
@@ -160,9 +156,20 @@ export default function Settings() {
     };
 
     const saveHours = async () => {
+        const invalidHour = workingHours.find((item) => item.hours.trim().toLocaleLowerCase("tr-TR") !== "kapalı" && !parseTimeRange(item.hours));
+        if (invalidHour) {
+            toast({
+                variant: "destructive",
+                title: "Geçersiz saat aralığı",
+                description: `${invalidHour.day} için “09:00 - 18:00” biçimini veya “Kapalı” değerini kullanın.`,
+            });
+            return;
+        }
         setLoading(true);
         try {
-            await setDoc(doc(db, "settings", "workingHours"), { items: workingHours });
+            await setDoc(doc(db, "settings", "workingHours"), {
+                items: workingHours.map((item) => ({ ...item, hours: item.hours.trim() })),
+            });
             toast({ title: "Başarılı", description: "Çalışma saatleri güncellendi." });
         } catch (error) {
             toast({ variant: "destructive", title: "Hata", description: "Kaydedilemedi." });

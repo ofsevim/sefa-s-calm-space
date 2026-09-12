@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, deleteDoc, doc, updateDoc, limit, startAfter, type DocumentData, type QueryDocumentSnapshot } from "firebase/firestore";
 import {
     Table,
     TableBody,
@@ -14,32 +14,39 @@ import { Trash2, MailOpen, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
 
 interface Message {
     id: string;
     name: string;
     email: string;
-    phone: string;
+    phone?: string;
     message: string;
-    createdAt: string;
+    createdAt: FirestoreDateValue;
     read: boolean;
 }
 
 export default function Messages() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
+    const lastDocument = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const [hasMore, setHasMore] = useState(false);
     const { toast } = useToast();
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async (reset = true) => {
         setLoading(true);
         try {
-            const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+            const q = reset || !lastDocument.current
+                ? query(collection(db, "messages"), orderBy("createdAt", "desc"), limit(50))
+                : query(collection(db, "messages"), orderBy("createdAt", "desc"), startAfter(lastDocument.current), limit(50));
             const querySnapshot = await getDocs(q);
             const data = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             })) as Message[];
-            setMessages(data);
+            setMessages((current) => reset ? data : [...current, ...data]);
+            lastDocument.current = querySnapshot.docs.at(-1) ?? null;
+            setHasMore(querySnapshot.size === 50);
         } catch (error) {
             console.error("Error fetching messages:", error);
             toast({
@@ -50,18 +57,18 @@ export default function Messages() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
-        fetchMessages();
-    }, []);
+        void fetchMessages(true);
+    }, [fetchMessages]);
 
     const handleDelete = async (id: string) => {
         if (!confirm("Bu mesajı silmek istediğinize emin misiniz?")) return;
 
         try {
             await deleteDoc(doc(db, "messages", id));
-            setMessages(messages.filter((msg) => msg.id !== id));
+            setMessages((current) => current.filter((msg) => msg.id !== id));
             toast({
                 title: "Başarılı",
                 description: "Mesaj silindi.",
@@ -81,7 +88,7 @@ export default function Messages() {
             await updateDoc(doc(db, "messages", id), {
                 read: !currentStatus,
             });
-            setMessages(messages.map(msg =>
+            setMessages((current) => current.map(msg =>
                 msg.id === id ? { ...msg, read: !currentStatus } : msg
             ));
         } catch (error) {
@@ -139,13 +146,13 @@ export default function Messages() {
                                         </Button>
                                     </TableCell>
                                     <TableCell className="whitespace-nowrap">
-                                        {format(new Date(msg.createdAt), "d MMM yyyy HH:mm", { locale: tr })}
+                                        {format(toDate(msg.createdAt), "d MMM yyyy HH:mm", { locale: tr })}
                                     </TableCell>
                                     <TableCell className="font-medium">{msg.name}</TableCell>
                                     <TableCell>
                                         <div className="flex flex-col text-sm">
                                             <span>{msg.email}</span>
-                                            <span className="text-muted-foreground">{msg.phone}</span>
+                                            {msg.phone && <span className="text-muted-foreground">{msg.phone}</span>}
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -169,6 +176,11 @@ export default function Messages() {
                     </TableBody>
                 </Table>
             </div>
+            {hasMore && (
+                <Button variant="outline" onClick={() => fetchMessages(false)} disabled={loading} className="w-full">
+                    {loading ? "Yükleniyor..." : "Daha Fazla Göster"}
+                </Button>
+            )}
         </div>
     );
 }

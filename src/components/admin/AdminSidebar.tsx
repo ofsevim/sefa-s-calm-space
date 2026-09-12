@@ -20,7 +20,7 @@ import {
     SidebarMenuItem,
     SidebarFooter,
 } from "@/components/ui/sidebar";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -90,10 +90,10 @@ export function AdminSidebar() {
                                         asChild
                                         isActive={location.pathname === item.url}
                                     >
-                                        <a href={item.url}>
+                                        <Link to={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}

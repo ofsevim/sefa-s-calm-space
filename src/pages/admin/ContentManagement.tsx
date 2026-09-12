@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { parseImageUrl, resolveImageUrl, isImgbbViewerUrl } from "@/lib/imageUtils";
 
 interface HeroContent {
     title: string;
@@ -30,6 +31,7 @@ interface AboutContent {
 export default function ContentManagement() {
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
+    const [isResolvingHero, setIsResolvingHero] = useState(false);
 
     // Hero Content State
     const [heroContent, setHeroContent] = useState<HeroContent>({
@@ -49,6 +51,27 @@ export default function ContentManagement() {
         paragraph1: "Hayatın gürültüsü içinde bazen kendi sesimizi duymakta zorlanırız. Bir PDR uzmanı olarak amacım, o sesi yeniden keşfetmenize rehberlik etmektir.",
         paragraph2: "Bilimsel yöntemlerin ışığında; tüm duygularınızı özgürce ifade edebileceğiniz güvenli bir limandasınız. Unutmayın; iyileşmek, yargılanmadığınızı hissettiğiniz yerde başlar.",
     });
+
+    // Handle Hero Image change with smart ImgBB / HTML parser & resolver
+    const handleHeroImageChange = async (val: string) => {
+        const parsed = parseImageUrl(val);
+        setHeroContent((prev) => ({ ...prev, heroImage: parsed }));
+
+        if (isImgbbViewerUrl(parsed)) {
+            setIsResolvingHero(true);
+            try {
+                const resolved = await resolveImageUrl(parsed);
+                if (resolved && resolved !== parsed) {
+                    setHeroContent((prev) => ({ ...prev, heroImage: resolved }));
+                    toast.success("ImgBB doğrudan görsel bağlantısı ayarlandı");
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setIsResolvingHero(false);
+            }
+        }
+    };
 
     // Fetch content from Firestore
     useEffect(() => {
@@ -82,7 +105,11 @@ export default function ContentManagement() {
     const saveHeroContent = async () => {
         setLoading(true);
         try {
-            await setDoc(doc(db, "content", "hero"), heroContent);
+            let finalImage = parseImageUrl(heroContent.heroImage);
+            if (isImgbbViewerUrl(finalImage)) {
+                finalImage = await resolveImageUrl(finalImage);
+            }
+            await setDoc(doc(db, "content", "hero"), { ...heroContent, heroImage: finalImage });
             toast.success("Hero içeriği başarıyla kaydedildi!");
         } catch (error) {
             console.error("Hero içerik kaydetme hatası:", error);
@@ -210,15 +237,38 @@ export default function ContentManagement() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="hero-image">Görsel URL (Medya Yönetimi'nden kopyalayabilirsiniz)</Label>
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="hero-image">Hero Görseli URL (ImgBB doğrudan link, HTML kodu veya sayfa linki)</Label>
+                                {isResolvingHero && (
+                                    <span className="text-xs text-emerald-600 flex items-center gap-1 animate-pulse font-medium">
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                        ImgBB bağlantısı ayarlanıyor...
+                                    </span>
+                                )}
+                            </div>
                             <Input
                                 id="hero-image"
                                 value={heroContent.heroImage}
-                                onChange={(e) =>
-                                    setHeroContent({ ...heroContent, heroImage: e.target.value })
-                                }
-                                placeholder="https://..."
+                                onChange={(e) => handleHeroImageChange(e.target.value)}
+                                placeholder="https://i.ibb.co/... veya ibb.co linki ya da HTML kodu"
+                                className="font-mono text-xs sm:text-sm"
                             />
+                            {heroContent.heroImage && (
+                                <div className="flex items-center gap-3 p-2.5 bg-muted/40 rounded border text-xs mt-2">
+                                    <img
+                                        src={heroContent.heroImage}
+                                        alt="Hero Önizleme"
+                                        className="w-12 h-12 rounded object-cover border shrink-0 bg-background"
+                                        onError={(e) => {
+                                            (e.currentTarget as HTMLElement).style.display = "none";
+                                        }}
+                                    />
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-medium text-green-600">✓ Görsel bağlantısı hazır</p>
+                                        <p className="text-muted-foreground truncate font-mono text-[11px]">{heroContent.heroImage}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <Button onClick={saveHeroContent} disabled={loading} className="w-full">

@@ -6,6 +6,7 @@ import heroPortrait from "@/assets/sefa-sevim-about.png";
 import { useAboutContent } from "@/hooks/useContent";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { parseImageUrl } from "@/lib/imageUtils";
 
 export const AboutSection = () => {
   const ref = useRef(null);
@@ -19,7 +20,8 @@ export const AboutSection = () => {
         const docRef = doc(db, "settings", "media");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().aboutImage) {
-          const url = docSnap.data().aboutImage as string;
+          const rawUrl = docSnap.data().aboutImage as string;
+          const url = parseImageUrl(rawUrl);
           // Firebase Storage URL ise önce erişilebilirliği kontrol et
           if (url.includes("firebasestorage.googleapis.com")) {
             try {

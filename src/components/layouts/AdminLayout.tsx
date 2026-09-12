@@ -3,16 +3,25 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Outlet, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onIdTokenChanged, signOut, type User } from "firebase/auth";
+import { isAdminUser } from "@/lib/adminAuth";
 
 export default function AdminLayout() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
+        const unsubscribe = onIdTokenChanged(auth, async (currentUser) => {
+            try {
+                if (currentUser && await isAdminUser(currentUser)) {
+                    setUser(currentUser);
+                } else {
+                    setUser(null);
+                    if (currentUser) await signOut(auth);
+                }
+            } finally {
+                setLoading(false);
+            }
         });
 
         return () => unsubscribe();

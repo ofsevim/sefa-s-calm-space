@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Select,
     SelectContent,
@@ -22,37 +23,36 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { tr } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
+import {
+    combineAppointmentDate,
+    generateTimeSlots,
+    getAppointmentDocumentId,
+    type WorkingHour,
+} from "@/lib/booking";
 
 const formSchema = z.object({
-    name: z.string().min(2, "İsim en az 2 karakter olmalıdır."),
-    email: z.string().email("Geçerli bir e-posta adresi giriniz."),
-    phone: z.string().min(10, "Geçerli bir telefon numarası giriniz."),
+    name: z.string().trim().min(2, "İsim en az 2 karakter olmalıdır.").max(100),
+    email: z.string().trim().email("Geçerli bir e-posta adresi giriniz.").max(254),
+    phone: z.string().trim().regex(/^[+\d][\d\s()-]{9,19}$/, "Geçerli bir telefon numarası giriniz."),
     date: z.date({
         required_error: "Lütfen bir tarih seçiniz.",
     }),
     time: z.string({
         required_error: "Lütfen bir saat seçiniz.",
     }),
-    notes: z.string().optional(),
+    notes: z.string().trim().max(1000, "Not en fazla 1000 karakter olabilir.").optional(),
+    consent: z.boolean().refine(Boolean, "Aydınlatma metnini kabul etmelisiniz."),
 });
-
-// Helper function to generate time slots between start and end hours
-const generateTimeSlots = (startHour: number, endHour: number): string[] => {
-    const slots: string[] = [];
-    for (let hour = startHour; hour < endHour; hour++) {
-        slots.push(`${hour.toString().padStart(2, '0')}:00`);
-    }
-    return slots;
-};
 
 export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [loading, setLoading] = useState(false);
     const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [workingHoursConfig, setWorkingHoursConfig] = useState<WorkingHour[]>([]);
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -62,52 +62,9 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
             email: "",
             phone: "",
             notes: "",
+            consent: false,
         },
     });
-
-    // Helper function to process working hours
-    const processWorkingHours = (workingHoursData: any[], date: Date) => {
-        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-        const selectedDayName = dayNames[dayOfWeek];
-
-        // Find working hours for selected day
-        let dayHours = workingHoursData.find((wh: any) => wh.day === selectedDayName);
-
-        // If not found, check for range (e.g., "Pazartesi - Cuma")
-        if (!dayHours) {
-            dayHours = workingHoursData.find((wh: any) => {
-                if (wh.day.includes('-')) {
-                    const [start, end] = wh.day.split('-').map((d: string) => d.trim());
-                    const startIdx = dayNames.indexOf(start);
-                    const endIdx = dayNames.indexOf(end);
-
-                    // Handle range wrapping (though typical business hours don't wrap)
-                    if (startIdx <= endIdx) {
-                        return dayOfWeek >= startIdx && dayOfWeek <= endIdx;
-                    }
-                }
-                return false;
-            });
-        }
-
-        if (dayHours && dayHours.hours !== "Kapalı") {
-            // Parse hours (e.g., "09:00 - 19:00")
-            const [startTime, endTime] = dayHours.hours.split('-').map((t: string) => t.trim());
-            const startHour = parseInt(startTime.split(':')[0]);
-            const endHour = parseInt(endTime.split(':')[0]);
-
-            setTimeSlots(generateTimeSlots(startHour, endHour));
-        } else {
-            // Closed on this day
-            setTimeSlots([]);
-            toast({
-                variant: "destructive",
-                title: "Kapalı Gün",
-                description: "Seçtiğiniz gün çalışma saatleri dışındadır.",
-            });
-        }
-    };
 
     // Load working hours and update time slots when date changes
     useEffect(() => {
@@ -118,22 +75,20 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 const docRef = doc(db, "settings", "workingHours");
                 const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists() && docSnap.data().items) {
-                    processWorkingHours(docSnap.data().items, selectedDate);
-                } else {
-                    // Fallback to local data
-                    const { workingHours } = await import("@/data/content");
-                    processWorkingHours(workingHours, selectedDate);
+                const { workingHours } = await import("@/data/content");
+                const config = docSnap.exists() && Array.isArray(docSnap.data().items)
+                    ? docSnap.data().items as WorkingHour[]
+                    : workingHours;
+                setWorkingHoursConfig(config);
+                const slots = generateTimeSlots(config, selectedDate);
+                setTimeSlots(slots);
+                if (slots.length === 0) {
+                    toast({ variant: "destructive", title: "Kapalı Gün", description: "Seçtiğiniz gün randevu alınamamaktadır." });
                 }
             } catch (error) {
                 console.error("Error loading working hours:", error);
-                // Fallback to local data on error
-                try {
-                    const { workingHours } = await import("@/data/content");
-                    processWorkingHours(workingHours, selectedDate);
-                } catch (e) {
-                    setTimeSlots(generateTimeSlots(9, 19)); // Ultimate fallback
-                }
+                setTimeSlots([]);
+                toast({ variant: "destructive", title: "Saatler yüklenemedi", description: "Lütfen daha sonra tekrar deneyin." });
             }
         };
 
@@ -143,19 +98,22 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
-            // Combine date and time
-            const appointmentDate = new Date(values.date);
-            const [hours, minutes] = values.time.split(':').map(Number);
-            appointmentDate.setHours(hours, minutes);
+            const appointmentDate = combineAppointmentDate(values.date, values.time);
+            const validSlots = generateTimeSlots(workingHoursConfig, values.date);
+            if (!validSlots.includes(values.time) || appointmentDate <= new Date()) {
+                throw new Error("Geçersiz veya geçmiş randevu saati");
+            }
 
-            await addDoc(collection(db, "appointments"), {
-                client_name: values.name,
-                client_email: values.email,
-                client_phone: values.phone,
-                appointment_date: appointmentDate.toISOString(),
-                notes: values.notes,
+            const appointmentRef = doc(db, "appointments", getAppointmentDocumentId(appointmentDate));
+            await setDoc(appointmentRef, {
+                client_name: values.name.trim(),
+                client_email: values.email.trim().toLocaleLowerCase("tr-TR"),
+                client_phone: values.phone.trim(),
+                appointment_date: Timestamp.fromDate(appointmentDate),
+                notes: values.notes?.trim() ?? "",
                 status: "pending",
-                created_at: new Date().toISOString(),
+                created_at: serverTimestamp(),
+                consent_version: "2026-09-13",
             });
 
             toast({
@@ -163,13 +121,15 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 description: "En kısa sürede size dönüş yapılacaktır.",
             });
             form.reset();
+            setSelectedDate(undefined);
+            setTimeSlots([]);
             if (onSuccess) onSuccess();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error submitting appointment:", error);
             toast({
                 variant: "destructive",
                 title: "Hata",
-                description: "Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyiniz.",
+                description: "Bu saat daha önce alınmış veya artık kullanılamıyor. Lütfen başka bir saat seçin.",
             });
         } finally {
             setLoading(false);
@@ -249,9 +209,11 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                     onSelect={(date) => {
                                         field.onChange(date);
                                         setSelectedDate(date);
+                                        form.setValue("time", "");
+                                        setTimeSlots([]);
                                     }}
                                     disabled={(date) =>
-                                        date < new Date() || date < new Date("1900-01-01")
+                                        date < new Date(new Date().setHours(0, 0, 0, 0))
                                     }
                                     locale={tr}
                                     className="w-full p-3"
@@ -287,7 +249,7 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel className="text-sm font-medium">Randevu Saati</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value} disabled={!selectedDate || timeSlots.length === 0}>
                                 <FormControl>
                                     <SelectTrigger className="h-11 rounded-lg">
                                         <SelectValue placeholder="Saat seçiniz" />
@@ -326,6 +288,24 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                 />
                             </FormControl>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="consent"
+                    render={({ field }) => (
+                        <FormItem className="flex items-start gap-3 space-y-0 rounded-lg border p-3">
+                            <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal">
+                                    <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="underline">KVKK Aydınlatma Metni</a> ve
+                                    {" "}<a href="/gizlilik" target="_blank" rel="noopener noreferrer" className="underline">Gizlilik Politikası</a>'nı okudum.
+                                </FormLabel>
+                                <FormMessage />
+                            </div>
                         </FormItem>
                     )}
                 />

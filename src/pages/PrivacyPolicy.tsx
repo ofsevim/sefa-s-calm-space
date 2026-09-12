@@ -35,7 +35,7 @@ const PrivacyPolicy = () => {
                                     Gizlilik Politikası
                                 </h1>
                                 <p className="text-muted-foreground">
-                                    Son güncelleme: {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    Son güncelleme: 13 Eylül 2026
                                 </p>
                             </div>
 
@@ -62,8 +62,8 @@ const PrivacyPolicy = () => {
                                         Aşağıdaki kişisel bilgileri toplayabiliriz:
                                     </p>
                                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                                        <li><strong>İletişim Bilgileri:</strong> Ad, soyad, e-posta adresi</li>
-                                        <li><strong>Randevu Bilgileri:</strong> Tercih edilen randevu tarihi ve saati</li>
+                                        <li><strong>İletişim Bilgileri:</strong> Ad, soyad, e-posta adresi ve telefon numarası</li>
+                                        <li><strong>Randevu Bilgileri:</strong> Tercih edilen tarih, saat ve kullanıcı tarafından yazılan isteğe bağlı not</li>
                                         <li><strong>Mesaj İçerikleri:</strong> İletişim formu aracılığıyla gönderdiğiniz mesajlar</li>
                                         <li><strong>Teknik Veriler:</strong> IP adresi, tarayıcı türü, ziyaret edilen sayfalar (anonim olarak)</li>
                                     </ul>

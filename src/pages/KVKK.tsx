@@ -77,15 +77,15 @@ const KVKK = () => {
                                                 </tr>
                                                 <tr className="border-b border-border/50">
                                                     <td className="py-2">İletişim Bilgileri</td>
-                                                    <td className="py-2">E-posta adresi</td>
+                                                    <td className="py-2">E-posta adresi ve randevu formunda telefon numarası</td>
                                                 </tr>
                                                 <tr className="border-b border-border/50">
                                                     <td className="py-2">İşlem Güvenliği</td>
                                                     <td className="py-2">IP adresi, tarayıcı bilgileri</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="py-2">Talep/Şikayet</td>
-                                                    <td className="py-2">İletişim formu mesaj içerikleri</td>
+                                                    <td className="py-2">Talep/Randevu</td>
+                                                    <td className="py-2">İletişim mesajı, randevu tarihi, saati ve kullanıcı tarafından yazılan isteğe bağlı not</td>
                                                 </tr>
                                             </tbody>
                                         </table>

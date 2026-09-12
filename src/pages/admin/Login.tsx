@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "firebase/auth";
+import { isAdminUser } from "@/lib/adminAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [resetting, setResetting] = useState(false);
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -20,13 +22,17 @@ export default function Login() {
         setLoading(true);
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
+            if (!await isAdminUser(credential.user, true)) {
+                await signOut(auth);
+                throw new Error("Bu hesabın yönetici yetkisi yok.");
+            }
             toast({
                 title: "Giriş başarılı",
                 description: "Yönetim paneline yönlendiriliyorsunuz.",
             });
             navigate("/admin/dashboard");
-        } catch (error) {
+        } catch (error: unknown) {
             toast({
                 variant: "destructive",
                 title: "Giriş başarısız",
@@ -34,6 +40,34 @@ export default function Login() {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async () => {
+        if (!email.trim()) {
+            toast({
+                variant: "destructive",
+                title: "E-posta Gerekli",
+                description: "Şifre sıfırlama bağlantısı gönderebilmemiz için lütfen e-posta adresinizi girin.",
+            });
+            return;
+        }
+
+        setResetting(true);
+        try {
+            await sendPasswordResetEmail(auth, email.trim());
+            toast({
+                title: "Sıfırlama E-postası Gönderildi",
+                description: "Şifre sıfırlama bağlantısı e-posta adresinize iletildi. Lütfen gelen kutunuzu kontrol edin.",
+            });
+        } catch (error: unknown) {
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Şifre sıfırlama bağlantısı gönderilemedi. E-posta adresinizi kontrol edin.",
+            });
+        } finally {
+            setResetting(false);
         }
     };
 
@@ -58,7 +92,17 @@ export default function Login() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Şifre</Label>
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Şifre</Label>
+                                <button
+                                    type="button"
+                                    onClick={handleForgotPassword}
+                                    disabled={resetting}
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    {resetting ? "Gönderiliyor..." : "Şifremi Unuttum"}
+                                </button>
+                            </div>
                             <Input
                                 id="password"
                                 type="password"

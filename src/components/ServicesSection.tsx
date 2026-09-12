@@ -9,11 +9,14 @@ import { WaveSeparator } from "@/components/ui/WaveSeparator";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { slugify } from "@/lib/slugify";
 
 export const ServicesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [servicesList, setServicesList] = useState(services);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -29,13 +32,6 @@ export const ServicesSection = () => {
     };
     fetchServices();
   }, []);
-
-  const scrollToContact = () => {
-    const element = document.querySelector("#iletisim");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section
@@ -77,7 +73,16 @@ export const ServicesSection = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.15 } }}
                 className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-150 cursor-pointer overflow-hidden flex flex-col"
-                onClick={scrollToContact}
+                role="link"
+                tabIndex={0}
+                aria-label={`${service.title} hakkında detaylı bilgi`}
+                onClick={() => navigate(`/hizmet/${slugify(service.title)}`)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    navigate(`/hizmet/${slugify(service.title)}`);
+                  }
+                }}
               >
                 {/* Visual Cover Area */}
                 <div className={`h-48 w-full ${service.color} relative overflow-hidden`}>

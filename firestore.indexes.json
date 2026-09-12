@@ -1,63 +1,33 @@
 {
-    "indexes": [
+  "indexes": [
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
         {
-            "collectionGroup": "appointments",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "status",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "created_at",
-                    "order": "DESCENDING"
-                }
-            ]
+          "fieldPath": "status",
+          "order": "ASCENDING"
         },
         {
-            "collectionGroup": "appointments",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "appointment_date",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "created_at",
-                    "order": "DESCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "appointments",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "created_at",
-                    "order": "ASCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "messages",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "createdAt",
-                    "order": "DESCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "messages",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "read",
-                    "order": "ASCENDING"
-                }
-            ]
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
         }
-    ],
-    "fieldOverrides": []
+      ]
+    },
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "appointment_date",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
 }

@@ -7,6 +7,7 @@ import {
   Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { contactInfo, workingHours } from "@/data/content";
 import {
@@ -20,7 +21,7 @@ import {
 import { BookingForm } from "@/components/BookingForm";
 
 import { db } from "@/lib/firebase";
-import { doc, getDoc, collection, addDoc } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export const ContactSection = () => {
   const ref = useRef(null);
@@ -66,7 +67,10 @@ export const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
+    website: "",
+    consent: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -80,15 +84,22 @@ export const ContactSection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.website) return;
+    if (!formData.consent) {
+      toast({ variant: "destructive", title: "Onay gerekli", description: "Lütfen aydınlatma metnini okuyup onaylayın." });
+      return;
+    }
     setIsSubmitting(true);
 
     try {
       await addDoc(collection(db, "messages"), {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        createdAt: new Date().toISOString(),
+        name: formData.name.trim(),
+        email: formData.email.trim().toLocaleLowerCase("tr-TR"),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+        createdAt: serverTimestamp(),
         read: false,
+        consent_version: "2026-09-13",
       });
 
       toast({
@@ -96,7 +107,7 @@ export const ContactSection = () => {
         description: "En kısa sürede sizinle iletişime geçeceğim.",
       });
 
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", message: "", website: "", consent: false });
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -162,6 +173,8 @@ export const ContactSection = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    minLength={2}
+                    maxLength={100}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
                     placeholder="Adınız ve soyadınız"
                   />
@@ -181,12 +194,33 @@ export const ContactSection = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    maxLength={254}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
                     placeholder="ornek@email.com"
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                    Telefon (Opsiyonel)
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    maxLength={20}
+                    pattern="[+0-9 ()-]{10,20}"
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                    placeholder="0555 555 55 55"
+                  />
+                </div>
 
+                <div className="absolute -left-[10000px]" aria-hidden="true">
+                  <label htmlFor="website">Web sitesi</label>
+                  <input id="website" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
+                </div>
 
                 <div>
                   <label
@@ -201,10 +235,24 @@ export const ContactSection = () => {
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    minLength={10}
+                    maxLength={2000}
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors resize-none"
                     placeholder="Mesajınızı buraya yazabilirsiniz..."
                   />
+                </div>
+
+                <div className="flex items-start gap-3 rounded-xl border border-border p-3">
+                  <Checkbox
+                    id="contact-consent"
+                    checked={formData.consent}
+                    onCheckedChange={(checked) => setFormData((current) => ({ ...current, consent: checked === true }))}
+                  />
+                  <label htmlFor="contact-consent" className="text-sm leading-relaxed text-muted-foreground">
+                    <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="underline text-foreground">KVKK Aydınlatma Metni</a> ve
+                    {" "}<a href="/gizlilik" target="_blank" rel="noopener noreferrer" className="underline text-foreground">Gizlilik Politikası</a>'nı okudum.
+                  </label>
                 </div>
 
                 <Button

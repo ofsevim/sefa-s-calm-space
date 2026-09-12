@@ -126,6 +126,10 @@ export const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
+            type="button"
+            aria-label={isMobileMenuOpen ? "Menüyü kapat" : "Menüyü aç"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
             className="lg:hidden p-2 rounded-lg hover:bg-muted/50 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -142,6 +146,7 @@ export const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            id="mobile-navigation"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

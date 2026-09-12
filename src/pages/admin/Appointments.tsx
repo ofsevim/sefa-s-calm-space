@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy, limit, startAfter, type DocumentData, type QueryDocumentSnapshot } from "firebase/firestore";
 import {
     Table,
     TableBody,
@@ -15,14 +15,15 @@ import { Check, X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
 
 type Appointment = {
     id: string;
-    created_at: string;
+    created_at: FirestoreDateValue;
     client_name: string;
     client_email: string;
     client_phone: string;
-    appointment_date: string;
+    appointment_date: FirestoreDateValue;
     status: "pending" | "approved" | "rejected" | "completed";
     notes: string;
 };
@@ -30,44 +31,22 @@ type Appointment = {
 export default function Appointments() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const lastDocument = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const [hasMore, setHasMore] = useState(false);
     const { toast } = useToast();
 
-    useEffect(() => {
-        const fetchAppointments = async () => {
-            setLoading(true);
-            try {
-                const q = query(collection(db, "appointments"), orderBy("appointment_date", "asc"));
-                const querySnapshot = await getDocs(q);
-                const data: Appointment[] = [];
-                querySnapshot.forEach((doc) => {
-                    data.push({ id: doc.id, ...doc.data() } as Appointment);
-                });
-                setAppointments(data);
-            } catch (error) {
-                console.error("Error fetching appointments:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Hata",
-                    description: "Randevular yüklenirken bir hata oluştu.",
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAppointments();
-    }, [toast]);
-
-    const fetchAppointments = async () => {
+    const fetchAppointments = useCallback(async (reset = true) => {
         setLoading(true);
         try {
-            const q = query(collection(db, "appointments"), orderBy("appointment_date", "asc"));
+            const baseQuery = reset || !lastDocument.current
+                ? query(collection(db, "appointments"), orderBy("appointment_date", "asc"), limit(50))
+                : query(collection(db, "appointments"), orderBy("appointment_date", "asc"), startAfter(lastDocument.current), limit(50));
+            const q = baseQuery;
             const querySnapshot = await getDocs(q);
-            const data: Appointment[] = [];
-            querySnapshot.forEach((doc) => {
-                data.push({ id: doc.id, ...doc.data() } as Appointment);
-            });
-            setAppointments(data);
+            const data = querySnapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as Appointment);
+            setAppointments((current) => reset ? data : [...current, ...data]);
+            lastDocument.current = querySnapshot.docs.at(-1) ?? null;
+            setHasMore(querySnapshot.size === 50);
         } catch (error) {
             console.error("Error fetching appointments:", error);
             toast({
@@ -78,7 +57,11 @@ export default function Appointments() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
+
+    useEffect(() => {
+        void fetchAppointments(true);
+    }, [fetchAppointments]);
 
     const updateStatus = async (id: string, status: Appointment["status"]) => {
         try {
@@ -89,7 +72,7 @@ export default function Appointments() {
                 title: "Başarılı",
                 description: "Randevu durumu güncellendi.",
             });
-            fetchAppointments();
+            await fetchAppointments(true);
         } catch (error) {
             console.error("Error updating status:", error);
             toast({
@@ -111,7 +94,7 @@ export default function Appointments() {
                 title: "Başarılı",
                 description: "Randevu silindi.",
             });
-            fetchAppointments();
+            await fetchAppointments(true);
         } catch (error) {
             console.error("Error deleting appointment:", error);
             toast({
@@ -172,7 +155,7 @@ export default function Appointments() {
                             appointments.map((appointment) => (
                                 <TableRow key={appointment.id}>
                                     <TableCell>
-                                        {format(new Date(appointment.appointment_date), "d MMMM yyyy HH:mm", { locale: tr })}
+                                        {format(toDate(appointment.appointment_date), "d MMMM yyyy HH:mm", { locale: tr })}
                                     </TableCell>
                                     <TableCell className="font-medium">{appointment.client_name}</TableCell>
                                     <TableCell>
@@ -226,6 +209,11 @@ export default function Appointments() {
                     </TableBody>
                 </Table>
             </div>
+            {hasMore && (
+                <Button variant="outline" onClick={() => fetchAppointments(false)} disabled={loading} className="w-full">
+                    {loading ? "Yükleniyor..." : "Daha Fazla Göster"}
+                </Button>
+            )}
         </div>
     );
 }

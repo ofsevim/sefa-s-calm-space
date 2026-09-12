@@ -4,8 +4,11 @@ import { quickLinks, socialLinks } from "@/data/content";
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const Footer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [contactInfo, setContactInfo] = useState({
     email: "iletisim@sefasevim.com",
     address: "K.Maraş, Türkiye"
@@ -31,6 +34,10 @@ export const Footer = () => {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (location.pathname !== "/") {
+      navigate(`/${href}`);
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });

@@ -3,16 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc } from "firebase/firestore";
+import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
 
 interface TodayAppointment {
     id: string;
     client_name: string;
-    appointment_date: string;
+    appointment_date: FirestoreDateValue;
     status: string;
 }
 
@@ -21,7 +22,7 @@ interface PendingAppointment {
     client_name: string;
     client_email: string;
     client_phone: string;
-    appointment_date: string;
+    appointment_date: FirestoreDateValue;
     status: string;
 }
 
@@ -29,7 +30,7 @@ interface RecentMessage {
     id: string;
     name: string;
     message: string;
-    createdAt: string;
+    createdAt: FirestoreDateValue;
     read: boolean;
 }
 
@@ -78,17 +79,25 @@ export default function Dashboard() {
                 const todayStart = startOfDay(today).toISOString();
                 const todayEnd = endOfDay(today).toISOString();
 
-                const todayQuery = query(
+                const todayTimestampQuery = query(
+                    appointmentsRef,
+                    where("appointment_date", ">=", Timestamp.fromDate(startOfDay(today))),
+                    where("appointment_date", "<=", Timestamp.fromDate(endOfDay(today))),
+                    orderBy("appointment_date", "asc")
+                );
+                const todayLegacyQuery = query(
                     appointmentsRef,
                     where("appointment_date", ">=", todayStart),
                     where("appointment_date", "<=", todayEnd),
                     orderBy("appointment_date", "asc")
                 );
-                const todaySnapshot = await getDocs(todayQuery);
-                const todayAppts: TodayAppointment[] = [];
-                todaySnapshot.forEach((doc) => {
-                    todayAppts.push({ id: doc.id, ...doc.data() } as TodayAppointment);
-                });
+                const [todayTimestampSnapshot, todayLegacySnapshot] = await Promise.all([
+                    getDocs(todayTimestampQuery),
+                    getDocs(todayLegacyQuery),
+                ]);
+                const todayAppts = [...todayTimestampSnapshot.docs, ...todayLegacySnapshot.docs]
+                    .map((item) => ({ id: item.id, ...item.data() }) as TodayAppointment)
+                    .sort((a, b) => toDate(a.appointment_date).getTime() - toDate(b.appointment_date).getTime());
                 setTodayAppointments(todayAppts);
 
                 // Weekly Trend (this week vs last week)
@@ -98,19 +107,24 @@ export default function Dashboard() {
 
                 const thisWeekQuery = query(
                     appointmentsRef,
-                    where("created_at", ">=", thisWeekStart)
+                    where("created_at", ">=", Timestamp.fromDate(subDays(today, 7)))
                 );
                 const lastWeekQuery = query(
                     appointmentsRef,
-                    where("created_at", ">=", lastWeekStart),
-                    where("created_at", "<", lastWeekEnd)
+                    where("created_at", ">=", Timestamp.fromDate(subDays(today, 14))),
+                    where("created_at", "<", Timestamp.fromDate(subDays(today, 7)))
                 );
+                const legacyThisWeekQuery = query(appointmentsRef, where("created_at", ">=", thisWeekStart));
+                const legacyLastWeekQuery = query(appointmentsRef, where("created_at", ">=", lastWeekStart), where("created_at", "<", lastWeekEnd));
+                const [thisWeekSnapshot, lastWeekSnapshot, legacyThisWeekSnapshot, legacyLastWeekSnapshot] = await Promise.all([
+                    getCountFromServer(thisWeekQuery),
+                    getCountFromServer(lastWeekQuery),
+                    getCountFromServer(legacyThisWeekQuery),
+                    getCountFromServer(legacyLastWeekQuery),
+                ]);
 
-                const thisWeekSnapshot = await getCountFromServer(thisWeekQuery);
-                const lastWeekSnapshot = await getCountFromServer(lastWeekQuery);
-
-                const thisWeekCount = thisWeekSnapshot.data().count;
-                const lastWeekCount = lastWeekSnapshot.data().count;
+                const thisWeekCount = thisWeekSnapshot.data().count + legacyThisWeekSnapshot.data().count;
+                const lastWeekCount = lastWeekSnapshot.data().count + legacyLastWeekSnapshot.data().count;
                 const weeklyTrend = lastWeekCount > 0
                     ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
                     : thisWeekCount > 0 ? 100 : 0;
@@ -346,7 +360,7 @@ export default function Dashboard() {
                                             <div className="flex-1">
                                                 <p className="font-semibold">{apt.client_name}</p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {format(new Date(apt.appointment_date), "d MMMM yyyy, HH:mm", { locale: tr })}
+                                                    {format(toDate(apt.appointment_date), "d MMMM yyyy, HH:mm", { locale: tr })}
                                                 </p>
                                                 <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
                                                     <span>{apt.client_email}</span>
@@ -421,7 +435,7 @@ export default function Dashboard() {
                                                 <div>
                                                     <p className="font-medium">{apt.client_name}</p>
                                                     <p className="text-sm text-muted-foreground">
-                                                        {format(new Date(apt.appointment_date), "HH:mm", { locale: tr })}
+                                                        {format(toDate(apt.appointment_date), "HH:mm", { locale: tr })}
                                                     </p>
                                                 </div>
                                             </div>
@@ -466,7 +480,7 @@ export default function Dashboard() {
                                             <div className="flex items-center justify-between mb-1">
                                                 <p className="font-medium text-sm">{msg.name}</p>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {format(new Date(msg.createdAt), "d MMM HH:mm", { locale: tr })}
+                                                    {format(toDate(msg.createdAt), "d MMM HH:mm", { locale: tr })}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-muted-foreground line-clamp-2">
