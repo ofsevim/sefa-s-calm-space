@@ -1,5 +1,3 @@
-import React from "react";
-
 interface WaveSeparatorProps {
     position?: "top" | "bottom";
     className?: string; // Text color class for fill, e.g. "text-white"

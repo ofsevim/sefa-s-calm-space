@@ -2,7 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Scale, FileCheck, Users, Database, Shield, AlertCircle, Mail, Phone } from "lucide-react";
+import { Scale, FileCheck, Users, Database, Shield, AlertCircle, Mail } from "lucide-react";
 
 const KVKK = () => {
     return (

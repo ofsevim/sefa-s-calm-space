@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, type ElementType } from "react";
 import { services } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 import { DynamicIcon } from "@/components/DynamicIcon";
@@ -12,10 +12,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
 
+interface ServiceItem {
+  title: string;
+  description: string;
+  icon: string | ElementType;
+  color: string;
+  iconColor: string;
+  image?: string;
+}
+
 export const ServicesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [servicesList, setServicesList] = useState(services);
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(services);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +33,7 @@ export const ServicesSection = () => {
         const docRef = doc(db, "settings", "services");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().items) {
-          setServicesList(docSnap.data().items);
+          setServicesList(docSnap.data().items as ServiceItem[]);
         }
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -67,7 +76,7 @@ export const ServicesSection = () => {
             const IconComponent = service.icon;
             return (
               <motion.div
-                key={index}
+                key={slugify(service.title)}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -90,7 +99,7 @@ export const ServicesSection = () => {
 
                   {/* Image Overlay */}
                   <img
-                    src={(service as any).image || [
+                    src={service.image || [
                       "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&auto=format&fit=crop",
                       "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
                       "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
@@ -99,6 +108,9 @@ export const ServicesSection = () => {
                       "https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop"
                     ][index % 6]}
                     alt={service.title}
+                    width={800}
+                    height={450}
+                    loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';

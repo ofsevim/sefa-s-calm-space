@@ -64,10 +64,10 @@ firebase deploy --only storage:rules
 ## What These Rules Do
 
 ### Firestore Rules
-- **Public Read**: Content, settings, services, FAQs, working hours, and media are readable by everyone
-- **Authenticated Write**: Only logged-in admins can modify the above collections
-- **Appointments**: Anyone can create (book appointments), only admins can manage
-- **Messages**: Anyone can send messages, only admins can view/manage
+- **Public Read**: Site content is public; notification settings are admin-only
+- **Admin Write**: Writes require the `admin` custom claim or the configured administrator e-mail
+- **Appointments**: Public creation is schema-validated and each date/time slot has a deterministic document ID
+- **Messages**: Public creation is schema-validated; only admins can view/manage records
 
 ### Storage Rules
 - **Public Read**: All uploaded files (images, etc.) are publicly accessible
@@ -96,10 +96,10 @@ After deploying, verify the rules are active:
 
 ## Security Notes
 
-⚠️ **Important**: These rules allow public read access to your data. This is intentional for a public website, but be aware:
+⚠️ **Important**: Public site content is intentionally readable, but appointment and message data is never public:
 - Anyone can read your content, services, FAQs, etc.
-- Only authenticated users (admins) can modify data
-- Consider adding rate limiting for production use
+- Only explicitly authorized administrators can modify or inspect private data
+- Enable Firebase App Check enforcement for production
 
 For production environments, consider:
 1. Adding rate limiting

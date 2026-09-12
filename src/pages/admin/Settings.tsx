@@ -5,11 +5,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash, Save } from "lucide-react";
+import { Loader2, Plus, Trash, Save, Bell, Send, MessageCircle, HelpCircle } from "lucide-react";
 import { parseTimeRange, type WorkingHour } from "@/lib/booking";
+import {
+    getNotificationSettings,
+    saveNotificationSettings,
+    sendTelegramTestNotification,
+    type NotificationSettings,
+} from "@/lib/notificationService";
 
 type Service = {
     title: string;
@@ -44,9 +52,21 @@ export default function Settings() {
     // Working Hours State
     const [workingHours, setWorkingHours] = useState<WorkingHour[]>([]);
 
+    // Notification Settings State
+    const [notificationData, setNotificationData] = useState<NotificationSettings>({
+        telegramEnabled: false,
+        whatsappNumber: "",
+    });
+    const [testingTelegram, setTestingTelegram] = useState(false);
+    const [savingNotifications, setSavingNotifications] = useState(false);
+
     useEffect(() => {
         const fetchAllSettings = async () => {
             try {
+                // Fetch Notification Settings
+                const notifSettings = await getNotificationSettings();
+                setNotificationData(notifSettings);
+
                 // Fetch General Settings
                 const generalRef = doc(db, "settings", "general");
                 const generalSnap = await getDoc(generalRef);
@@ -178,6 +198,55 @@ export default function Settings() {
         }
     };
 
+    // Notification Handlers
+    const saveNotifications = async () => {
+        setSavingNotifications(true);
+        try {
+            await saveNotificationSettings(notificationData);
+            toast({
+                title: "Başarılı 🎉",
+                description: "Bildirim ayarları başarıyla kaydedildi.",
+            });
+        } catch (error) {
+            console.error("Bildirim ayarları kaydedilemedi:", error);
+            toast({
+                variant: "destructive",
+                title: "Hata",
+                description: "Bildirim ayarları kaydedilirken bir hata oluştu.",
+            });
+        } finally {
+            setSavingNotifications(false);
+        }
+    };
+
+    const handleTestTelegram = async () => {
+        setTestingTelegram(true);
+        try {
+            const res = await sendTelegramTestNotification();
+
+            if (res.success) {
+                toast({
+                    title: "Test Başarılı! 🎉",
+                    description: "Telegram botunuza test mesajı ulaştı. Telefonunuzu kontrol edebilirsiniz.",
+                });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Test Mesajı Gönderilemedi",
+                    description: res.error || "Lütfen Bot Token ve Chat ID bilgilerinizi kontrol edin.",
+                });
+            }
+        } catch (error: unknown) {
+            toast({
+                variant: "destructive",
+                title: "Bağlantı Hatası",
+                description: error instanceof Error ? error.message : "Bilinmeyen bir hata oluştu.",
+            });
+        } finally {
+            setTestingTelegram(false);
+        }
+    };
+
     if (fetching) {
         return <div className="flex items-center justify-center h-64">Yükleniyor...</div>;
     }
@@ -187,10 +256,13 @@ export default function Settings() {
             <h2 className="text-3xl font-bold tracking-tight">Ayarlar</h2>
 
             <Tabs defaultValue="general" className="w-full">
-                <TabsList>
-                    <TabsTrigger value="general">Genel</TabsTrigger>
-                    <TabsTrigger value="services">Hizmetler</TabsTrigger>
-                    <TabsTrigger value="hours">Çalışma Saatleri</TabsTrigger>
+                <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 gap-1">
+                    <TabsTrigger value="general" className="py-2.5">Genel</TabsTrigger>
+                    <TabsTrigger value="services" className="py-2.5">Hizmetler</TabsTrigger>
+                    <TabsTrigger value="hours" className="py-2.5">Çalışma Saatleri</TabsTrigger>
+                    <TabsTrigger value="notifications" className="py-2.5 flex items-center justify-center gap-1.5">
+                        <Bell className="h-4 w-4" /> Bildirimler
+                    </TabsTrigger>
                 </TabsList>
 
                 {/* General Tab */}
@@ -298,6 +370,155 @@ export default function Settings() {
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Kaydet
                             </Button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Notifications Tab */}
+                <TabsContent value="notifications" className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl flex items-center gap-2">
+                                        <Send className="h-5 w-5 text-sky-500" />
+                                        Telegram Anlık Bildirimleri
+                                    </CardTitle>
+                                    <CardDescription className="mt-1">
+                                        Danışanlar web sitenizden randevu aldığında veya mesaj gönderdiğinde cebinize anlık bildirim gelsin.
+                                    </CardDescription>
+                                </div>
+                                <Badge variant={notificationData.telegramEnabled ? "default" : "secondary"}>
+                                    {notificationData.telegramEnabled ? "Aktif" : "Pasif"}
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Switch */}
+                            <div className="flex items-center justify-between p-4 bg-muted/40 rounded-xl border">
+                                <div className="space-y-0.5">
+                                    <Label htmlFor="telegram-switch" className="font-semibold text-base">
+                                        Telegram Bildirimlerini Etkinleştir
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground">
+                                        Yeni randevu ve iletişim talepleri belirlenen Telegram sohbetine anında iletilir.
+                                    </p>
+                                </div>
+                                <Switch
+                                    id="telegram-switch"
+                                    checked={notificationData.telegramEnabled}
+                                    onCheckedChange={(checked) =>
+                                        setNotificationData({ ...notificationData, telegramEnabled: checked })
+                                    }
+                                />
+                            </div>
+
+                            <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-4 text-sm text-sky-950">
+                                Bot anahtarı ve sohbet kimliği tarayıcıya gönderilmez. Değerler Firebase Secret Manager'da
+                                <code className="mx-1">TELEGRAM_BOT_TOKEN</code> ve <code>TELEGRAM_CHAT_ID</code> adlarıyla saklanır.
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center gap-3 pt-2">
+                                <Button
+                                    onClick={saveNotifications}
+                                    disabled={savingNotifications}
+                                    className="gap-2"
+                                >
+                                    {savingNotifications ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Save className="h-4 w-4" />
+                                    )}
+                                    Bildirim Ayarlarını Kaydet
+                                </Button>
+
+                                <Button
+                                    variant="outline"
+                                    onClick={handleTestTelegram}
+                                    disabled={testingTelegram}
+                                    className="gap-2"
+                                >
+                                    {testingTelegram ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Send className="h-4 w-4 text-sky-500" />
+                                    )}
+                                    Test Bildirimi Gönder
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* WhatsApp Guidance Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <MessageCircle className="h-5 w-5 text-emerald-600" />
+                                Danışan WhatsApp Hızlı İletişim Hattı
+                            </CardTitle>
+                            <CardDescription>
+                                Danışan form gönderdikten sonra başarı ekranında çıkan WhatsApp butonu için telefon numarası.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2 max-w-md">
+                                <Label htmlFor="whatsappNumber">WhatsApp Telefon Numarası</Label>
+                                <Input
+                                    id="whatsappNumber"
+                                    placeholder="+90 555 123 4567"
+                                    value={notificationData.whatsappNumber || ""}
+                                    onChange={(e) =>
+                                        setNotificationData({
+                                            ...notificationData,
+                                            whatsappNumber: e.target.value,
+                                        })
+                                    }
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Boş bırakırsanız Genel Ayarlar sekmesindeki telefon numarası kullanılır.
+                                </p>
+                            </div>
+                            <Button
+                                onClick={saveNotifications}
+                                disabled={savingNotifications}
+                                variant="secondary"
+                                size="sm"
+                            >
+                                WhatsApp Numarasını Kaydet
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Quick Telegram Setup Guide */}
+                    <Card className="border-sky-200 bg-sky-50/40 dark:bg-sky-950/20 dark:border-sky-900">
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2 text-sky-900 dark:text-sky-300">
+                                <HelpCircle className="h-5 w-5 text-sky-600" />
+                                💡 2 Dakikada Telegram Botu Nasıl Kurulur?
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-sm space-y-3 text-sky-950 dark:text-sky-200">
+                            <ol className="list-decimal list-inside space-y-2 leading-relaxed">
+                                <li>
+                                    Telegram uygulamasında arama yerine <b>@BotFather</b> yazın ve sohbeti başlatın.
+                                </li>
+                                <li>
+                                    Sohbete <code>/newbot</code> komutunu gönderin. Botunuz için bir isim (örn: <i>Sefa Bildirim</i>) ve sonu <code>bot</code> ile biten bir kullanıcı adı (örn: <i>sefasevim_bildirim_bot</i>) yazın.
+                                </li>
+                                <li>
+                                    BotFather'ın verdiği anahtarı terminalde <code>npx firebase-tools functions:secrets:set TELEGRAM_BOT_TOKEN</code> komutuyla güvenli kasaya kaydedin.
+                                </li>
+                                <li>
+                                    Sohbet kimliğini <code>npx firebase-tools functions:secrets:set TELEGRAM_CHAT_ID</code> komutuyla kaydedip Functions'ı yeniden dağıtın.
+                                </li>
+                                <li>
+                                    <b>Önemli:</b> Telegram kuralları gereği botların size mesaj atabilmesi için oluşturduğunuz botun sohbetine gidip bir kez <b>"Başlat" (/start)</b> butonuna tıklayın.
+                                </li>
+                                <li>
+                                    Yukarıdaki <b>"Test Bildirimi Gönder"</b> butonuna basarak telefonunuza gelen bildirimi hemen görün!
+                                </li>
+                            </ol>
                         </CardContent>
                     </Card>
                 </TabsContent>

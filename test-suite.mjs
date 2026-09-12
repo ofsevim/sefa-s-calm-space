@@ -3,6 +3,7 @@ import { parseImageUrl, resolveImageUrl, isImgbbViewerUrl, isValidUrl } from "./
 import { slugify } from "./src/lib/slugify.ts";
 import { services } from "./src/data/content.ts";
 import { combineAppointmentDate, generateTimeSlots, getAppointmentDocumentId, parseTimeRange } from "./src/lib/booking.ts";
+import { formatWhatsappLink, sendTelegramNotification } from "./src/lib/notificationService.ts";
 
 let passedCount = 0;
 let totalCount = 0;
@@ -161,12 +162,43 @@ runTest("3.5 Randevu belge kimliğini aynı slot için deterministik üretme", (
     assert.ok(getAppointmentDocumentId(appointment).startsWith("slot_"));
 });
 
+// --- GRUP 4: Bildirim & WhatsApp Entegrasyon Testleri ---
+console.log("\n📁 4. Bildirim ve WhatsApp Entegrasyon Testleri:");
+
+runTest("4.1 formatWhatsappLink standart Türkiye numarası (0555...)", () => {
+    const link = formatWhatsappLink("0555 123 45 67", "Randevu talebi");
+    assert.strictEqual(link, "https://wa.me/905551234567?text=Randevu%20talebi");
+});
+
+runTest("4.2 formatWhatsappLink uluslararası format (+90 532...)", () => {
+    const link = formatWhatsappLink("+90 532 999 88 77", "Merhaba & Test");
+    assert.strictEqual(link, "https://wa.me/905329998877?text=Merhaba%20%26%20Test");
+});
+
+runTest("4.3 formatWhatsappLink başında 0 olmayan 10 haneli numara", () => {
+    const link = formatWhatsappLink("5321112233", "Danışmanlık");
+    assert.strictEqual(link, "https://wa.me/905321112233?text=Dan%C4%B1%C5%9Fmanl%C4%B1k");
+});
+
+await runAsyncTest("4.4 sendTelegramNotification kapalıyken güvenli hata dönmesi", async () => {
+    const res = await sendTelegramNotification("Test", { telegramEnabled: false });
+    assert.strictEqual(res.success, false);
+    assert.strictEqual(res.error, "Telegram bildirimleri etkin değil.");
+});
+
+await runAsyncTest("4.5 sendTelegramNotification token veya chatId eksikken hata dönmesi", async () => {
+    const res = await sendTelegramNotification("Test", { telegramEnabled: true, telegramBotToken: "", telegramChatId: "" });
+    assert.strictEqual(res.success, false);
+    assert.ok(res.error.includes("eksik"));
+});
+
 console.log("\n==========================================");
 console.log(`📊 Test Sonucu: ${passedCount} / ${totalCount} test başarıyla tamamlandı!`);
 if (passedCount === totalCount) {
     console.log("🎉 Tüm test senaryoları eksiksiz GEÇTİ.");
+    console.log("==========================================\n");
+    process.exit(0);
 } else {
     console.error("⚠️ Bazı testler başarısız oldu.");
     process.exit(1);
 }
-console.log("==========================================\n");

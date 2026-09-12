@@ -3,9 +3,8 @@ import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHeroContent } from "@/hooks/useContent";
-import { WaveSeparator } from "@/components/ui/WaveSeparator";
 import { useState } from "react";
-import heroPortrait from "@/assets/sefa-sevim.png";
+import heroPortrait from "@/assets/sefa-sevim.webp";
 import {
   Dialog,
   DialogContent,
@@ -141,6 +140,9 @@ export const HeroSection = () => {
                   <img
                     src={parseImageUrl(content.heroImage) || heroPortrait}
                     alt={content.title}
+                    width={511}
+                    height={601}
+                    fetchPriority="high"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.currentTarget;

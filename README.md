@@ -1,73 +1,65 @@
-# Welcome to your Lovable project
+# Sefa's Calm Space
 
-## Project info
+Sefa Sevim için hazırlanmış psikolojik danışmanlık sitesi ve Firebase tabanlı yönetim paneli.
 
-**URL**: https://lovable.dev/projects/0fe4307b-9b48-43fa-b364-47590dd8500e
+## Teknoloji
 
-## How can I edit this code?
+- React 18, TypeScript, Vite ve Tailwind CSS
+- Firebase Authentication, Firestore, Storage, App Check ve Cloud Functions
+- Radix UI / shadcn-ui, React Hook Form ve Zod
 
-There are several ways of editing your application.
+## Yerel kurulum
 
-**Use Lovable**
+Node.js 20 veya üzeri ve npm kullanın.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0fe4307b-9b48-43fa-b364-47590dd8500e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm ci
+copy .env.example .env.local
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+`.env.local` içindeki Firebase web uygulaması değerlerini Firebase Console'dan doldurun. Üretimde App Check için `VITE_RECAPTCHA_V3_SITE_KEY` de tanımlanmalıdır. `.env*` dosyaları Git'e dahil edilmez; yalnızca `.env.example` sürüm kontrolündedir.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Kalite kontrolleri
 
-**Use GitHub Codespaces**
+```bash
+npm run check
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Bu komut sırasıyla TypeScript, ESLint, birim testleri ve üretim derlemesini çalıştırır.
 
-## What technologies are used for this project?
+## Firebase kurulumu
 
-This project is built with:
+Proje kimliği `.firebaserc` içinde `sefasevim-9d8f8` olarak ayarlıdır. Güvenlik kuralları yalnızca `admin: true` custom claim'ine veya geçiş dönemi için `sefa.sevim@outlook.com` hesabına yönetici yetkisi verir.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+npx firebase-tools login
+npx firebase-tools use sefasevim-9d8f8
+npx firebase-tools deploy --only firestore:rules,firestore:indexes,storage
+```
 
-## How can I deploy this project?
+Telegram bildirimleri tarayıcıdan gönderilmez. Bot anahtarı ve sohbet kimliği Secret Manager'da saklanır:
 
-Simply open [Lovable](https://lovable.dev/projects/0fe4307b-9b48-43fa-b364-47590dd8500e) and click on Share -> Publish.
+```bash
+npx firebase-tools functions:secrets:set TELEGRAM_BOT_TOKEN
+npx firebase-tools functions:secrets:set TELEGRAM_CHAT_ID
+npm --prefix functions install
+npx firebase-tools deploy --only functions
+```
 
-## Can I connect a custom domain to my Lovable project?
+Ardından yönetim panelinde **Ayarlar → Bildirimler** bölümünden bildirimleri etkinleştirin. Cloud Functions yeni randevu ve mesaj belgelerini dinler.
 
-Yes, you can!
+## Veri modeli
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `content/{hero,about}`: ana sayfa içerikleri
+- `settings/{general,services,workingHours,faqs,media}`: herkese açık site ayarları
+- `settings/notifications`: yalnızca yöneticinin okuyabildiği bildirim ayarları
+- `appointments/slot_*`: benzersiz randevu talepleri
+- `messages/*`: iletişim talepleri
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Yeni herkese açık yazmalar Firestore Rules tarafından alan, tür, boyut, tarih ve onay sürümü açısından doğrulanır. Firebase Console'da App Check zorlamasını Firestore, Storage ve Functions için etkinleştirin.
+
+## Yayın
+
+`npm run build` çıktısı `dist/` klasörüne yazılır. SPA yönlendirmesi `public/_redirects`, güvenlik başlıkları `public/_headers`, arama motoru rotaları ise `public/sitemap.xml` tarafından sağlanır.
+

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Helmet } from "react-helmet-async";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -73,6 +74,7 @@ export default function Login() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <Helmet><title>Yönetici Girişi</title><meta name="robots" content="noindex, nofollow" /></Helmet>
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle>Yönetici Girişi</CardTitle>

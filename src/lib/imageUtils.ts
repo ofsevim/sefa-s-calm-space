@@ -33,7 +33,7 @@ export function parseImageUrl(rawInput: string): string {
     }
 
     // 3. Markdown ![...](...) kodunu kontrol et
-    const mdMatch = str.match(/!\[.*?\]\((https?:\/\/[^\s\)]+)\)/i);
+    const mdMatch = str.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/i);
     if (mdMatch && mdMatch[1]) {
         return cleanUrl(mdMatch[1]);
     }

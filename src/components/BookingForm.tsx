@@ -26,13 +26,14 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { tr } from "date-fns/locale";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, MessageCircle } from "lucide-react";
 import {
     combineAppointmentDate,
     generateTimeSlots,
     getAppointmentDocumentId,
     type WorkingHour,
 } from "@/lib/booking";
+import { formatWhatsappLink } from "@/lib/notificationService";
 
 const formSchema = z.object({
     name: z.string().trim().min(2, "İsim en az 2 karakter olmalıdır.").max(100),
@@ -53,7 +54,31 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [workingHoursConfig, setWorkingHoursConfig] = useState<WorkingHour[]>([]);
+    const [submittedInfo, setSubmittedInfo] = useState<{
+        name: string;
+        phone: string;
+        date: Date;
+        time: string;
+        whatsappUrl?: string;
+    } | null>(null);
+    const [whatsappContact, setWhatsappContact] = useState<string>("");
     const { toast } = useToast();
+
+    // Fetch contact phone for WhatsApp direct message option
+    useEffect(() => {
+        const fetchContactPhone = async () => {
+            try {
+                const generalRef = doc(db, "settings", "general");
+                const generalSnap = await getDoc(generalRef);
+                if (generalSnap.exists()) {
+                    setWhatsappContact(generalSnap.data().whatsappNumber || generalSnap.data().phone || "");
+                }
+            } catch {
+                // Fallback to default
+            }
+        };
+        fetchContactPhone();
+    }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -116,6 +141,25 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 consent_version: "2026-09-13",
             });
 
+            // WhatsApp linkini hazırla
+            const contactPhone = whatsappContact || "+905551234567";
+            const formattedDateStr = appointmentDate.toLocaleDateString("tr-TR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                weekday: "long",
+            });
+            const waText = `Merhaba, web siteniz üzerinden randevu talebi oluşturdum.\n\n👤 Danışan: ${values.name.trim()}\n📅 Tarih: ${formattedDateStr}\n⏰ Saat: ${values.time}\n📞 Telefon: ${values.phone.trim()}`;
+            const waLink = formatWhatsappLink(contactPhone, waText);
+
+            setSubmittedInfo({
+                name: values.name.trim(),
+                phone: values.phone.trim(),
+                date: appointmentDate,
+                time: values.time,
+                whatsappUrl: waLink,
+            });
+
             toast({
                 title: "Randevu Talebi Alındı",
                 description: "En kısa sürede size dönüş yapılacaktır.",
@@ -134,6 +178,53 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
         } finally {
             setLoading(false);
         }
+    }
+
+    if (submittedInfo) {
+        return (
+            <div className="text-center py-8 px-4 space-y-5 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl animate-in fade-in-50 duration-300">
+                <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                    <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Randevu Talebiniz Alındı!</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto">
+                        Sayın <b>{submittedInfo.name}</b>, randevu talebiniz sisteme başarıyla iletildi. En kısa sürede sizinle iletişime geçilecektir.
+                    </p>
+                    <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        {submittedInfo.date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric", weekday: "long" })} - Saat: {submittedInfo.time}
+                    </p>
+                </div>
+                {submittedInfo.whatsappUrl && (
+                    <div className="pt-2 flex flex-col items-center">
+                        <a
+                            href={submittedInfo.whatsappUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium px-5 py-3 rounded-xl shadow-md transition-all hover:scale-105 text-sm"
+                        >
+                            <MessageCircle className="w-5 h-5" />
+                            Danışmanınıza WhatsApp'tan Yazın
+                        </a>
+                        <p className="text-xs text-muted-foreground mt-2 max-w-xs">
+                            Dilerseniz randevu detayınızı danışmanınıza WhatsApp üzerinden de hemen iletebilirsiniz.
+                        </p>
+                    </div>
+                )}
+                <div className="pt-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            setSubmittedInfo(null);
+                            form.reset();
+                        }}
+                        className="text-sm"
+                    >
+                        Yeni Randevu Oluştur
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -218,22 +309,24 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                                     locale={tr}
                                     className="w-full p-3"
                                     classNames={{
-                                        months: "flex w-full",
-                                        month: "w-full space-y-3",
+                                        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                        month: "space-y-4 w-full",
                                         caption: "flex justify-center pt-1 relative items-center mb-2",
-                                        caption_label: "text-sm font-medium",
+                                        caption_label: "text-sm font-medium text-foreground",
                                         nav: "space-x-1 flex items-center",
-                                        nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                                        table: "w-full border-collapse",
-                                        head_row: "flex w-full",
-                                        head_cell: "text-muted-foreground w-full font-normal text-[0.8rem] flex-1",
-                                        row: "flex w-full mt-1",
-                                        cell: "flex-1 text-center text-sm p-0 relative",
-                                        day: "h-9 w-full p-0 font-normal hover:bg-accent rounded-md",
-                                        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-                                        day_today: "bg-accent text-accent-foreground",
-                                        day_outside: "text-muted-foreground opacity-50",
-                                        day_disabled: "text-muted-foreground opacity-50",
+                                        nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 border border-input rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
+                                        nav_button_previous: "absolute left-1",
+                                        nav_button_next: "absolute right-1",
+                                        table: "w-full border-collapse space-y-1",
+                                        head_row: "flex w-full justify-between mb-1",
+                                        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center",
+                                        row: "flex w-full mt-2 justify-between",
+                                        cell: "text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+                                        day: "h-9 w-9 p-0 font-normal rounded-md hover:bg-sage hover:text-white transition-colors aria-selected:opacity-100 flex items-center justify-center cursor-pointer",
+                                        day_selected: "bg-sage text-white hover:bg-sage-dark hover:text-white focus:bg-sage focus:text-white font-medium",
+                                        day_today: "border border-sage text-sage font-semibold",
+                                        day_outside: "text-muted-foreground opacity-30",
+                                        day_disabled: "text-muted-foreground opacity-20 hover:bg-transparent hover:text-muted-foreground cursor-not-allowed",
                                         day_hidden: "invisible",
                                     }}
                                 />
@@ -247,26 +340,32 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                     control={form.control}
                     name="time"
                     render={({ field }) => (
-                        <FormItem className="flex flex-col">
+                        <FormItem>
                             <FormLabel className="text-sm font-medium">Randevu Saati</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value} disabled={!selectedDate || timeSlots.length === 0}>
+                            <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                disabled={!selectedDate || timeSlots.length === 0}
+                            >
                                 <FormControl>
                                     <SelectTrigger className="h-11 rounded-lg">
-                                        <SelectValue placeholder="Saat seçiniz" />
+                                        <SelectValue
+                                            placeholder={
+                                                !selectedDate
+                                                    ? "Önce tarih seçiniz"
+                                                    : timeSlots.length === 0
+                                                        ? "Uygun saat bulunamadı"
+                                                        : "Saat seçiniz"
+                                            }
+                                        />
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="max-h-[200px]">
-                                    {timeSlots.length > 0 ? (
-                                        timeSlots.map((time) => (
-                                            <SelectItem key={time} value={time}>
-                                                {time}
-                                            </SelectItem>
-                                        ))
-                                    ) : (
-                                        <div className="p-3 text-center text-sm text-muted-foreground">
-                                            Lütfen önce tarih seçiniz
-                                        </div>
-                                    )}
+                                <SelectContent>
+                                    {timeSlots.map((time) => (
+                                        <SelectItem key={time} value={time}>
+                                            {time}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                             <FormMessage />

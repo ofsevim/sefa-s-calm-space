@@ -130,9 +130,10 @@ import {
     Tv,
     Watch,
     Webcam,
+    type LucideIcon,
 } from "lucide-react";
 
-const icons: { [key: string]: any } = {
+const icons: Record<string, LucideIcon> = {
     User,
     Users,
     Brain,

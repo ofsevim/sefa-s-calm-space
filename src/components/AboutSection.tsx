@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { credentials } from "@/data/content";
-import heroPortrait from "@/assets/sefa-sevim-about.png";
+import heroPortrait from "@/assets/sefa-sevim-about.webp";
 import { useAboutContent } from "@/hooks/useContent";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -62,6 +62,9 @@ export const AboutSection = () => {
                 <img
                   src={aboutImage}
                   alt="Sefa Sevim - Psikolojik Danışman"
+                  width={529}
+                  height={568}
+                  loading="lazy"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.currentTarget;

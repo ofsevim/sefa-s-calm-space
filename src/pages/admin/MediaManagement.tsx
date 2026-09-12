@@ -78,6 +78,8 @@ export default function MediaManagement() {
     // Load existing image URL from Firestore and all images
     useEffect(() => {
         loadData();
+        // loadData intentionally runs once; handlers expose subsequent refreshes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadData = async () => {

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { onIdTokenChanged, signOut, type User } from "firebase/auth";
 import { isAdminUser } from "@/lib/adminAuth";
+import { Helmet } from "react-helmet-async";
 
 export default function AdminLayout() {
     const [user, setUser] = useState<User | null>(null);
@@ -37,6 +38,7 @@ export default function AdminLayout() {
 
     return (
         <SidebarProvider>
+            <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
             <AdminSidebar />
             <main className="w-full">
                 <div className="p-4 border-b flex items-center gap-4">

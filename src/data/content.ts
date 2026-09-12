@@ -18,7 +18,6 @@ import {
     Phone,
     MapPin,
     Instagram,
-    Linkedin,
 } from "lucide-react";
 
 export const services = [
