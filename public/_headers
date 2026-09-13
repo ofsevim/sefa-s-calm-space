@@ -4,3 +4,42 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
   Content-Security-Policy: default-src 'self'; script-src 'self' https://apis.google.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseappcheck.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://r.jina.ai https://europe-west1-sefasevim-9d8f8.cloudfunctions.net; frame-src 'self' https://*.firebaseapp.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests;
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/hizmet/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/gizlilik
+  Cache-Control: public, max-age=0, must-revalidate
+
+/kvkk
+  Cache-Control: public, max-age=0, must-revalidate
+
+/admin
+  Cache-Control: private, max-age=0, must-revalidate
+
+/admin/*
+  Cache-Control: private, max-age=0, must-revalidate
+
+/favicon.ico
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/favicon.svg
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/og-image.png
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/robots.txt
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600, must-revalidate

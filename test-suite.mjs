@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { readFileSync } from "node:fs";
 import { parseImageUrl, resolveImageUrl, isImgbbViewerUrl, isValidUrl } from "./src/lib/imageUtils.ts";
 import { slugify } from "./src/lib/slugify.ts";
 import { services } from "./src/data/content.ts";
@@ -178,6 +179,44 @@ runTest("4.2 formatWhatsappLink uluslararası format (+90 532...)", () => {
 runTest("4.3 formatWhatsappLink başında 0 olmayan 10 haneli numara", () => {
     const link = formatWhatsappLink("5321112233", "Danışmanlık");
     assert.strictEqual(link, "https://wa.me/905321112233?text=Dan%C4%B1%C5%9Fmanl%C4%B1k");
+});
+
+// --- GRUP 5: Üretim Cache Politikası Testleri ---
+console.log("\n📁 5. Üretim Cache Politikası Testleri:");
+
+const headersConfig = readFileSync(new URL("./public/_headers", import.meta.url), "utf8");
+
+runTest("5.1 İçerik hash'li asset'ler immutable cache kullanıyor", () => {
+    assert.match(
+        headersConfig,
+        /(?:^|\n)\/assets\/\*\r?\n\s+Cache-Control:\s*public,\s*max-age=31536000,\s*immutable/,
+    );
+});
+
+runTest("5.2 HTML ve SPA rotaları her dağıtımda yeniden doğrulanıyor", () => {
+    ["/", "/index.html", "/hizmet/*", "/gizlilik", "/kvkk"].forEach((route) => {
+        const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        assert.match(
+            headersConfig,
+            new RegExp(`(?:^|\\n)${escapedRoute}\\r?\\n\\s+Cache-Control:\\s*public,\\s*max-age=0,\\s*must-revalidate`),
+            `${route} için yeniden doğrulama politikası eksik`,
+        );
+    });
+});
+
+runTest("5.3 Admin rotaları paylaşımlı önbellekte tutulmuyor", () => {
+    ["/admin", "/admin/*"].forEach((route) => {
+        const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        assert.match(
+            headersConfig,
+            new RegExp(`(?:^|\\n)${escapedRoute}\\r?\\n\\s+Cache-Control:\\s*private,\\s*max-age=0,\\s*must-revalidate`),
+            `${route} için private yeniden doğrulama politikası eksik`,
+        );
+    });
+});
+
+runTest("5.4 Geri/ileri önbelleğini devre dışı bırakan no-store kullanılmıyor", () => {
+    assert.doesNotMatch(headersConfig, /Cache-Control:[^\r\n]*\bno-store\b/i);
 });
 
 console.log("\n==========================================");

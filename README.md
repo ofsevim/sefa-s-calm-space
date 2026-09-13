@@ -64,3 +64,5 @@ Yeni herkese açık yazmalar Firestore Rules tarafından alan, tür, boyut, tari
 ## Yayın
 
 `npm run build` çıktısı `dist/` klasörüne yazılır. SPA yönlendirmesi `public/_redirects`, güvenlik başlıkları `public/_headers`, arama motoru rotaları ise `public/sitemap.xml` tarafından sağlanır.
+
+Vite, JavaScript ve CSS dosyalarını içerik hash'li adlarla üretir. `public/_headers` bu `/assets/*` dosyalarını bir yıl boyunca `immutable` olarak önbelleğe alır; HTML ve SPA rotalarını ise `must-revalidate` ile her dağıtımda yeniden doğrular. Sabit isimli favicon, sosyal paylaşım görseli, robots ve sitemap dosyaları saatlik olarak yeniden doğrulanır. Böylece yeni sürümde HTML güncel hash'li dosyalara yönelirken değişmemiş asset'ler tarayıcı önbelleğinden hızlıca yüklenir.
