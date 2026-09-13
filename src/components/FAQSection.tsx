@@ -19,7 +19,7 @@ interface FAQItem {
 
 export const FAQSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
   const [faqs, setFaqs] = useState<FAQItem[]>(defaultFaqs);
 
   useEffect(() => {

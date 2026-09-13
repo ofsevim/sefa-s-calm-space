@@ -25,7 +25,7 @@ import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/fires
 
 export const ContactSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
   const { toast } = useToast();
 
   const [contactData, setContactData] = useState(contactInfo);
@@ -153,7 +153,7 @@ export const ContactSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="bg-card rounded-3xl p-8 lg:p-10 shadow-card">
+            <div className="bg-card rounded-3xl p-6 sm:p-8 lg:p-10 shadow-card">
               <h3 className="text-2xl font-heading font-semibold text-foreground mb-6">
                 Mesaj Gönderin
               </h3>
@@ -217,7 +217,7 @@ export const ContactSection = () => {
                   />
                 </div>
 
-                <div className="absolute -left-[10000px]" aria-hidden="true">
+                <div className="sr-only" aria-hidden="true">
                   <label htmlFor="website">Web sitesi</label>
                   <input id="website" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
                 </div>
@@ -291,7 +291,7 @@ export const ContactSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.9 }}
-              className="bg-gradient-sage rounded-3xl p-8 text-primary-foreground"
+              className="bg-gradient-sage rounded-3xl p-6 sm:p-8 text-primary-foreground"
             >
               <div className="flex items-center gap-3 mb-4">
                 <Calendar className="w-6 h-6" />
@@ -303,7 +303,7 @@ export const ContactSection = () => {
                 Size en uygun gün ve saati seçerek hemen online randevu
                 oluşturabilirsiniz.
               </p>
-              <div className="bg-primary-foreground/10 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="bg-primary-foreground/10 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button
@@ -314,7 +314,7 @@ export const ContactSection = () => {
                       Randevu Oluştur
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                     <DialogHeader>
                       <DialogTitle>Randevu Oluştur</DialogTitle>
                       <DialogDescription>

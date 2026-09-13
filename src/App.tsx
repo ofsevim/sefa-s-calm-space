@@ -6,6 +6,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import { Navigate } from "react-router-dom";
+import { ScrollManager } from "@/components/ScrollManager";
 
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -34,6 +35,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollManager />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />

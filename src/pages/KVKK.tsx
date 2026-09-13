@@ -15,7 +15,7 @@ const KVKK = () => {
                 />
             </Helmet>
 
-            <main className="overflow-hidden">
+            <main className="overflow-x-clip min-h-screen">
                 <Navbar />
 
                 <section className="pt-32 pb-20 bg-gradient-calm min-h-screen">

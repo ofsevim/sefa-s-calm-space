@@ -22,7 +22,13 @@ export const HeroSection = () => {
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const navbarHeight = 80;
+      const elementTop = element.getBoundingClientRect().top;
+      const targetY = window.scrollY + elementTop - navbarHeight;
+      window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: "smooth",
+      });
     }
   };
 
@@ -54,7 +60,6 @@ export const HeroSection = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="w-full"
             >
-
               {loading ? (
                 <div className="flex flex-col items-center lg:items-start gap-4 mb-6 w-full">
                   <Skeleton className="h-10 sm:h-14 md:h-16 w-3/4 rounded-lg" />
@@ -65,7 +70,7 @@ export const HeroSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-tight mb-6"
+                  className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-tight mb-6 break-words"
                 >
                   {content.title}{" "}
                   <span className="text-primary">{content.titleHighlight}</span>
@@ -83,29 +88,29 @@ export const HeroSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
+                  className="text-base sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
                 >
                   {content.description}
                 </motion.p>
               )}
 
               {loading ? (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Skeleton className="h-14 w-40 rounded-full" />
-                  <Skeleton className="h-14 w-40 rounded-full" />
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full sm:w-auto">
+                  <Skeleton className="h-14 w-full sm:w-40 rounded-full" />
+                  <Skeleton className="h-14 w-full sm:w-40 rounded-full" />
                 </div>
               ) : (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full sm:w-auto"
                 >
                   <Button
                     variant="hero"
                     size="xl"
                     onClick={() => setIsDialogOpen(true)}
-                    className="group"
+                    className="group w-full sm:w-auto"
                   >
                     {content.primaryButtonText}
                     <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -114,7 +119,7 @@ export const HeroSection = () => {
                     variant="hero-outline"
                     size="xl"
                     onClick={() => scrollToSection("#hizmetler")}
-                    className="group"
+                    className="group w-full sm:w-auto"
                   >
                     <BookOpen className="w-5 h-5" />
                     {content.secondaryButtonText}
@@ -160,7 +165,7 @@ export const HeroSection = () => {
 
       {/* Randevu Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Randevu Oluştur</DialogTitle>
             <DialogDescription>

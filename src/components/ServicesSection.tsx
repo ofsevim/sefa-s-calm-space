@@ -23,7 +23,7 @@ interface ServiceItem {
 
 export const ServicesSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
   const [servicesList, setServicesList] = useState<ServiceItem[]>(services);
   const navigate = useNavigate();
 
@@ -79,9 +79,8 @@ export const ServicesSection = () => {
                 key={slugify(service.title)}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.15 } }}
-                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover transition-all duration-150 cursor-pointer overflow-hidden flex flex-col"
+                transition={{ duration: 0.5, delay: Math.min(index * 0.08, 0.4) }}
+                className="group relative bg-card rounded-[2rem] shadow-soft hover:shadow-hover sm:hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
                 role="link"
                 tabIndex={0}
                 aria-label={`${service.title} hakkında detaylı bilgi`}

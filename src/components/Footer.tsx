@@ -40,7 +40,13 @@ export const Footer = () => {
     }
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const navbarHeight = 80;
+      const elementTop = element.getBoundingClientRect().top;
+      const targetY = window.scrollY + elementTop - navbarHeight;
+      window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: "smooth",
+      });
     }
   };
 

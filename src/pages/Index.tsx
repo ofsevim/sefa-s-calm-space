@@ -23,7 +23,7 @@ const Index = () => {
         <link rel="canonical" href="https://sefasevim.com" />
       </Helmet>
 
-      <main className="overflow-hidden">
+      <main className="overflow-x-clip min-h-screen">
         <Navbar />
         <HeroSection />
         <AboutSection />

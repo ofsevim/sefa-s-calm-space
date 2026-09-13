@@ -31,23 +31,12 @@ export const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle scroll to hash on mount/update if on home page
-  useEffect(() => {
-    if (location.pathname === "/" && location.hash) {
-      const element = document.querySelector(location.hash);
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      }
-    }
-  }, [location]);
-
   const scrollToSection = (href: string) => {
+    const wasMobileMenuOpen = isMobileMenuOpen;
     setIsMobileMenuOpen(false);
 
     if (location.pathname !== "/") {
@@ -55,12 +44,26 @@ export const Navbar = () => {
       return;
     }
 
-    setTimeout(() => {
+    const performScroll = () => {
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        const navbarHeight = 80;
+        const elementTop = element.getBoundingClientRect().top;
+        const targetY = window.scrollY + elementTop - navbarHeight;
+        window.scrollTo({
+          top: Math.max(0, targetY),
+          behavior: "smooth",
+        });
       }
-    }, 100);
+    };
+
+    // If mobile menu was open, wait for the exit animation to finish
+    // so that DOM unmounting does not cancel the smooth scroll in iOS Safari
+    if (wasMobileMenuOpen) {
+      setTimeout(performScroll, 320);
+    } else {
+      performScroll();
+    }
   };
 
   return (
@@ -68,10 +71,11 @@ export const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? "bg-white/80 backdrop-blur-lg border-b border-sage-light/50 shadow-soft"
-        : "bg-transparent"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/80 backdrop-blur-lg border-b border-sage-light/50 shadow-soft"
+          : "bg-transparent"
+      }`}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">
@@ -151,7 +155,7 @@ export const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden bg-white/95 backdrop-blur-lg border-b border-sage-light/50"
+            className="lg:hidden bg-white/95 backdrop-blur-lg border-b border-sage-light/50 max-h-[calc(100dvh-5rem)] overflow-y-auto"
           >
             <div className="container-custom py-4 space-y-2">
               {navLinks.map((link, index) => (
@@ -191,7 +195,7 @@ export const Navbar = () => {
 
       {/* Randevu Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Randevu Oluştur</DialogTitle>
             <DialogDescription>

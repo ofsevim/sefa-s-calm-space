@@ -10,7 +10,7 @@ import { parseImageUrl } from "@/lib/imageUtils";
 
 export const AboutSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
   const { content } = useAboutContent();
   const [aboutImage, setAboutImage] = useState<string>(heroPortrait);
 
@@ -72,20 +72,20 @@ export const AboutSection = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.5 }}
-                className="absolute -bottom-6 -right-6 glass rounded-2xl p-6 shadow-card pointer-events-none"
+                className="absolute -bottom-4 right-0 sm:-bottom-6 sm:-right-6 glass rounded-2xl p-4 sm:p-6 shadow-card pointer-events-none"
               >
                 <div className="text-center">
-                  <div className="text-4xl font-heading font-bold text-secondary">
+                  <div className="text-3xl sm:text-4xl font-heading font-bold text-secondary">
                     5+
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground font-medium">
                     Yıllık Deneyim
                   </div>
                 </div>
               </motion.div>
 
               {/* Decorative elements */}
-              <div className="absolute -z-10 -top-4 -left-4 w-full h-full rounded-3xl border-2 border-sage-light" />
+              <div className="hidden sm:block absolute -z-10 -top-4 -left-4 w-full h-full rounded-3xl border-2 border-sage-light" />
             </div>
           </motion.div>
 
