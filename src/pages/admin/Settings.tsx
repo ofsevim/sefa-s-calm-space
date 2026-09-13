@@ -80,11 +80,16 @@ export default function Settings() {
 
                 // General Settings
                 if (generalSnap.exists()) {
-                    setGeneralData(generalSnap.data() as typeof generalData);
+                    const data = generalSnap.data();
+                    setGeneralData({
+                        email: typeof data.email === "string" ? data.email : "",
+                        phone: typeof data.phone === "string" ? data.phone : "",
+                        address: typeof data.address === "string" ? data.address : "",
+                    });
                 } else {
                     setGeneralData({
                         email: "iletisim@sefasevim.com",
-                        phone: "+90 555 123 4567",
+                        phone: "",
                         address: "Onikişubat, Kahramanmaraş",
                     });
                 }
@@ -101,7 +106,6 @@ export default function Settings() {
                         { title: "Online Terapi", description: "Evinizin konforunda, güvenli ve etkili online psikolojik danışmanlık hizmeti.", icon: "Monitor", color: "bg-sage-light", iconColor: "text-sage-dark" },
                     ];
                     setServices(defaultServices);
-                    void setDoc(servicesRef, { items: defaultServices });
                 }
 
                 // Working Hours

@@ -15,7 +15,6 @@ import {
     Shield,
     Award,
     Mail,
-    Phone,
     MapPin,
     Instagram,
 } from "lucide-react";
@@ -171,12 +170,6 @@ export const contactInfo = [
         label: "E-posta",
         value: "iletisim@sefasevim.com",
         href: "mailto:iletisim@sefasevim.com",
-    },
-    {
-        icon: Phone,
-        label: "Telefon",
-        value: "+90 555 123 4567",
-        href: "tel:+905551234567",
     },
     {
         icon: MapPin,

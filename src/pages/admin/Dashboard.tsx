@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc, Timestamp } from "firebase/firestore";
+import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc, Timestamp, type DocumentData, type Query } from "firebase/firestore";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,7 @@ export default function Dashboard() {
                 const appointmentsRef = collection(db, "appointments");
                 const messagesRef = collection(db, "messages");
 
-                const safeCount = async (q: any) => {
+                const safeCount = async (q: Query<DocumentData>) => {
                     try {
                         const snap = await getCountFromServer(q);
                         return snap.data().count;

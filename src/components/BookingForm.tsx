@@ -121,7 +121,8 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
         setLoading(true);
         try {
             const appointmentDate = combineAppointmentDate(values.date, values.time);
-            const validSlots = generateTimeSlots(workingHoursConfig, values.date);
+            const config = workingHoursConfig.length > 0 ? workingHoursConfig : defaultWorkingHours;
+            const validSlots = generateTimeSlots(config, values.date);
             if (!validSlots.includes(values.time) || appointmentDate <= new Date()) {
                 throw new Error("Geçersiz veya geçmiş randevu saati");
             }
