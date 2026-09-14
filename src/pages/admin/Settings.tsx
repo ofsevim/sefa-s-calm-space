@@ -478,10 +478,10 @@ export default function Settings() {
                         <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2">
                                 <MessageCircle className="h-5 w-5 text-emerald-600" />
-                                Danışan WhatsApp Hızlı İletişim Hattı
+                                Danışman WhatsApp İletişim Hattı
                             </CardTitle>
                             <CardDescription>
-                                Danışan form gönderdikten sonra başarı ekranında çıkan WhatsApp butonu için telefon numarası.
+                                Yönetim panelinden danışan randevuları onaylandığında gönderilen WhatsApp mesajları ve iletişim için kullanılan telefon numarası.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">

@@ -26,14 +26,13 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { tr } from "date-fns/locale";
-import { Loader2, CheckCircle2, MessageCircle } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import {
     combineAppointmentDate,
     generateTimeSlots,
     getAppointmentDocumentId,
     type WorkingHour,
 } from "@/lib/booking";
-import { formatWhatsappLink } from "@/lib/whatsapp";
 import { workingHours as defaultWorkingHours } from "@/data/content";
 
 const formSchema = z.object({
@@ -60,25 +59,15 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
         phone: string;
         date: Date;
         time: string;
-        whatsappUrl?: string;
     } | null>(null);
-    const [whatsappContact, setWhatsappContact] = useState<string>("");
     const { toast } = useToast();
 
-    // Fetch contact phone & working hours once on mount in parallel
+    // Fetch working hours once on mount
     useEffect(() => {
         const fetchInitialSettings = async () => {
             try {
-                const generalRef = doc(db, "settings", "general");
                 const hoursRef = doc(db, "settings", "workingHours");
-                const [generalSnap, hoursSnap] = await Promise.all([
-                    getDoc(generalRef),
-                    getDoc(hoursRef),
-                ]);
-
-                if (generalSnap.exists()) {
-                    setWhatsappContact(generalSnap.data().whatsappNumber || generalSnap.data().phone || "");
-                }
+                const hoursSnap = await getDoc(hoursRef);
 
                 const config = hoursSnap.exists() && Array.isArray(hoursSnap.data().items)
                     ? (hoursSnap.data().items as WorkingHour[])
@@ -139,29 +128,16 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 consent_version: "2026-09-13",
             });
 
-            // WhatsApp linkini hazırla
-            const formattedDateStr = appointmentDate.toLocaleDateString("tr-TR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                weekday: "long",
-            });
-            const waText = `Merhaba, web siteniz üzerinden randevu talebi oluşturdum.\n\n👤 Danışan: ${values.name.trim()}\n📅 Tarih: ${formattedDateStr}\n⏰ Saat: ${values.time}\n📞 Telefon: ${values.phone.trim()}`;
-            const waLink = whatsappContact
-                ? formatWhatsappLink(whatsappContact, waText)
-                : undefined;
-
             setSubmittedInfo({
                 name: values.name.trim(),
                 phone: values.phone.trim(),
                 date: appointmentDate,
                 time: values.time,
-                whatsappUrl: waLink,
             });
 
             toast({
                 title: "Randevu Talebi Alındı",
-                description: "En kısa sürede size dönüş yapılacaktır.",
+                description: "Talebiniz incelenip onaylandıktan sonra sizinle iletişime geçilecektir.",
             });
             form.reset();
             setSelectedDate(undefined);
@@ -188,28 +164,15 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 <div className="space-y-2">
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Randevu Talebiniz Alındı!</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-                        Sayın <b>{submittedInfo.name}</b>, randevu talebiniz sisteme başarıyla iletildi. En kısa sürede sizinle iletişime geçilecektir.
+                        Sayın <b>{submittedInfo.name}</b>, randevu talebiniz sisteme iletildi. Talebiniz uzmanımız tarafından incelenip onaylandıktan sonra sizinle iletişime geçilecektir.
                     </p>
                     <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                         {submittedInfo.date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric", weekday: "long" })} - Saat: {submittedInfo.time}
                     </p>
                 </div>
-                {submittedInfo.whatsappUrl && (
-                    <div className="pt-2 flex flex-col items-center">
-                        <a
-                            href={submittedInfo.whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium px-5 py-3 rounded-xl shadow-md transition-all hover:scale-105 text-sm"
-                        >
-                            <MessageCircle className="w-5 h-5" />
-                            Danışmanınıza WhatsApp'tan Yazın
-                        </a>
-                        <p className="text-xs text-muted-foreground mt-2 max-w-xs">
-                            Dilerseniz randevu detayınızı danışmanınıza WhatsApp üzerinden de hemen iletebilirsiniz.
-                        </p>
-                    </div>
-                )}
+                <div className="p-3.5 bg-white/80 dark:bg-emerald-900/40 rounded-xl border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-200 max-w-md mx-auto leading-relaxed text-center">
+                    🌿 Randevu talebiniz incelendikten ve onaylandıktan sonra uzmanımız sizinle doğrudan WhatsApp veya telefon üzerinden iletişime geçecektir.
+                </div>
                 <div className="pt-2">
                     <Button
                         variant="outline"

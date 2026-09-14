@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X } from "lucide-react";
+import { Calendar, Users, Clock, Mail, TrendingUp, TrendingDown, CalendarCheck, MessageSquare, Check, X, MessageCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
+import { formatWhatsappLink } from "@/lib/whatsapp";
 import { collection, getCountFromServer, query, where, getDocs, orderBy, limit, doc, updateDoc, Timestamp, type DocumentData, type Query } from "firebase/firestore";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -227,6 +228,14 @@ export default function Dashboard() {
         }
     };
 
+    const handleApproveAndWhatsapp = async (apt: PendingAppointment) => {
+        await updateStatus(apt.id, "approved");
+        const formattedDate = format(toDate(apt.appointment_date), "d MMMM yyyy HH:mm", { locale: tr });
+        const message = `Merhaba Sayın ${apt.client_name},\n\n${formattedDate} tarihindeki randevu talebiniz incelenmiş ve ONAYLANMIŞTIR.\n\nSeans detayları veya sorularınız için bu hat üzerinden görüşebiliriz.`;
+        const waLink = formatWhatsappLink(apt.client_phone, message);
+        window.open(waLink, "_blank");
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pending":
@@ -424,31 +433,58 @@ export default function Dashboard() {
                                                 <p className="text-sm text-muted-foreground">
                                                     {format(toDate(apt.appointment_date), "d MMMM yyyy, HH:mm", { locale: tr })}
                                                 </p>
-                                                <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
+                                                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                                                     <span>{apt.client_email}</span>
                                                     <span>•</span>
-                                                    <span>{apt.client_phone}</span>
+                                                    <span className="flex items-center gap-1">
+                                                        {apt.client_phone}
+                                                        {apt.client_phone && (
+                                                            <a
+                                                                href={formatWhatsappLink(
+                                                                    apt.client_phone,
+                                                                    `Merhaba Sayın ${apt.client_name}, randevunuz hakkında sizinle iletişime geçiyorum.`
+                                                                )}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-emerald-600 hover:text-emerald-700 p-0.5 rounded hover:bg-emerald-50"
+                                                                title="Danışana WhatsApp'tan Yaz"
+                                                            >
+                                                                <MessageCircle className="h-3 w-3" />
+                                                            </a>
+                                                        )}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1.5">
+                                            <Button
+                                                size="sm"
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 px-2.5 flex items-center gap-1"
+                                                onClick={() => handleApproveAndWhatsapp(apt)}
+                                                title="Randevuyu onayla ve danışana WhatsApp'tan onay mesajı aç"
+                                            >
+                                                <MessageCircle className="h-3.5 w-3.5" />
+                                                Onayla & WhatsApp
+                                            </Button>
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                                                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200 text-xs h-8 px-2.5"
                                                 onClick={() => updateStatus(apt.id, "approved")}
+                                                title="Sadece Onayla"
                                             >
-                                                <Check className="h-4 w-4 mr-1" />
+                                                <Check className="h-3.5 w-3.5 mr-1" />
                                                 Onayla
                                             </Button>
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                                                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 text-xs h-8 px-2"
                                                 onClick={() => updateStatus(apt.id, "rejected")}
+                                                title="Reddet"
                                             >
-                                                <X className="h-4 w-4 mr-1" />
-                                                Reddet
+                                                <X className="h-3.5 w-3.5" />
+                                                <span className="sr-only">Reddet</span>
                                             </Button>
                                         </div>
                                     </div>

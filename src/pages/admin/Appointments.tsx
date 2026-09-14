@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Trash2 } from "lucide-react";
+import { Check, X, Trash2, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatWhatsappLink } from "@/lib/whatsapp";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { toDate, type FirestoreDateValue } from "@/lib/firestoreDates";
@@ -86,6 +87,14 @@ export default function Appointments() {
                 description: "Durum güncellenemedi.",
             });
         }
+    };
+
+    const handleApproveAndWhatsapp = async (appointment: Appointment) => {
+        await updateStatus(appointment.id, "approved");
+        const formattedDate = format(toDate(appointment.appointment_date), "d MMMM yyyy HH:mm", { locale: tr });
+        const message = `Merhaba Sayın ${appointment.client_name},\n\n${formattedDate} tarihindeki randevu talebiniz incelenmiş ve ONAYLANMIŞTIR.\n\nSeans detayları veya sorularınız için bu hat üzerinden görüşebiliriz.`;
+        const waLink = formatWhatsappLink(appointment.client_phone, message);
+        window.open(waLink, "_blank");
     };
 
     const deleteAppointment = async (id: string, clientName: string) => {
@@ -174,7 +183,23 @@ export default function Appointments() {
                                     <TableCell>
                                         <div className="flex flex-col text-sm text-muted-foreground">
                                             <span>{appointment.client_email}</span>
-                                            <span>{appointment.client_phone}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span>{appointment.client_phone}</span>
+                                                {appointment.client_phone && (
+                                                    <a
+                                                        href={formatWhatsappLink(
+                                                            appointment.client_phone,
+                                                            `Merhaba Sayın ${appointment.client_name}, randevunuz hakkında sizinle iletişime geçiyorum.`
+                                                        )}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-emerald-600 hover:text-emerald-700 p-0.5 rounded hover:bg-emerald-50 transition-colors"
+                                                        title="Danışana WhatsApp'tan Yaz"
+                                                    >
+                                                        <MessageCircle className="h-3.5 w-3.5" />
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="max-w-[200px] truncate" title={appointment.notes}>
@@ -182,14 +207,25 @@ export default function Appointments() {
                                     </TableCell>
                                     <TableCell>{getStatusBadge(appointment.status)}</TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex items-center justify-end gap-2">
+                                        <div className="flex items-center justify-end gap-1.5">
                                             {appointment.status === "pending" && (
                                                 <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="h-8 px-2 text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 border-emerald-200 flex items-center gap-1"
+                                                        onClick={() => handleApproveAndWhatsapp(appointment)}
+                                                        title="Onayla ve Danışana WhatsApp'tan Onay Mesajı Aç"
+                                                    >
+                                                        <MessageCircle className="h-3.5 w-3.5" />
+                                                        <span className="hidden sm:inline">Onayla & WhatsApp</span>
+                                                    </Button>
                                                     <Button
                                                         size="sm"
                                                         variant="ghost"
                                                         className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
                                                         onClick={() => updateStatus(appointment.id, "approved")}
+                                                        title="Sadece Onayla"
                                                     >
                                                         <Check className="h-4 w-4" />
                                                         <span className="sr-only">Onayla</span>
@@ -199,17 +235,34 @@ export default function Appointments() {
                                                         variant="ghost"
                                                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                                                         onClick={() => updateStatus(appointment.id, "rejected")}
+                                                        title="Reddet"
                                                     >
                                                         <X className="h-4 w-4" />
                                                         <span className="sr-only">Reddet</span>
                                                     </Button>
                                                 </>
                                             )}
+                                            {appointment.status === "approved" && (
+                                                <a
+                                                    href={formatWhatsappLink(
+                                                        appointment.client_phone,
+                                                        `Merhaba Sayın ${appointment.client_name},\n\n${format(toDate(appointment.appointment_date), "d MMMM yyyy HH:mm", { locale: tr })} tarihindeki onaylı randevunuz ile ilgili bilgilendirme yapmak istiyorum.`
+                                                    )}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-md border border-emerald-200 transition-colors"
+                                                    title="Danışana WhatsApp'tan Yaz"
+                                                >
+                                                    <MessageCircle className="h-3.5 w-3.5" />
+                                                    <span>WhatsApp</span>
+                                                </a>
+                                            )}
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 text-gray-600 hover:text-red-700 hover:bg-red-50"
+                                                className="h-8 w-8 p-0 text-gray-500 hover:text-red-700 hover:bg-red-50"
                                                 onClick={() => deleteAppointment(appointment.id, appointment.client_name)}
+                                                title="Sil"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                                 <span className="sr-only">Sil</span>
