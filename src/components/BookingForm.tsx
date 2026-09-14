@@ -164,14 +164,14 @@ export function BookingForm({ onSuccess }: { onSuccess?: () => void }) {
                 <div className="space-y-2">
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Randevu Talebiniz Alındı!</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-                        Sayın <b>{submittedInfo.name}</b>, randevu talebiniz sisteme iletildi. Talebiniz uzmanımız tarafından incelenip onaylandıktan sonra sizinle iletişime geçilecektir.
+                        Sayın <b>{submittedInfo.name}</b>, randevu talebiniz başarıyla alınmıştır.
                     </p>
                     <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                         {submittedInfo.date.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric", weekday: "long" })} - Saat: {submittedInfo.time}
                     </p>
                 </div>
                 <div className="p-3.5 bg-white/80 dark:bg-emerald-900/40 rounded-xl border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-200 max-w-md mx-auto leading-relaxed text-center">
-                    🌿 Randevu talebiniz incelendikten ve onaylandıktan sonra uzmanımız sizinle doğrudan WhatsApp veya telefon üzerinden iletişime geçecektir.
+                    🌿 Talebiniz incelenip onaylandıktan sonra uzmanımız sizinle WhatsApp veya telefon üzerinden doğrudan iletişime geçecektir.
                 </div>
                 <div className="pt-2">
                     <Button
