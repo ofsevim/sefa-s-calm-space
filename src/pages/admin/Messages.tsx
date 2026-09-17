@@ -10,7 +10,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Trash2, MailOpen, Mail } from "lucide-react";
+import { Trash2, MailOpen, Mail, Phone, Calendar as CalendarIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -99,14 +100,15 @@ export default function Messages() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold tracking-tight">Mesajlar</h1>
-                <div className="text-muted-foreground text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Mesajlar</h1>
+                <div className="text-muted-foreground text-xs sm:text-sm">
                     {loading && messages.length === 0 ? "Yükleniyor..." : `Toplam ${messages.length} mesaj`}
                 </div>
             </div>
 
-            <div className="border rounded-lg">
+            {/* Desktop Table View */}
+            <div className="hidden md:block border rounded-lg overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -184,6 +186,129 @@ export default function Messages() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Mobile Cards View */}
+            <div className="space-y-3 block md:hidden">
+                {loading && messages.length === 0 ? (
+                    [1, 2, 3].map((i) => (
+                        <div key={i} className="p-4 border rounded-xl bg-card space-y-3">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-5 w-16 rounded-full" />
+                            </div>
+                            <Skeleton className="h-5 w-36" />
+                            <Skeleton className="h-4 w-48" />
+                            <Skeleton className="h-16 w-full rounded-md" />
+                            <div className="flex gap-2 pt-2 border-t">
+                                <Skeleton className="h-9 flex-1 rounded-md" />
+                                <Skeleton className="h-9 w-20 rounded-md" />
+                            </div>
+                        </div>
+                    ))
+                ) : messages.length === 0 ? (
+                    <div className="text-center py-10 border rounded-xl bg-card text-muted-foreground text-sm">
+                        Henüz hiç mesaj yok.
+                    </div>
+                ) : (
+                    messages.map((msg) => (
+                        <div
+                            key={msg.id}
+                            className={`p-4 border rounded-xl shadow-sm space-y-3 ${
+                                msg.read
+                                    ? "bg-card border-border/70"
+                                    : "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900"
+                            }`}
+                        >
+                            {/* Card Header: Date & Read status */}
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                                    <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
+                                    <span>
+                                        {format(toDate(msg.createdAt), "d MMM yyyy HH:mm", { locale: tr })}
+                                    </span>
+                                </div>
+                                <div>
+                                    {msg.read ? (
+                                        <Badge variant="outline" className="text-xs text-muted-foreground">
+                                            Okundu
+                                        </Badge>
+                                    ) : (
+                                        <Badge className="bg-primary text-xs">
+                                            Yeni
+                                        </Badge>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Sender Name */}
+                            <div>
+                                <h3 className="font-semibold text-base text-foreground">
+                                    {msg.name}
+                                </h3>
+                            </div>
+
+                            {/* Contact Links */}
+                            <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+                                {msg.email && (
+                                    <a
+                                        href={`mailto:${msg.email}`}
+                                        className="inline-flex items-center gap-1.5 hover:underline break-all"
+                                    >
+                                        <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
+                                        <span>{msg.email}</span>
+                                    </a>
+                                )}
+                                {msg.phone && (
+                                    <a
+                                        href={`tel:${msg.phone}`}
+                                        className="inline-flex items-center gap-1.5 hover:underline"
+                                    >
+                                        <Phone className="h-3.5 w-3.5 shrink-0 text-primary" />
+                                        <span>{msg.phone}</span>
+                                    </a>
+                                )}
+                            </div>
+
+                            {/* Message Body */}
+                            <div className="text-sm bg-muted/40 p-3 rounded-md text-foreground whitespace-pre-wrap break-words">
+                                {msg.message}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2 pt-2 border-t">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="flex-1 text-xs"
+                                    onClick={() => toggleReadStatus(msg.id, msg.read)}
+                                >
+                                    {msg.read ? (
+                                        <>
+                                            <Mail className="h-3.5 w-3.5 mr-1.5" />
+                                            Okunmadı Yap
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MailOpen className="h-3.5 w-3.5 mr-1.5" />
+                                            Okundu Yap
+                                        </>
+                                    )}
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-destructive hover:bg-destructive/10 border-destructive/20 text-xs px-3"
+                                    onClick={() => handleDelete(msg.id)}
+                                >
+                                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                                    Sil
+                                </Button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
             {hasMore && (
                 <Button variant="outline" onClick={() => fetchMessages(false)} disabled={loading} className="w-full">
                     {loading ? "Yükleniyor..." : "Daha Fazla Göster"}

@@ -142,13 +142,13 @@ export default function ContentManagement() {
     }
 
     return (
-        <div className="p-6 max-w-5xl mx-auto space-y-8">
+        <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
+                <h1 className="text-2xl sm:text-3xl font-heading font-bold text-foreground mb-2">
                     İçerik Yönetimi
                 </h1>
                 <p className="text-muted-foreground">

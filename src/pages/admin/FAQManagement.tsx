@@ -151,16 +151,16 @@ export default function FAQManagement() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div>
-                        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-heading font-bold text-foreground mb-1 sm:mb-2">
                             SSS Yönetimi
                         </h1>
-                        <p className="text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                             Sıkça Sorulan Soruları buradan düzenleyebilirsiniz.
                         </p>
                     </div>
-                    <Button onClick={addFAQ} variant="outline">
+                    <Button onClick={addFAQ} variant="outline" className="w-full sm:w-auto shrink-0">
                         <Plus className="w-4 h-4 mr-2" />
                         Yeni Soru Ekle
                     </Button>

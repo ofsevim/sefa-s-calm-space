@@ -93,7 +93,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
             <Helmet><title>Yönetici Girişi</title><meta name="robots" content="noindex, nofollow" /></Helmet>
             <Card className="w-full max-w-md">
                 <CardHeader>

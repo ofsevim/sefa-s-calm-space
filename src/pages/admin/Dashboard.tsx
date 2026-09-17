@@ -306,9 +306,9 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Panel</h2>
-                <p className="text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Panel</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                     {format(new Date(), "d MMMM yyyy, EEEE", { locale: tr })}
                 </p>
             </div>
@@ -422,20 +422,20 @@ export default function Dashboard() {
                                 {pendingAppointments.map((apt) => (
                                     <div
                                         key={apt.id}
-                                        className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-lg border border-yellow-100 dark:border-yellow-900"
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-4 bg-white dark:bg-gray-900 rounded-lg border border-yellow-100 dark:border-yellow-900"
                                     >
-                                        <div className="flex items-center gap-4 flex-1">
-                                            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
-                                                <Users className="h-6 w-6 text-yellow-700 dark:text-yellow-300" />
+                                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                                                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-700 dark:text-yellow-300" />
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="font-semibold">{apt.client_name}</p>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold truncate">{apt.client_name}</p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {format(toDate(apt.appointment_date), "d MMMM yyyy, HH:mm", { locale: tr })}
                                                 </p>
-                                                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-xs text-muted-foreground break-all">
                                                     <span>{apt.client_email}</span>
-                                                    <span>•</span>
+                                                    <span className="hidden sm:inline">•</span>
                                                     <span className="flex items-center gap-1">
                                                         {apt.client_phone}
                                                         {apt.client_phone && (
@@ -446,7 +446,7 @@ export default function Dashboard() {
                                                                 )}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-emerald-600 hover:text-emerald-700 p-0.5 rounded hover:bg-emerald-50"
+                                                                className="text-emerald-600 hover:text-emerald-700 p-0.5 rounded hover:bg-emerald-50 transition-colors"
                                                                 title="Danışana WhatsApp'tan Yaz"
                                                             >
                                                                 <MessageCircle className="h-3 w-3" />
@@ -456,10 +456,10 @@ export default function Dashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1.5">
+                                        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-yellow-100 dark:border-yellow-900">
                                             <Button
                                                 size="sm"
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 px-2.5 flex items-center gap-1"
+                                                className="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 px-2.5 flex items-center justify-center gap-1"
                                                 onClick={() => handleApproveAndWhatsapp(apt)}
                                                 title="Randevuyu onayla ve danışana WhatsApp'tan onay mesajı aç"
                                             >
@@ -469,7 +469,7 @@ export default function Dashboard() {
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200 text-xs h-8 px-2.5"
+                                                className="flex-1 sm:flex-initial bg-green-50 hover:bg-green-100 text-green-700 border-green-200 text-xs h-8 px-2.5"
                                                 onClick={() => updateStatus(apt.id, "approved")}
                                                 title="Sadece Onayla"
                                             >
@@ -479,7 +479,7 @@ export default function Dashboard() {
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 text-xs h-8 px-2"
+                                                className="flex-1 sm:flex-initial bg-red-50 hover:bg-red-100 text-red-700 border-red-200 text-xs h-8 px-2"
                                                 onClick={() => updateStatus(apt.id, "rejected")}
                                                 title="Reddet"
                                             >
@@ -524,20 +524,20 @@ export default function Dashboard() {
                                     {todayAppointments.map((apt) => (
                                         <div
                                             key={apt.id}
-                                            className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                                            className="flex items-center justify-between p-3 bg-muted/50 rounded-lg gap-2 min-w-0"
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-full flex items-center justify-center">
                                                     <Users className="h-5 w-5 text-primary" />
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium">{apt.client_name}</p>
+                                                <div className="min-w-0">
+                                                    <p className="font-medium truncate">{apt.client_name}</p>
                                                     <p className="text-sm text-muted-foreground">
                                                         {format(toDate(apt.appointment_date), "HH:mm", { locale: tr })}
                                                     </p>
                                                 </div>
                                             </div>
-                                            {getStatusBadge(apt.status)}
+                                            <div className="shrink-0">{getStatusBadge(apt.status)}</div>
                                         </div>
                                     ))}
                                 </div>

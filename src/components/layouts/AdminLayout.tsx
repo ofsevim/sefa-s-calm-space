@@ -45,12 +45,12 @@ export default function AdminLayout() {
         <SidebarProvider>
             <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
             <AdminSidebar />
-            <main className="w-full">
-                <div className="p-4 border-b flex items-center gap-4">
+            <main className="min-w-0 flex-1 overflow-x-clip bg-background">
+                <div className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                     <SidebarTrigger />
-                    <h1 className="font-semibold text-lg">Yönetim Paneli</h1>
+                    <h1 className="font-semibold text-base sm:text-lg truncate">Yönetim Paneli</h1>
                 </div>
-                <div className="p-6">
+                <div className="p-3 sm:p-6">
                     <Outlet />
                 </div>
             </main>

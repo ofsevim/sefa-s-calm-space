@@ -242,14 +242,14 @@ export default function MediaManagement() {
     return (
         <div className="space-y-6 max-w-5xl">
             {/* Üst Başlık */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Görsel Yönetimi</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Görsel Yönetimi</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         Sitenizin Anasayfa (Hero) ve Hakkımda bölümlerindeki fotoğrafları güncelleyin.
                     </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => loadData()} disabled={loading}>
+                <Button variant="outline" size="sm" onClick={() => loadData()} disabled={loading} className="self-start sm:self-auto shrink-0">
                     <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
                     Yenile
                 </Button>
@@ -317,17 +317,17 @@ export default function MediaManagement() {
             {/* 1. ANASAYFA (HERO) FOTOĞRAFI KARTI */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
                         <div className="space-y-1">
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <ImageIcon className="h-5 w-5 text-primary" />
+                            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                                <ImageIcon className="h-5 w-5 text-primary shrink-0" />
                                 1. Anasayfa (Hero) Fotoğrafı
                             </CardTitle>
                             <CardDescription>
                                 Sitenin en üstünde, karşılama metninin yanındaki ana vitrin görseli.
                             </CardDescription>
                         </div>
-                        <Badge variant={heroImage ? "default" : "secondary"}>
+                        <Badge variant={heroImage ? "default" : "secondary"} className="self-start sm:self-auto shrink-0">
                             {heroImage ? "Özel Görsel Yayında" : "Varsayılan Görsel"}
                         </Badge>
                     </div>
@@ -428,17 +428,17 @@ export default function MediaManagement() {
             {/* 2. HAKKIMDA FOTOĞRAFI KARTI */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
                         <div className="space-y-1">
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <ImageIcon className="h-5 w-5 text-primary" />
+                            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                                <ImageIcon className="h-5 w-5 text-primary shrink-0" />
                                 2. Hakkımda Bölümü Portre Fotoğrafı
                             </CardTitle>
                             <CardDescription>
                                 Sitedeki "Ben Kimim? / Psikolojik Danışman Sefa Sevim" bölümündeki portre fotoğrafı.
                             </CardDescription>
                         </div>
-                        <Badge variant={aboutImage ? "default" : "secondary"}>
+                        <Badge variant={aboutImage ? "default" : "secondary"} className="self-start sm:self-auto shrink-0">
                             {aboutImage ? "Özel Görsel Yayında" : "Varsayılan Görsel"}
                         </Badge>
                     </div>

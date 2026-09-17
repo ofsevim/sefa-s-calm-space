@@ -276,7 +276,7 @@ export default function Settings() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-3xl font-bold tracking-tight">Ayarlar</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Ayarlar</h2>
 
             <Tabs defaultValue="general" className="w-full">
                 <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 gap-1">
@@ -308,7 +308,7 @@ export default function Settings() {
                                 <Label htmlFor="address">Adres</Label>
                                 <Textarea id="address" value={generalData.address} onChange={handleGeneralChange} />
                             </div>
-                            <Button onClick={saveGeneral} disabled={loading}>
+                            <Button onClick={saveGeneral} disabled={loading} className="w-full sm:w-auto">
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Kaydet
                             </Button>
@@ -381,15 +381,16 @@ export default function Settings() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {workingHours.map((item, index) => (
-                                <div key={index} className="flex items-center gap-4">
-                                    <Label className="w-32">{item.day}</Label>
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4">
+                                    <Label className="sm:w-36 text-sm font-medium shrink-0">{item.day}</Label>
                                     <Input
                                         value={item.hours}
                                         onChange={(e) => handleHourChange(index, e.target.value)}
+                                        className="flex-1"
                                     />
                                 </div>
                             ))}
-                            <Button onClick={saveHours} disabled={loading}>
+                            <Button onClick={saveHours} disabled={loading} className="w-full sm:w-auto">
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Kaydet
                             </Button>
@@ -401,26 +402,29 @@ export default function Settings() {
                 <TabsContent value="notifications" className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                                 <div>
-                                    <CardTitle className="text-xl flex items-center gap-2">
-                                        <Send className="h-5 w-5 text-sky-500" />
+                                    <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                                        <Send className="h-5 w-5 text-sky-500 shrink-0" />
                                         Telegram Anlık Bildirimleri
                                     </CardTitle>
                                     <CardDescription className="mt-1">
                                         Danışanlar web sitenizden randevu aldığında veya mesaj gönderdiğinde cebinize anlık bildirim gelsin.
                                     </CardDescription>
                                 </div>
-                                <Badge variant={notificationData.telegramEnabled ? "default" : "secondary"}>
+                                <Badge
+                                    variant={notificationData.telegramEnabled ? "default" : "secondary"}
+                                    className="self-start sm:self-auto shrink-0"
+                                >
                                     {notificationData.telegramEnabled ? "Aktif" : "Pasif"}
                                 </Badge>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {/* Switch */}
-                            <div className="flex items-center justify-between p-4 bg-muted/40 rounded-xl border">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="telegram-switch" className="font-semibold text-base">
+                            <div className="flex items-center justify-between gap-4 p-4 bg-muted/40 rounded-xl border">
+                                <div className="space-y-0.5 min-w-0">
+                                    <Label htmlFor="telegram-switch" className="font-semibold text-sm sm:text-base">
                                         Telegram Bildirimlerini Etkinleştir
                                     </Label>
                                     <p className="text-xs text-muted-foreground">
@@ -433,6 +437,7 @@ export default function Settings() {
                                     onCheckedChange={(checked) =>
                                         setNotificationData({ ...notificationData, telegramEnabled: checked })
                                     }
+                                    className="shrink-0"
                                 />
                             </div>
 
@@ -442,11 +447,11 @@ export default function Settings() {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex flex-wrap items-center gap-3 pt-2">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                                 <Button
                                     onClick={saveNotifications}
                                     disabled={savingNotifications}
-                                    className="gap-2"
+                                    className="gap-2 w-full sm:w-auto"
                                 >
                                     {savingNotifications ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -460,7 +465,7 @@ export default function Settings() {
                                     variant="outline"
                                     onClick={handleTestTelegram}
                                     disabled={testingTelegram}
-                                    className="gap-2"
+                                    className="gap-2 w-full sm:w-auto"
                                 >
                                     {testingTelegram ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -507,6 +512,7 @@ export default function Settings() {
                                 disabled={savingNotifications}
                                 variant="secondary"
                                 size="sm"
+                                className="w-full sm:w-auto"
                             >
                                 WhatsApp Numarasını Kaydet
                             </Button>

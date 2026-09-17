@@ -19,6 +19,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarFooter,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { auth } from "@/lib/firebase";
@@ -67,8 +68,18 @@ export function AdminSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { toast } = useToast();
+    const { isMobile, setOpenMobile } = useSidebar();
+
+    const handleItemClick = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    };
 
     const handleLogout = async () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
         await signOut(auth);
         toast({
             title: "Çıkış yapıldı",
@@ -90,7 +101,7 @@ export function AdminSidebar() {
                                         asChild
                                         isActive={location.pathname === item.url}
                                     >
-                                        <Link to={item.url}>
+                                        <Link to={item.url} onClick={handleItemClick}>
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </Link>
@@ -105,7 +116,7 @@ export function AdminSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <a href="/" target="_blank" rel="noopener noreferrer">
+                            <a href="/" target="_blank" rel="noopener noreferrer" onClick={handleItemClick}>
                                 <Home />
                                 <span>Siteye Dön</span>
                             </a>

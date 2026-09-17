@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Trash2, MessageCircle } from "lucide-react";
+import { Check, X, Trash2, Phone, Mail, Calendar as CalendarIcon, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatWhatsappLink } from "@/lib/whatsapp";
 import { format } from "date-fns";
@@ -140,10 +140,11 @@ export default function Appointments() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Randevular</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Randevular</h2>
             </div>
 
-            <div className="rounded-md border">
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -275,6 +276,174 @@ export default function Appointments() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Mobile Cards View */}
+            <div className="space-y-3 block md:hidden">
+                {loading && appointments.length === 0 ? (
+                    [1, 2, 3].map((i) => (
+                        <div key={i} className="p-4 border rounded-xl bg-card space-y-3">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-6 w-16 rounded-full" />
+                            </div>
+                            <Skeleton className="h-5 w-40" />
+                            <Skeleton className="h-4 w-48" />
+                            <div className="flex gap-2 pt-2 border-t">
+                                <Skeleton className="h-9 flex-1 rounded-md" />
+                                <Skeleton className="h-9 flex-1 rounded-md" />
+                            </div>
+                        </div>
+                    ))
+                ) : appointments.length === 0 ? (
+                    <div className="text-center py-10 border rounded-xl bg-card text-muted-foreground text-sm">
+                        Randevu bulunamadı.
+                    </div>
+                ) : (
+                    appointments.map((appointment) => (
+                        <div
+                            key={appointment.id}
+                            className="p-4 border rounded-xl bg-card shadow-sm space-y-3"
+                        >
+                            {/* Card Header: Date & Status */}
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                                    <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
+                                    <span>
+                                        {format(toDate(appointment.appointment_date), "d MMM yyyy HH:mm", { locale: tr })}
+                                    </span>
+                                </div>
+                                <div>{getStatusBadge(appointment.status)}</div>
+                            </div>
+
+                            {/* Client Name */}
+                            <div>
+                                <h3 className="font-semibold text-base text-foreground">
+                                    {appointment.client_name}
+                                </h3>
+                            </div>
+
+                            {/* Contact Links */}
+                            <div className="flex flex-col gap-1.5 text-xs text-muted-foreground pt-1">
+                                {appointment.client_phone && (
+                                    <div className="flex items-center gap-2">
+                                        <a
+                                            href={`tel:${appointment.client_phone}`}
+                                            className="inline-flex items-center gap-1.5 text-primary hover:underline"
+                                        >
+                                            <Phone className="h-3.5 w-3.5 shrink-0" />
+                                            <span>{appointment.client_phone}</span>
+                                        </a>
+                                        <a
+                                            href={formatWhatsappLink(
+                                                appointment.client_phone,
+                                                `Merhaba Sayın ${appointment.client_name}, randevunuz hakkında sizinle iletişime geçiyorum.`
+                                            )}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-emerald-600 hover:text-emerald-700 p-0.5 rounded hover:bg-emerald-50 transition-colors"
+                                            title="Danışana WhatsApp'tan Yaz"
+                                        >
+                                            <MessageCircle className="h-3.5 w-3.5" />
+                                        </a>
+                                    </div>
+                                )}
+                                {appointment.client_email && (
+                                    <a
+                                        href={`mailto:${appointment.client_email}`}
+                                        className="inline-flex items-center gap-1.5 hover:underline break-all"
+                                    >
+                                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                                        <span>{appointment.client_email}</span>
+                                    </a>
+                                )}
+                            </div>
+
+                            {/* Notes */}
+                            {appointment.notes && (
+                                <div className="text-xs bg-muted/50 p-2.5 rounded-md text-muted-foreground break-words">
+                                    <span className="font-medium text-foreground">Not: </span>
+                                    {appointment.notes}
+                                </div>
+                            )}
+
+                            {/* Card Actions */}
+                            <div className="flex flex-col gap-2 pt-2 border-t">
+                                {appointment.status === "pending" ? (
+                                    <>
+                                        <Button
+                                            size="sm"
+                                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 flex items-center justify-center gap-1.5"
+                                            onClick={() => handleApproveAndWhatsapp(appointment)}
+                                            title="Onayla ve Danışana WhatsApp'tan Onay Mesajı Aç"
+                                        >
+                                            <MessageCircle className="h-3.5 w-3.5" />
+                                            Onayla & WhatsApp
+                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                                                onClick={() => updateStatus(appointment.id, "approved")}
+                                            >
+                                                <Check className="h-4 w-4 mr-1.5" />
+                                                Onayla
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="flex-1 bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                                                onClick={() => updateStatus(appointment.id, "rejected")}
+                                            >
+                                                <X className="h-4 w-4 mr-1.5" />
+                                                Reddet
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="px-2.5 text-muted-foreground hover:text-red-700 hover:bg-red-50"
+                                                onClick={() => deleteAppointment(appointment.id, appointment.client_name)}
+                                                title="Sil"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                <span className="sr-only">Sil</span>
+                                            </Button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        {appointment.status === "approved" && (
+                                            <a
+                                                href={formatWhatsappLink(
+                                                    appointment.client_phone,
+                                                    `Merhaba Sayın ${appointment.client_name},\n\n${format(toDate(appointment.appointment_date), "d MMMM yyyy HH:mm", { locale: tr })} tarihindeki onaylı randevunuz ile ilgili bilgilendirme yapmak istiyorum.`
+                                                )}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-md border border-emerald-200 transition-colors"
+                                                title="Danışana WhatsApp'tan Yaz"
+                                            >
+                                                <MessageCircle className="h-3.5 w-3.5" />
+                                                <span>WhatsApp ile Yaz</span>
+                                            </a>
+                                        )}
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className={`${appointment.status === "approved" ? "flex-1" : "w-full"} text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20`}
+                                            onClick={() => deleteAppointment(appointment.id, appointment.client_name)}
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-1.5" />
+                                            Randevuyu Sil
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
             {hasMore && (
                 <Button variant="outline" onClick={() => fetchAppointments(false)} disabled={loading} className="w-full">
                     {loading ? "Yükleniyor..." : "Daha Fazla Göster"}
