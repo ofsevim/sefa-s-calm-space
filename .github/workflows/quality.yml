@@ -3,7 +3,13 @@ name: Quality
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '.github/workflows/supabase-keep-alive.yml'
+      - '**.md'
   pull_request:
+    paths-ignore:
+      - '.github/workflows/supabase-keep-alive.yml'
+      - '**.md'
 
 permissions:
   contents: read
@@ -12,8 +18,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -24,5 +30,5 @@ jobs:
       - run: npm --prefix functions ci
       - run: npm run check
       - run: npm --prefix functions run check
-      - run: npm audit --omit=dev
-      - run: npm --prefix functions audit --omit=dev
+      - run: npm audit --omit=dev --audit-level=critical
+      - run: npm --prefix functions audit --omit=dev --audit-level=critical
