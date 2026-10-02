@@ -1,0 +1,39 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Her 3 günde bir saat 04:00 UTC'de (Türkiye saati ile 07:00) çalışır
+    - cron: '0 4 */3 * *'
+  workflow_dispatch: # İstediğiniz an GitHub arayüzünden manuel tetiklemek için
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_URL veya SUPABASE_ANON_KEY secret'ı tanımlanmamış!"
+            echo "Lütfen GitHub Repo -> Settings -> Secrets and variables -> Actions kısmına bu iki secret'ı ekleyin."
+            exit 1
+          fi
+
+          # URL sonundaki slash (/) işaretini temizle
+          BASE_URL="${SUPABASE_URL%/}"
+
+          echo "Supabase API'sine istek gönderiliyor: ${BASE_URL}/rest/v1/"
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" -X GET "${BASE_URL}/rest/v1/" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "HTTP Durum Kodu: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "Başarılı! Supabase aktif tutuldu (Keep-alive pingi başarılı)."
+          else
+            echo "::warning::Beklenmeyen durum kodu alındı ($HTTP_STATUS). Detay:"
+            cat response.txt
+          fi
